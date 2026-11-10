@@ -1,0 +1,5 @@
+# Ядро: CPU-сборка torch (GPU не нужен)
+torch>=2.4,<3
+numpy>=1.26,<3
+pillow>=10,<13
+matplotlib>=3.8,<4

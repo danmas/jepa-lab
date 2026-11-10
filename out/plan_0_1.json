@@ -1,0 +1,148 @@
+{
+ "zone": 0,
+ "zone_name": "верхний левый",
+ "seed": 1,
+ "success": true,
+ "steps_used": 12,
+ "miss_px": 6.7,
+ "steps": [
+  {
+   "step": 1,
+   "action": "влево-вверх",
+   "cost": 0.0324,
+   "plan_time": 0.265,
+   "pos": [
+    28.7,
+    50.7
+   ],
+   "shadow_miss": 10.22
+  },
+  {
+   "step": 2,
+   "action": "влево-вверх",
+   "cost": 0.0388,
+   "plan_time": 0.169,
+   "pos": [
+    22.4,
+    44.7
+   ],
+   "shadow_miss": 8.2
+  },
+  {
+   "step": 3,
+   "action": "влево-вверх",
+   "cost": 0.0394,
+   "plan_time": 0.131,
+   "pos": [
+    14.6,
+    37.3
+   ],
+   "shadow_miss": 15.44
+  },
+  {
+   "step": 4,
+   "action": "влево-вверх",
+   "cost": 0.0381,
+   "plan_time": 0.186,
+   "pos": [
+    6.0,
+    29.0
+   ],
+   "shadow_miss": 9.86
+  },
+  {
+   "step": 5,
+   "action": "вправо-вниз",
+   "cost": 0.0324,
+   "plan_time": 0.126,
+   "pos": [
+    5.2,
+    28.2
+   ],
+   "shadow_miss": 8.79
+  },
+  {
+   "step": 6,
+   "action": "вправо",
+   "cost": 0.0348,
+   "plan_time": 0.129,
+   "pos": [
+    10.0,
+    27.9
+   ],
+   "shadow_miss": 6.24
+  },
+  {
+   "step": 7,
+   "action": "вправо",
+   "cost": 0.0352,
+   "plan_time": 0.221,
+   "pos": [
+    16.8,
+    27.8
+   ],
+   "shadow_miss": 7.35
+  },
+  {
+   "step": 8,
+   "action": "вверх",
+   "cost": 0.0358,
+   "plan_time": 0.232,
+   "pos": [
+    20.9,
+    23.9
+   ],
+   "shadow_miss": 7.9
+  },
+  {
+   "step": 9,
+   "action": "вправо-вниз",
+   "cost": 0.0341,
+   "plan_time": 0.285,
+   "pos": [
+    27.3,
+    25.7
+   ],
+   "shadow_miss": 9.54
+  },
+  {
+   "step": 10,
+   "action": "влево-вверх",
+   "cost": 0.0397,
+   "plan_time": 0.275,
+   "pos": [
+    27.2,
+    23.0
+   ],
+   "shadow_miss": 8.8
+  },
+  {
+   "step": 11,
+   "action": "влево-вверх",
+   "cost": 0.037,
+   "plan_time": 0.262,
+   "pos": [
+    23.1,
+    17.5
+   ],
+   "shadow_miss": 7.48
+  },
+  {
+   "step": 12,
+   "action": "на месте",
+   "cost": 0.0277,
+   "plan_time": 0.159,
+   "pos": [
+    20.7,
+    14.3
+   ],
+   "shadow_miss": 8.63
+  }
+ ],
+ "final_pos": [
+  20.7,
+  14.3
+ ],
+ "gif": "C:\\ERV\\projects-ex\\jepa-lab\\out\\plan_0_1.gif",
+ "total_time": 2.7
+}

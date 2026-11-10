@@ -1,0 +1,137 @@
+{
+ "zone": 2,
+ "zone_name": "верхний правый",
+ "seed": 1,
+ "success": true,
+ "steps_used": 11,
+ "miss_px": 6.02,
+ "steps": [
+  {
+   "step": 1,
+   "action": "вправо-вверх",
+   "cost": 0.0117,
+   "plan_time": 0.068,
+   "pos": [
+    36.7,
+    50.7
+   ],
+   "shadow_miss": 6.09
+  },
+  {
+   "step": 2,
+   "action": "влево",
+   "cost": 0.0154,
+   "plan_time": 0.073,
+   "pos": [
+    35.2,
+    48.7
+   ],
+   "shadow_miss": 16.77
+  },
+  {
+   "step": 3,
+   "action": "вправо-вверх",
+   "cost": 0.0076,
+   "plan_time": 0.068,
+   "pos": [
+    38.3,
+    43.7
+   ],
+   "shadow_miss": 7.3
+  },
+  {
+   "step": 4,
+   "action": "на месте",
+   "cost": 0.0061,
+   "plan_time": 0.078,
+   "pos": [
+    40.2,
+    40.9
+   ],
+   "shadow_miss": 1.15
+  },
+  {
+   "step": 5,
+   "action": "вправо",
+   "cost": 0.0044,
+   "plan_time": 0.069,
+   "pos": [
+    45.3,
+    39.3
+   ],
+   "shadow_miss": 7.05
+  },
+  {
+   "step": 6,
+   "action": "влево",
+   "cost": 0.005,
+   "plan_time": 0.07,
+   "pos": [
+    44.4,
+    38.5
+   ],
+   "shadow_miss": 8.23
+  },
+  {
+   "step": 7,
+   "action": "влево",
+   "cost": 0.0041,
+   "plan_time": 0.073,
+   "pos": [
+    39.8,
+    38.2
+   ],
+   "shadow_miss": 8.21
+  },
+  {
+   "step": 8,
+   "action": "вправо-вверх",
+   "cost": 0.0046,
+   "plan_time": 0.119,
+   "pos": [
+    41.1,
+    34.2
+   ],
+   "shadow_miss": 3.22
+  },
+  {
+   "step": 9,
+   "action": "вправо",
+   "cost": 0.0032,
+   "plan_time": 0.087,
+   "pos": [
+    45.8,
+    31.9
+   ],
+   "shadow_miss": 5.77
+  },
+  {
+   "step": 10,
+   "action": "влево-вверх",
+   "cost": 0.0032,
+   "plan_time": 0.083,
+   "pos": [
+    44.7,
+    26.7
+   ],
+   "shadow_miss": 8.85
+  },
+  {
+   "step": 11,
+   "action": "вправо-вверх",
+   "cost": 0.0034,
+   "plan_time": 0.079,
+   "pos": [
+    48.0,
+    19.7
+   ],
+   "shadow_miss": 9.25
+  }
+ ],
+ "final_pos": [
+  48.0,
+  19.7
+ ],
+ "gif": "C:\\ERV\\projects-ex\\jepa-lab\\out\\plan_2_1.gif",
+ "total_time": 1.06
+}

@@ -1,0 +1,291 @@
+{
+ "zone": 1,
+ "zone_name": "верхний центр",
+ "seed": 1,
+ "success": false,
+ "steps_used": 25,
+ "miss_px": 33.84,
+ "steps": [
+  {
+   "step": 1,
+   "action": "вправо-вверх",
+   "cost": 0.0367,
+   "plan_time": 0.354,
+   "pos": [
+    37.5,
+    57.0
+   ],
+   "shadow_miss": 47.05
+  },
+  {
+   "step": 2,
+   "action": "вправо-вниз",
+   "cost": 0.036,
+   "plan_time": 0.311,
+   "pos": [
+    42.0,
+    56.3
+   ],
+   "shadow_miss": 38.5
+  },
+  {
+   "step": 3,
+   "action": "вправо-вверх",
+   "cost": 0.0408,
+   "plan_time": 0.275,
+   "pos": [
+    47.7,
+    54.9
+   ],
+   "shadow_miss": 22.07
+  },
+  {
+   "step": 4,
+   "action": "вправо-вверх",
+   "cost": 0.044,
+   "plan_time": 0.176,
+   "pos": [
+    54.6,
+    52.6
+   ],
+   "shadow_miss": 21.47
+  },
+  {
+   "step": 5,
+   "action": "влево-вверх",
+   "cost": 0.0456,
+   "plan_time": 0.225,
+   "pos": [
+    55.6,
+    49.5
+   ],
+   "shadow_miss": 22.64
+  },
+  {
+   "step": 6,
+   "action": "вправо-вверх",
+   "cost": 0.0494,
+   "plan_time": 0.119,
+   "pos": [
+    51.1,
+    45.6
+   ],
+   "shadow_miss": 15.52
+  },
+  {
+   "step": 7,
+   "action": "вправо",
+   "cost": 0.0489,
+   "plan_time": 0.216,
+   "pos": [
+    47.8,
+    42.1
+   ],
+   "shadow_miss": 17.21
+  },
+  {
+   "step": 8,
+   "action": "на месте",
+   "cost": 0.0448,
+   "plan_time": 0.19,
+   "pos": [
+    44.5,
+    39.0
+   ],
+   "shadow_miss": 18.85
+  },
+  {
+   "step": 9,
+   "action": "влево",
+   "cost": 0.0392,
+   "plan_time": 0.206,
+   "pos": [
+    40.0,
+    36.3
+   ],
+   "shadow_miss": 31.16
+  },
+  {
+   "step": 10,
+   "action": "влево-вниз",
+   "cost": 0.0344,
+   "plan_time": 0.266,
+   "pos": [
+    34.3,
+    35.2
+   ],
+   "shadow_miss": 27.69
+  },
+  {
+   "step": 11,
+   "action": "влево-вверх",
+   "cost": 0.0313,
+   "plan_time": 0.146,
+   "pos": [
+    27.4,
+    33.3
+   ],
+   "shadow_miss": 20.27
+  },
+  {
+   "step": 12,
+   "action": "влево-вниз",
+   "cost": 0.033,
+   "plan_time": 0.219,
+   "pos": [
+    19.3,
+    33.0
+   ],
+   "shadow_miss": 31.84
+  },
+  {
+   "step": 13,
+   "action": "вправо-вверх",
+   "cost": 0.0335,
+   "plan_time": 0.151,
+   "pos": [
+    12.3,
+    31.9
+   ],
+   "shadow_miss": 15.93
+  },
+  {
+   "step": 14,
+   "action": "влево-вниз",
+   "cost": 0.0411,
+   "plan_time": 0.185,
+   "pos": [
+    5.8,
+    32.4
+   ],
+   "shadow_miss": 40.76
+  },
+  {
+   "step": 15,
+   "action": "влево-вниз",
+   "cost": 0.0477,
+   "plan_time": 0.223,
+   "pos": [
+    12.7,
+    34.5
+   ],
+   "shadow_miss": 11.79
+  },
+  {
+   "step": 16,
+   "action": "влево",
+   "cost": 0.0443,
+   "plan_time": 0.274,
+   "pos": [
+    18.4,
+    37.0
+   ],
+   "shadow_miss": 20.09
+  },
+  {
+   "step": 17,
+   "action": "вверх",
+   "cost": 0.0452,
+   "plan_time": 0.172,
+   "pos": [
+    24.1,
+    38.7
+   ],
+   "shadow_miss": 16.69
+  },
+  {
+   "step": 18,
+   "action": "вниз",
+   "cost": 0.0458,
+   "plan_time": 0.224,
+   "pos": [
+    29.8,
+    42.0
+   ],
+   "shadow_miss": 36.92
+  },
+  {
+   "step": 19,
+   "action": "вправо",
+   "cost": 0.0391,
+   "plan_time": 0.175,
+   "pos": [
+    36.7,
+    45.8
+   ],
+   "shadow_miss": 31.54
+  },
+  {
+   "step": 20,
+   "action": "влево-вниз",
+   "cost": 0.0335,
+   "plan_time": 0.221,
+   "pos": [
+    42.4,
+    51.1
+   ],
+   "shadow_miss": 19.77
+  },
+  {
+   "step": 21,
+   "action": "влево",
+   "cost": 0.0328,
+   "plan_time": 0.155,
+   "pos": [
+    46.9,
+    56.8
+   ],
+   "shadow_miss": 15.99
+  },
+  {
+   "step": 22,
+   "action": "влево-вверх",
+   "cost": 0.0438,
+   "plan_time": 0.187,
+   "pos": [
+    50.3,
+    54.3
+   ],
+   "shadow_miss": 6.97
+  },
+  {
+   "step": 23,
+   "action": "вправо-вниз",
+   "cost": 0.0462,
+   "plan_time": 0.215,
+   "pos": [
+    54.8,
+    51.0
+   ],
+   "shadow_miss": 13.24
+  },
+  {
+   "step": 24,
+   "action": "вправо-вверх",
+   "cost": 0.0473,
+   "plan_time": 0.158,
+   "pos": [
+    55.5,
+    46.9
+   ],
+   "shadow_miss": 23.3
+  },
+  {
+   "step": 25,
+   "action": "вправо-вверх",
+   "cost": 0.0491,
+   "plan_time": 0.259,
+   "pos": [
+    51.0,
+    42.0
+   ],
+   "shadow_miss": 13.17
+  }
+ ],
+ "final_pos": [
+  51.0,
+  42.0
+ ],
+ "gif": "C:\\ERV\\projects-ex\\jepa-lab\\out\\plan_1_1.gif",
+ "total_time": 5.72
+}

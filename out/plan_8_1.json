@@ -1,0 +1,60 @@
+{
+ "zone": 8,
+ "zone_name": "нижний правый",
+ "seed": 1,
+ "success": true,
+ "steps_used": 4,
+ "miss_px": 5.38,
+ "steps": [
+  {
+   "step": 1,
+   "action": "вниз",
+   "cost": 0.0026,
+   "plan_time": 0.243,
+   "pos": [
+    32.7,
+    57.3
+   ],
+   "shadow_miss": 8.61
+  },
+  {
+   "step": 2,
+   "action": "вправо-вверх",
+   "cost": 0.0023,
+   "plan_time": 0.407,
+   "pos": [
+    36.8,
+    50.8
+   ],
+   "shadow_miss": 7.53
+  },
+  {
+   "step": 3,
+   "action": "на месте",
+   "cost": 0.0028,
+   "plan_time": 0.268,
+   "pos": [
+    39.3,
+    47.0
+   ],
+   "shadow_miss": 2.09
+  },
+  {
+   "step": 4,
+   "action": "вправо-вниз",
+   "cost": 0.0024,
+   "plan_time": 0.204,
+   "pos": [
+    44.7,
+    48.8
+   ],
+   "shadow_miss": 9.01
+  }
+ ],
+ "final_pos": [
+  44.7,
+  48.8
+ ],
+ "gif": "C:\\ERV\\projects-ex\\jepa-lab\\out\\plan_8_1.gif",
+ "total_time": 1.25
+}
