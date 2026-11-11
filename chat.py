@@ -16,8 +16,8 @@ import sys
 import numpy as np
 import torch
 
-from data import ZONE_CENTERS, ZONES, find_zone
-from models import Probe, load_model
+from data import SLIP, ZONE_CENTERS, ZONES, find_zone
+from models import Probe, load_model, world_of
 from plan import execute
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
@@ -69,13 +69,15 @@ def main():
                     help="вес probe-члена в mixed (по умолчанию 1.0)")
     args = ap.parse_args()
 
-    model, ema, _ = load_model(os.path.join(OUT, f"jepa_{args.tag}.pt"), threads=args.threads)
+    model, ema, ck = load_model(os.path.join(OUT, f"jepa_{args.tag}.pt"), threads=args.threads)
+    world = world_of(ck)
+    slip = float(ck.get("slip") or SLIP)
     if args.probe_weight is None:
         args.probe_weight = 1.0 if args.cost == "mixed" else 0.0
     probe = load_probe(args.tag)
     cem_kw = {"samples": args.samples, "iters": args.iters, "seed": args.seed}
 
-    print("Чат с world model. Примеры: «положи мяч в правый верхний угол», "
+    print(f"Чат с world model, мир «{world}». Примеры: «положи мяч в правый верхний угол», "
           "«где мяч», «зоны», «выход».")
     print("Модель ничего не знает про слова: фразу разбирает таблица зон, "
           "планирование идёт в латенте.\n")
@@ -114,7 +116,8 @@ def main():
         res = execute(model, ema, zone, seed=args.seed, horizon=args.horizon,
                       max_steps=args.steps, cem_kw=cem_kw, probe=probe,
                       probe_weight=args.probe_weight,
-                      verbose=True, save_gif=True, tag="_chat", keep_frames=True)
+                      verbose=True, save_gif=True, tag="_chat", keep_frames=True,
+                      world=world, slip=slip)
         frames = res.pop("frames")
         last = {"frames": frames, "pos": res["final_pos"], "zone": zone}
         print(f"[итог] {'достигнута' if res['success'] else 'промах'} за "

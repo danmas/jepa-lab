@@ -13,13 +13,13 @@ import os
 import numpy as np
 import torch
 
-from data import make_batch
-from models import fit_ridge, load_model, r2_score
+from data import WORLDS, make_batch
+from models import fit_ridge, load_model, r2_score, world_of
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 
 
-def collect(model, samples=6000, horizon=12, seed=0):
+def collect(model, samples=6000, horizon=12, seed=0, world="flat"):
     """Пары латентов (z_{t-1}, z_t) и истинное состояние (x, y, vx, vy).
 
     Скорость = смещение между кадрами (pos_t − pos_{t-1}) — ровно то, что видит физика.
@@ -28,7 +28,7 @@ def collect(model, samples=6000, horizon=12, seed=0):
     Z, Y = [], []
     got = 0
     while got < samples:
-        frames, _, pos = make_batch(64, rng, horizon)
+        frames, _, pos = make_batch(64, rng, horizon, world=world)
         with torch.no_grad():
             z = model.encoder(torch.from_numpy(frames.reshape(-1, 1, 64, 64)))
         z = z.view(frames.shape[0], horizon, -1)
@@ -47,11 +47,16 @@ def main():
     ap.add_argument("--samples", type=int, default=6000)
     ap.add_argument("--lam", type=float, default=1e-2)
     ap.add_argument("--threads", type=int, default=8)
+    ap.add_argument("--world", default=None, choices=WORLDS,
+                    help="если задан и не совпадает с чекпоинтом — отказ")
     args = ap.parse_args()
 
     path = os.path.join(OUT, f"jepa_{args.tag}.pt")
-    model, ema, _ = load_model(path, threads=args.threads)
-    Z, Y = collect(model, args.samples)
+    model, ema, ck = load_model(path, threads=args.threads)
+    world = world_of(ck)
+    if args.world is not None and args.world != world:
+        raise SystemExit(f"несовпадение режима: чекпоинт {world}, запрошен {args.world}")
+    Z, Y = collect(model, args.samples, world=world)
 
     g = torch.Generator().manual_seed(0)
     perm = torch.randperm(Z.shape[0], generator=g)
@@ -63,8 +68,9 @@ def main():
     r2 = r2_score(pred, Y[te])
     mae = (pred - Y[te]).abs().mean(0).tolist()
 
-    torch.save({"probe": probe.state_dict(), "r2": r2}, os.path.join(OUT, f"probe_{args.tag}.pt"))
-    res = {"tag": args.tag, "samples": int(Z.shape[0]), "r2": r2,
+    torch.save({"probe": probe.state_dict(), "r2": r2, "world": world},
+               os.path.join(OUT, f"probe_{args.tag}.pt"))
+    res = {"tag": args.tag, "world": world, "samples": int(Z.shape[0]), "r2": r2,
            "mae": [round(v, 3) for v in mae],
            "columns": ["x", "y", "vx", "vy"]}
     with open(os.path.join(OUT, f"probe_{args.tag}.json"), "w", encoding="utf-8") as f:

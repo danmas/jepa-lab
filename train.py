@@ -18,7 +18,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from data import N_ACTIONS, make_batch
+from data import N_ACTIONS, NOISE_SIGMA, SLIP, WORLDS, make_batch, measure_jitter_ambiguity
 from models import EMATarget, WorldModel
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
@@ -64,10 +64,10 @@ def build_loss(mode, model, ema, frames, acts):
 
 
 @torch.no_grad()
-def quick_eval(mode, model, ema, seed=12345):
+def quick_eval(mode, model, ema, seed=12345, world="flat"):
     """Одношаговая ошибка на фиксированном батче: в пикселях и в латенте."""
     rng = np.random.default_rng(seed)
-    frames, acts, _ = make_batch(128, rng, HORIZON)
+    frames, acts, _ = make_batch(128, rng, HORIZON, world=world)
     frames, acts = torch.from_numpy(frames), torch.from_numpy(acts)
     z = model.predictor(model.encoder(frames[:, 0]), model.encoder(frames[:, 1]), acts[:, 1])
     pix = F.mse_loss(model.decoder(z), frames[:, 2]).item()
@@ -79,6 +79,16 @@ def ckpt_path(mode, tag):
     return os.path.join(OUT, f"{mode}{('_' + tag) if tag else ''}.pt")
 
 
+def refuse_tag(world, tag):
+    """Неплоский режим не имеет права затереть v4 и архив v0.2."""
+    if world == "flat":
+        return
+    if not tag or tag == "v4":
+        raise SystemExit(
+            f"режим {world}: нужен непустой тег и не v4, например v5-{world}. "
+            "Файлы out/jepa.pt, out/pixel.pt и чекпоинты v4 не перезаписываются.")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["jepa", "pixel"], required=True)
@@ -87,6 +97,7 @@ def main():
     ap.add_argument("--lr", type=float, default=3e-4)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--tag", default="", help="суффикс имени чекпоинта, напр. v3")
+    ap.add_argument("--world", choices=WORLDS, default="flat")
     ap.add_argument("--unit-norm", type=int, default=1, help="1: латент на единичной сфере")
     ap.add_argument("--threads", type=int, default=8)  # 12 потоков на 6 ядрах медленнее
     args = ap.parse_args()
@@ -95,6 +106,19 @@ def main():
     torch.manual_seed(args.seed)
     rng = np.random.default_rng(args.seed)
     os.makedirs(OUT, exist_ok=True)
+    refuse_tag(args.world, args.tag)
+    if args.world == "jitter":
+        gate = measure_jitter_ambiguity()
+        gate_path = os.path.join(OUT, "ambiguity_jitter.json")
+        with open(gate_path, "w", encoding="utf-8") as f:
+            json.dump(gate, f, ensure_ascii=False, indent=1)
+            f.write("\n")
+        print(f"[jitter] радиус разброса {gate['radius_px']:.2f} px "
+              f"(порог {gate['threshold_px']}) -> {gate_path}")
+        if not gate["train"]:
+            raise SystemExit(
+                "jitter не обучается: радиус не больше 6 px, это не проверка неоднозначности. "
+                "Вероятность 0.25 не поднимается.")
 
     model = WorldModel(n_actions=N_ACTIONS, unit_norm=bool(args.unit_norm))
     ema = EMATarget(model.encoder, momentum=0.99)
@@ -103,11 +127,11 @@ def main():
         opt, max_lr=args.lr, total_steps=args.steps, pct_start=0.1)
 
     print(f"[{args.mode}] params={model.params_count()/1e6:.2f}M steps={args.steps} "
-          f"batch={args.batch} actions={N_ACTIONS} horizon={HORIZON}")
+          f"batch={args.batch} actions={N_ACTIONS} horizon={HORIZON} world={args.world}")
     log, t_start = [], time.perf_counter()
 
     for step in range(1, args.steps + 1):
-        frames, acts, _ = make_batch(args.batch, rng, HORIZON)
+        frames, acts, _ = make_batch(args.batch, rng, HORIZON, world=args.world)
         frames, acts = torch.from_numpy(frames), torch.from_numpy(acts)
 
         loss, parts = build_loss(args.mode, model, ema, frames, acts)
@@ -120,7 +144,7 @@ def main():
             ema.update(model.encoder)
 
         if step % 100 == 0 or step == 1:
-            ev = quick_eval(args.mode, model, ema)
+            ev = quick_eval(args.mode, model, ema, world=args.world)
             row = {"step": step, "loss": round(loss.item(), 5),
                    **{k: round(v, 5) for k, v in parts.items()},
                    **{k: round(v, 5) for k, v in ev.items()}}
@@ -134,7 +158,10 @@ def main():
     path = ckpt_path(args.mode, args.tag)
     torch.save({"model": model.state_dict(), "ema": ema.state_dict(),
                 "args": vars(args), "n_actions": N_ACTIONS,
-                "horizon": HORIZON, "log": log}, path)
+                "horizon": HORIZON, "log": log,
+                "world": args.world,
+                "sigma": NOISE_SIGMA if args.world == "noise" else None,
+                "slip": SLIP if args.world == "jitter" else None}, path)
     with open(os.path.join(OUT, f"{args.mode}{('_' + args.tag) if args.tag else ''}_log.json"),
               "w", encoding="utf-8") as f:
         json.dump(log, f, ensure_ascii=False, indent=1)

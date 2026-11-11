@@ -33,6 +33,7 @@ python chat.py --tag v4
 | [README_PLAN.md](README_PLAN.md) | Цель, CEM, MPC, два режима стоимости, три грабли v0.3 |
 | [README_DEV.md](README_DEV.md) | Команды, флаги, времена, константы физики |
 | [README_report.md](README_report.md) | **Отчёт для руководства** — без техники: что и как сделано |
+| [README_WORLDS.md](README_WORLDS.md) | Четыре мира v5: пробуксовка, помехи, два мяча, бугры. Ярлыки на 90 эпизодах |
 
 ### 2. Быстрый поиск по темам
 
@@ -52,6 +53,7 @@ python chat.py --tag v4
 | Какой командой сняты 90 эпизодов | [README_DEV.md](README_DEV.md) → «Запуск» |
 | Как поменять физику мяча | [README_DEV.md](README_DEV.md) → «Эксперименты» |
 | Что показать начальству | [README_report.md](README_report.md) — одна страница без терминов |
+| Где план держится на пробуксовке, помехах, втором мяче и буграх | [README_WORLDS.md](README_WORLDS.md) |
 
 ## Состав репозитория
 
@@ -68,7 +70,7 @@ python chat.py --tag v4
 | `imagine.py` | раскатка архивного эксперимента v0.2 |
 | `AGENTS.md` | правила работы ИИ-агентов в проекте |
 | `CHANGELOG.md` | история изменений |
-| `out/` | чекпоинты, логи, `eval_v4_latent.json`, `eval_v4_mixed.json` |
+| `out/` | чекпоинты, логи, `eval_v4_*.json`, `eval_v5-*_latent.json` |
 | `docs/plans/` | проектный документ v0.3 |
 | `README.md` | описание для людей и таблица результатов |
 

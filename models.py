@@ -131,6 +131,16 @@ class WorldModel(nn.Module):
         return sum(p.numel() for p in self.parameters())
 
 
+def world_of(ck) -> str:
+    """Режим чекпоинта. Старые файлы без поля — плоский мир."""
+    if not isinstance(ck, dict):
+        return "flat"
+    if ck.get("world"):
+        return str(ck["world"])
+    args = ck.get("args") or {}
+    return str(args.get("world") or "flat")
+
+
 def load_model(path, threads: int = 8):
     """Загружает чекпоинт, восстанавливая флаги архитектуры из его args."""
     torch.set_num_threads(threads)

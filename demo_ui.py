@@ -20,8 +20,11 @@ import torch
 from PIL import Image
 
 from chat import describe_state
-from data import ACTIONS, ACTION_NAMES, GRAVITY, IMPULSE, ZONE_CENTERS, ZONE_HALF, ZONES, find_zone
-from models import load_model
+from data import (
+    ACTIONS, ACTION_NAMES, GRAVITY, IMPULSE, SLIP, ZONE_CENTERS, ZONE_HALF, ZONES,
+    blocked_zone_names, bump_centers, find_zone, gravity_of,
+)
+from models import load_model, world_of
 from plan import load_probe, execute
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
@@ -120,6 +123,15 @@ PAGE = """<!DOCTYPE html>
   .steps li { margin: 2px 0; }
   .caption { color: #d9d3c5; font-size: 13px; line-height: 1.4; margin: 10px 2px 0; }
   .note { color: var(--muted); font-size: 13px; margin-top: 14px; }
+  .knobs { margin-bottom: 4px; }
+  .knobs input[type="range"] {
+    width: 100%;
+    margin: 0 0 12px;
+    padding: 0;
+    border: none;
+    background: transparent;
+  }
+  .knob-note { font-size: 13px; color: var(--muted); margin: 0 0 8px; line-height: 1.35; }
   @media (max-width: 860px) {
     .bench { grid-template-columns: 1fr; }
     .stage, canvas { width: min(384px, 100%); height: auto; }
@@ -134,7 +146,7 @@ PAGE = """<!DOCTYPE html>
   <div class="bench">
     <div class="stage">
       <canvas id="view" width="384" height="384"></canvas>
-      <p class="caption">Вид сбоку, не сверху: верх картинки — верх. Мяч тянет вниз слабая тяжесть, стены его отталкивают. Жёлтая стрелка — толчок в масштабе поля. Прямой короче косого, «на месте» стрелки не даёт. Тяжесть слабее прямого толчка примерно в 27 раз, поэтому отдельной стрелкой в том же масштабе её не разглядеть.</p>
+      <p class="caption" id="caption">Вид сбоку, не сверху: верх картинки — верх. Мяч тянет вниз слабая тяжесть, стены его отталкивают. Кадр — тот, который получает модель. Жёлтая стрелка — выбранный толчок в масштабе поля, без подмены пробуксовкой. Прямой короче косого, «на месте» стрелки не даёт. Тяжесть слабее прямого толчка примерно в 27 раз, поэтому отдельной стрелкой в том же масштабе её не разглядеть.</p>
       <div class="play">
         <button id="toggle" type="button">пауза</button>
         <input id="scrub" type="range" min="0" max="0" value="0">
@@ -146,6 +158,25 @@ PAGE = """<!DOCTYPE html>
       <textarea id="phrase">мяч в верхний левый угол</textarea>
       <label>Зона</label>
       <div class="zones" id="zones"></div>
+      <label for="world">Мир</label>
+      <select id="world">
+        <option value="flat" selected>плоский</option>
+        <option value="jitter">пробуксовка</option>
+        <option value="noise">помехи на кадре</option>
+        <option value="balls">два мяча</option>
+        <option value="floor">бугры</option>
+      </select>
+      <div class="knobs" id="floor-knobs" hidden>
+        <label for="bump-h">Высота холмов <span id="bump-h-val">4</span> px</label>
+        <input id="bump-h" type="range" min="0" max="40" step="1" value="4">
+        <label for="bump-n">Число холмов <span id="bump-n-val">2</span></label>
+        <input id="bump-n" type="range" min="0" max="5" step="1" value="2">
+        <label for="g-steps">Тяжесть <span id="g-val">0.15</span></label>
+        <input id="g-steps" type="range" min="0" max="80" step="1" value="3">
+        <p class="knob-note" id="centers-line">Холмы в x = 20, 44.</p>
+        <p class="knob-note" id="train-warn" hidden></p>
+        <p class="knob-note" id="zone-warn" hidden></p>
+      </div>
       <div class="row">
         <div>
           <label for="seed">Стартовый сид</label>
@@ -161,7 +192,7 @@ PAGE = """<!DOCTYPE html>
       </div>
       <button class="go" id="go" type="button">Довести мяч</button>
       <div class="report" id="report">Нажмите кнопку или выберите зону. Один прогон — до пары секунд на CPU.</div>
-      <p class="note">Потолок 20 реальных шагов, поиск 128×8, горизонт 10. На 90 стартах latent попадает примерно в 8 случаях из 10. Промах — нормальный исход, не ошибка страницы.</p>
+      <p class="note">Потолок 20 реальных шагов, поиск 128×8, горизонт 10. На плоском мире latent попадает примерно в 8 случаях из 10. Промах — нормальный исход, не ошибка страницы.</p>
     </div>
   </div>
 </main>
@@ -180,6 +211,82 @@ let outcome = null;
 let timer = null;
 let playing = true;
 const SCALE = 6;
+const ZONE_TABLE = [
+  ["верхний левый", 14, 14],
+  ["верхний центр", 32, 14],
+  ["верхний правый", 50, 14],
+  ["средний левый", 14, 32],
+  ["центр", 32, 32],
+  ["средний правый", 50, 32],
+  ["нижний левый", 14, 50],
+  ["нижний центр", 32, 50],
+  ["нижний правый", 50, 50]
+];
+const CAPTION_HEAD = "Вид сбоку, не сверху: верх картинки — верх. Мяч тянет вниз слабая тяжесть, стены его отталкивают. Кадр — тот, который получает модель. Жёлтая стрелка — выбранный толчок в масштабе поля, без подмены пробуксовкой. Прямой короче косого, «на месте» стрелки не даёт. ";
+
+function centersOf(n) {
+  if (n === 0) return [];
+  if (n === 1) return [32];
+  if (n === 2) return [20, 44];
+  const out = [];
+  for (let i = 0; i < n; i++) out.push(8 + i * 48 / (n - 1));
+  return out;
+}
+
+function floorLimitAt(x, h, centers) {
+  let best = 0;
+  for (const cx of centers) {
+    const d = Math.abs(x - cx);
+    if (d < 8) best = Math.max(best, h * (1 - d / 8));
+  }
+  return 58 - best;
+}
+
+function blockedNames(h, centers) {
+  const names = [];
+  for (const row of ZONE_TABLE) {
+    let margin = Infinity;
+    for (let i = 0; i < 65; i++) {
+      const x = row[1] - 8 + (16 * i) / 64;
+      margin = Math.min(margin, floorLimitAt(x, h, centers) - row[2]);
+    }
+    if (margin < 2) names.push(row[0]);
+  }
+  return names;
+}
+
+function gravitySentence(steps) {
+  if (steps === 0) return "Вниз не тянет.";
+  if (steps === 80) return "Тяжесть не слабее прямого толчка.";
+  const n = Math.round(4 / (steps * 0.05));
+  let text = "Тяжесть слабее прямого толчка примерно в " + n + " раз";
+  if (steps === 3) text += ", поэтому отдельной стрелкой в том же масштабе её не разглядеть";
+  return text + ".";
+}
+
+function syncKnobs() {
+  const floor = document.getElementById("world").value === "floor";
+  document.getElementById("floor-knobs").hidden = !floor;
+  const h = Number(document.getElementById("bump-h").value);
+  const n = Number(document.getElementById("bump-n").value);
+  const gs = Number(document.getElementById("g-steps").value);
+  document.getElementById("bump-h-val").textContent = String(h);
+  document.getElementById("bump-n-val").textContent = String(n);
+  document.getElementById("g-val").textContent = (gs * 0.05).toFixed(2);
+  const centers = centersOf(n);
+  document.getElementById("centers-line").textContent = n === 0
+    ? "Холмов нет, пол ровный."
+    : "Холмы в x = " + centers.join(", ") + ".";
+  const trained = h === 4 && n === 2 && gs === 3;
+  const trainWarn = document.getElementById("train-warn");
+  trainWarn.hidden = !floor || trained;
+  trainWarn.textContent = "Модель училась на двух холмах высотой 4 и тяжести 0.15. Этот прогон не является замером v5-floor.";
+  const zones = blockedNames(h, centers);
+  const zoneWarn = document.getElementById("zone-warn");
+  zoneWarn.hidden = !floor || zones.length === 0;
+  zoneWarn.textContent = zones.length ? "Холм заходит в зоны: " + zones.join(", ") + "." : "";
+  document.getElementById("caption").textContent = CAPTION_HEAD + gravitySentence(floor ? gs : 3);
+}
 
 function drawArrow(x, y, dx, dy) {
   const len = Math.hypot(dx, dy);
@@ -321,7 +428,11 @@ async function run() {
       body: JSON.stringify({
         text,
         seed: Number(document.getElementById("seed").value),
-        cost: document.getElementById("cost").value
+        cost: document.getElementById("cost").value,
+        world: document.getElementById("world").value,
+        bump_h: Number(document.getElementById("bump-h").value),
+        bump_n: Number(document.getElementById("bump-n").value),
+        g_steps: Number(document.getElementById("g-steps").value)
       })
     });
     const data = await res.json();
@@ -363,6 +474,11 @@ async function run() {
 }
 
 document.getElementById("go").addEventListener("click", run);
+document.getElementById("world").addEventListener("change", syncKnobs);
+["bump-h", "bump-n", "g-steps"].forEach((id) => {
+  document.getElementById(id).addEventListener("input", syncKnobs);
+});
+syncKnobs();
 loadZones().catch((err) => { report.textContent = String(err); });
 draw(0);
 </script>
@@ -372,9 +488,15 @@ draw(0);
 
 
 LOCK = threading.Lock()
-MODEL = None
-EMA = None
-PROBE = None
+THREADS = 8
+CACHE = {}
+TAGS = {
+    "flat": "v4",
+    "jitter": "v5-jitter",
+    "noise": "v5-noise",
+    "balls": "v5-balls",
+    "floor": "v5-floor",
+}
 
 
 PUSH = {name: [float(ACTIONS[i][0]), float(ACTIONS[i][1])] for i, name in enumerate(ACTION_NAMES)}
@@ -390,17 +512,42 @@ def blob_center(frame: np.ndarray) -> list:
     return [round(float((w * xs).sum() / total), 2), round(float((w * ys).sum() / total), 2)]
 
 
-def frame_marks(frames, steps) -> list:
-    """Толчок, который привёл к этому кадру. Длина — величина импульса в точках поля."""
+def frame_marks(frames, steps, ball=None) -> list:
+    """Толчок, который привёл к этому кадру. Длина — номинальный импульс, не подмена.
+
+    Точки — управляемый мяч. Центр пятна на кадре с двумя мячами или с полом врёт.
+    """
+    if ball is None:
+        centers = list(map(blob_center, frames))
+    else:
+        centers = [[float(p[0]), float(p[1])] for p in ball]
     pushes = [[0.0, 0.0]]
     if len(frames) > 1:
         pushes.append([0.0, 0.0])
     for step in steps:
         pushes.append(PUSH[step["action"]])
-    pushes = pushes[:len(frames)]
-    while len(pushes) < len(frames):
+    pushes = pushes[:len(centers)]
+    while len(pushes) < len(centers):
         pushes.append([0.0, 0.0])
-    return [{"x": c[0], "y": c[1], "push": p} for c, p in zip(map(blob_center, frames), pushes)]
+    return [{"x": c[0], "y": c[1], "push": p} for c, p in zip(centers, pushes)]
+
+
+def bundle(world: str):
+    if world not in TAGS:
+        raise ValueError("неизвестный мир")
+    if world not in CACHE:
+        tag = TAGS[world]
+        path = os.path.join(OUT, f"jepa_{tag}.pt")
+        if not os.path.exists(path):
+            raise ValueError(
+                f"нет чекпоинта для мира «{world}». Сначала: "
+                f"python train.py --mode jepa --steps 2500 --tag {tag} --world {world}")
+        model, ema, ck = load_model(path, threads=THREADS)
+        got = world_of(ck)
+        if got != world:
+            raise ValueError(f"чекпоинт {tag} обучен в мире «{got}», запрошен «{world}»")
+        CACHE[world] = (model, ema, load_probe(tag), tag, float(ck.get("slip") or SLIP))
+    return CACHE[world]
 
 
 def png_b64(frame: np.ndarray) -> str:
@@ -411,28 +558,64 @@ def png_b64(frame: np.ndarray) -> str:
     return base64.b64encode(buf.getvalue()).decode("ascii")
 
 
-def run_phrase(text: str, seed: int, cost: str) -> dict:
+def _int_field(data: dict, key: str, default: int, lo: int, hi: int) -> int:
+    if key not in data or data[key] is None:
+        return default
+    val = data[key]
+    if isinstance(val, bool) or not isinstance(val, int):
+        raise ValueError(f"{key}: целое от {lo} до {hi}")
+    if val < lo or val > hi:
+        raise ValueError(f"{key}: целое от {lo} до {hi}")
+    return val
+
+
+def floor_request(data: dict) -> dict:
+    """Ползунки только для мира бугров. Нет поля — обученные 4, 2 и тяжесть 0.15."""
+    bump_h = _int_field(data, "bump_h", 4, 0, 40)
+    bump_n = _int_field(data, "bump_n", 2, 0, 5)
+    g_steps = _int_field(data, "g_steps", 3, 0, 80)
+    centers = bump_centers(bump_n)
+    return {
+        "bump_h": bump_h,
+        "bump_n": bump_n,
+        "centers": centers,
+        "g_steps": g_steps,
+        "gravity": gravity_of(g_steps),
+        "blocked": blocked_zone_names(float(bump_h), centers),
+    }
+
+
+def run_phrase(text: str, seed: int, cost: str, world: str, knobs=None) -> dict:
     zone = find_zone(text)
     if zone is None:
         names = ", ".join(z["name"] for z in ZONES)
         raise ValueError("Не понял цель. Например: «мяч в верхний левый угол». Зоны: " + names)
     weight = 1.0 if cost == "mixed" else 0.0
-    if weight and PROBE is None:
-        raise ValueError("Для mixed нужен out/probe_v4.pt — сначала python probe.py --tag v4")
+    model, ema, probe, tag, slip = bundle(world)
+    if weight and probe is None:
+        raise ValueError(f"Для mixed нужен out/probe_{tag}.pt — сначала python probe.py --tag {tag}")
+    floor = {}
+    if world == "floor":
+        floor = knobs or floor_request({})
     with LOCK:
         with torch.no_grad():
             res = execute(
-                MODEL, EMA, zone, seed=seed, horizon=10, max_steps=20,
+                model, ema, zone, seed=seed, horizon=10, max_steps=20,
                 cem_kw={"samples": 128, "iters": 8, "seed": seed},
-                probe=PROBE, probe_weight=weight, verbose=False,
+                probe=probe, probe_weight=weight, verbose=False,
                 save_gif=False, keep_frames=True, shadow=False,
+                world=world, slip=slip,
+                bump_h=float(floor.get("bump_h", 4)),
+                centers=floor.get("centers"),
+                gravity=float(floor.get("gravity", GRAVITY)),
             )
             frames = res.pop("frames")
-            report = describe_state(MODEL, PROBE, frames[-2:], res["final_pos"])
+            ball = res.pop("ball", None)
+            report = describe_state(model, probe, frames[-2:], res["final_pos"])
     think_ms = int(round(sum(s["plan_time"] for s in res["steps"]) * 1000))
     status = "цель достигнута" if res["success"] else "промах"
     xy = res["final_pos"]
-    return {
+    out = {
         "zone": zone,
         "zone_name": res["zone_name"],
         "center": list(ZONE_CENTERS[zone]),
@@ -444,11 +627,21 @@ def run_phrase(text: str, seed: int, cost: str) -> dict:
         "think_ms": think_ms,
         "report": f"мяч в ({xy[0]:.0f}, {xy[1]:.0f}), {status}. {report}",
         "steps": res["steps"],
-        "marks": frame_marks(frames, res["steps"]),
+        "marks": frame_marks(frames, res["steps"], ball),
+        "world": world,
         "gravity_down": GRAVITY,
         "impulse": IMPULSE,
         "frames": [png_b64(fr) for fr in frames],
     }
+    if floor:
+        out["bump_h"] = floor["bump_h"]
+        out["bump_n"] = floor["bump_n"]
+        out["centers"] = [int(c) if float(c).is_integer() else round(float(c), 2) for c in floor["centers"]]
+        out["g_steps"] = floor["g_steps"]
+        out["gravity"] = 0.15 if floor["g_steps"] == 3 else round(floor["g_steps"] * 0.05, 2)
+        out["blocked"] = floor["blocked"]
+        out["gravity_down"] = out["gravity"]
+    return out
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -483,11 +676,15 @@ class Handler(BaseHTTPRequestHandler):
             text = str(data.get("text", "")).strip()
             seed = int(data.get("seed", 1))
             cost = data.get("cost", "latent")
+            world = data.get("world", "flat")
             if cost not in ("latent", "mixed"):
                 raise ValueError("cost: latent или mixed")
+            if world not in TAGS:
+                raise ValueError("world: flat, jitter, noise, balls или floor")
             if not text:
                 raise ValueError("пустая фраза")
-            payload = run_phrase(text, seed, cost)
+            knobs = floor_request(data) if world == "floor" else None
+            payload = run_phrase(text, seed, cost, world, knobs)
             raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
             self._send(200, raw, "application/json; charset=utf-8")
         except ValueError as exc:
@@ -500,20 +697,18 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
-    global MODEL, EMA, PROBE
+    global THREADS
     ap = argparse.ArgumentParser(description="Страница проверки планирования")
-    ap.add_argument("--tag", default="v4")
+    ap.add_argument("--tag", default="v4", help="тег плоского мира; остальные миры берутся по своим тегам v5")
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--threads", type=int, default=8)
     args = ap.parse_args()
-
-    path = os.path.join(OUT, f"jepa_{args.tag}.pt")
-    if not os.path.exists(path):
-        raise SystemExit(f"нет чекпоинта {path}. Сначала: python train.py --mode jepa --steps 2500 --tag {args.tag}")
-    print(f"гружу {path} …")
-    MODEL, EMA, _ = load_model(path, threads=args.threads)
-    PROBE = load_probe(args.tag)
-    if PROBE is None:
+    THREADS = args.threads
+    if args.tag != "v4":
+        TAGS["flat"] = args.tag
+    print(f"гружу плоский мир, тег {TAGS['flat']} …")
+    bundle("flat")
+    if CACHE["flat"][2] is None:
         print("probe не найден — отчёт без слов о скорости, mixed недоступен")
 
     httpd = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)

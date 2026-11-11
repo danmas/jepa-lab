@@ -17,9 +17,10 @@ import numpy as np
 import torch
 from PIL import Image, ImageDraw
 
-from data import (ACTION_NAMES, N_ACTIONS, ZONE_CENTERS, ZONE_HALF, ZONES, World,
-                  find_zone, in_zone, step_state, zone_frame)
-from models import EMATarget, Probe, WorldModel
+from data import (ACTION_NAMES, BUMP_H, GRAVITY, N_ACTIONS, SLIP, WORLDS,
+                  ZONE_CENTERS, ZONE_HALF, ZONES,
+                  World, find_zone, goal_frame, in_zone, step_floor, step_state)
+from models import EMATarget, Probe, WorldModel, load_model, world_of
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 SCALE = 4
@@ -61,11 +62,12 @@ def cem_plan(model, ema, context, z_goal, horizon=10, samples=128, iters=8,
     z_prev = model.encoder(context[0:1])
     z_cur = model.encoder(context[1:2])
     probs = torch.full((horizon, N_ACTIONS), 1.0 / N_ACTIONS)
-    g = torch.Generator().manual_seed(seed)
+    g = torch.Generator().manual_seed(int(seed))
 
     best_seq, best_cost = None, float("inf")
     for _ in range(iters):
-        u = torch.multinomial(probs, samples, replacement=True).T.contiguous()  # (S,H)
+        # Генератор обязателен: без него --seed не фиксирует поиск, и повтор эпизода другой.
+        u = torch.multinomial(probs, samples, replacement=True, generator=g).T.contiguous()  # (S,H)
         zp = z_prev.expand(samples, -1).contiguous()
         zc = z_cur.expand(samples, -1).contiguous()
         ds = []
@@ -103,15 +105,35 @@ def cem_plan(model, ema, context, z_goal, horizon=10, samples=128, iters=8,
     return best_seq, best_cost, time.perf_counter() - t0, info
 
 
+def _shadow_end(pos, vel, seq, world, bump_h: float = BUMP_H, centers=None,
+                gravity: float = GRAVITY):
+    """Куда доедет управляемый мяч, если выполнить план без будущей пробуксовки."""
+    sp, sv = np.array(pos, np.float32), np.array(vel, np.float32)
+    for a in seq:
+        if world == "floor":
+            sp, sv = step_floor(sp, sv, int(a), g=gravity, height=bump_h, centers=centers)
+        else:
+            sp, sv = step_state(sp, sv, int(a))
+    return sp
+
+
 def execute(model, ema, zone_index, seed=1, horizon=10, max_steps=30,
             cem_kw=None, probe=None, verbose=True, save_gif=True, tag="", shadow=True,
-            keep_frames=False, probe_weight=0.0):
-    """MPC: план -> выполняем первое действие -> перепланируем от настоящих кадров."""
-    cem_kw = cem_kw or {}
-    w = World(seed)
+            keep_frames=False, probe_weight=0.0, world="flat", slip=SLIP,
+            bump_h: float = BUMP_H, centers=None, gravity: float = GRAVITY):
+    """MPC: план -> выполняем первое действие -> перепланируем от настоящих кадров.
+
+    Поиск сидируется сидом эпизода. Подмена толчка разыгрывается уже после выбора.
+    """
+    cem_kw = dict(cem_kw or {})
+    cem_kw.setdefault("seed", seed)
+    w = World(seed, world=world, slip=slip, bump_h=bump_h, centers=centers, gravity=gravity)
     f_a = w.frame()
+    ball = [w.pos.astype(float).copy()]
     f_b = w.step(4)                       # нулевой шаг, чтобы получить пару кадров
-    z_goal = ema(torch.from_numpy(zone_frame(zone_index))).detach()
+    ball.append(w.pos.astype(float).copy())
+    z_goal = ema(torch.from_numpy(
+        goal_frame(zone_index, world=world, bump_h=bump_h, centers=centers))).detach()
     cx, cy = ZONE_CENTERS[zone_index]
 
     steps, frames = [], [f_a[0], f_b[0]]
@@ -126,12 +148,12 @@ def execute(model, ema, zone_index, seed=1, horizon=10, max_steps=30,
         pos_before = w.pos.copy()
         if shadow:
             # открытая петля на настоящей физике: куда мяч придёт, если выполнить план целиком.
-            # нужно, чтобы проверить, предсказывает ли латентная стоимость реальный промах
-            sp, sv = w.pos.copy(), w.vel.copy()
-            for a in seq.tolist():
-                sp, sv = step_state(sp, sv, a)
+            # пробуксовку сюда не подставляем — её ещё нет в момент выбора
+            sp = _shadow_end(w.pos, w.vel, seq.tolist(), world,
+                             bump_h=bump_h, centers=centers, gravity=gravity)
             info["shadow_miss"] = round(float(np.hypot(sp[0] - cx, sp[1] - cy)), 2)
         new_frame = w.step(action)
+        ball.append(w.pos.astype(float).copy())
         frames.append(new_frame[0])
         steps.append({"step": t + 1, "action": ACTION_NAMES[action], "cost": round(cost, 4),
                       "plan_time": round(dt, 3), "pos": [round(float(v), 1) for v in w.pos],
@@ -156,6 +178,7 @@ def execute(model, ema, zone_index, seed=1, horizon=10, max_steps=30,
         result["gif"] = path
     if keep_frames:
         result["frames"] = frames
+        result["ball"] = [[float(p[0]), float(p[1])] for p in ball]
     return result
 
 
@@ -198,6 +221,8 @@ def main():
     ap.add_argument("--samples", type=int, default=128)
     ap.add_argument("--iters", type=int, default=8)
     ap.add_argument("--tag", default="v4")
+    ap.add_argument("--world", default=None, choices=WORLDS,
+                    help="если задан и не совпадает с чекпоинтом — отказ")
     ap.add_argument("--dry", action="store_true", help="только план, без исполнения")
     ap.add_argument("--threads", type=int, default=8)
     ap.add_argument("--cost", choices=["latent", "mixed"], default="latent",
@@ -218,7 +243,12 @@ def main():
 
     if args.probe_weight is None:
         args.probe_weight = 1.0 if args.cost == "mixed" else 0.0
-    model, ema = load(args.tag, threads=args.threads)
+    model, ema, ck = load_model(
+        os.path.join(OUT, f"jepa_{args.tag}.pt"), threads=args.threads)
+    world = world_of(ck)
+    if args.world is not None and args.world != world:
+        raise SystemExit(f"несовпадение режима: чекпоинт {world}, запрошен {args.world}")
+    slip = float(ck.get("slip") or SLIP)
     probe = load_probe(args.tag) if args.probe_weight else None
     if args.probe_weight and probe is None:
         print("probe не найден — считаю без него (python probe.py --tag " + args.tag + ")")
@@ -227,9 +257,11 @@ def main():
     cem_kw = {"samples": args.samples, "iters": args.iters, "seed": args.seed}
     print(f"цель: {ZONES[zone]['name']} {ZONE_CENTERS[zone]}, старт seed={args.seed}")
     t0 = time.perf_counter()
+    print(f"мир: {world}")
     res = execute(model, ema, zone, seed=args.seed, horizon=args.horizon,
                   max_steps=args.steps, cem_kw=cem_kw, probe=probe,
-                  probe_weight=args.probe_weight, save_gif=not args.no_gif)
+                  probe_weight=args.probe_weight, save_gif=not args.no_gif,
+                  world=world, slip=slip)
     res.pop("frames", None)
     total = time.perf_counter() - t0
     res["total_time"] = round(total, 2)

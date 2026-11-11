@@ -1,0 +1,325 @@
+DRIVER_START
+BEGIN jitter
+>> C:\Python312\python.exe train.py --mode jepa --steps 2500 --tag v5-jitter --world jitter --threads 8
+[jitter] радиус разброса 26.94 px (порог 6.0) -> C:\ERV\projects-ex\jepa-lab\out\ambiguity_jitter.json
+[jepa] params=0.95M steps=2500 batch=32 actions=9 horizon=6 world=jitter
+      1/2500 loss=0.3741 l1=0.0164 l3=0.0335 rec=0.6713 | eval pix=0.6590 lat=0.0166 | 382 ms/step, осталось ~15.9 мин
+    100/2500 loss=0.0264 l1=0.0007 l3=0.0011 rec=0.0501 | eval pix=0.0500 lat=0.0006 | 153 ms/step, осталось ~6.1 мин
+    200/2500 loss=0.0080 l1=0.0006 l3=0.0006 rec=0.0139 | eval pix=0.0220 lat=0.0007 | 150 ms/step, осталось ~5.7 мин
+    300/2500 loss=0.0094 l1=0.0035 l3=0.0062 rec=0.0030 | eval pix=0.0213 lat=0.0028 | 149 ms/step, осталось ~5.5 мин
+    400/2500 loss=0.0233 l1=0.0088 l3=0.0198 rec=0.0020 | eval pix=0.0167 lat=0.0072 | 149 ms/step, осталось ~5.2 мин
+    500/2500 loss=0.0252 l1=0.0085 l3=0.0257 rec=0.0014 | eval pix=0.0168 lat=0.0072 | 148 ms/step, осталось ~4.9 мин
+    600/2500 loss=0.0245 l1=0.0078 l3=0.0264 rec=0.0010 | eval pix=0.0181 lat=0.0071 | 146 ms/step, осталось ~4.6 мин
+    700/2500 loss=0.0250 l1=0.0080 l3=0.0275 rec=0.0008 | eval pix=0.0176 lat=0.0071 | 144 ms/step, осталось ~4.3 мин
+    800/2500 loss=0.0217 l1=0.0064 l3=0.0253 rec=0.0006 | eval pix=0.0173 lat=0.0064 | 144 ms/step, осталось ~4.1 мин
+    900/2500 loss=0.0205 l1=0.0060 l3=0.0234 rec=0.0011 | eval pix=0.0165 lat=0.0062 | 145 ms/step, осталось ~3.9 мин
+   1000/2500 loss=0.0221 l1=0.0059 l3=0.0294 rec=0.0007 | eval pix=0.0162 lat=0.0056 | 145 ms/step, осталось ~3.6 мин
+   1100/2500 loss=0.0199 l1=0.0056 l3=0.0241 rec=0.0005 | eval pix=0.0158 lat=0.0056 | 145 ms/step, осталось ~3.4 мин
+   1200/2500 loss=0.0192 l1=0.0059 l3=0.0230 rec=0.0005 | eval pix=0.0156 lat=0.0052 | 146 ms/step, осталось ~3.2 мин
+   1300/2500 loss=0.0165 l1=0.0046 l3=0.0197 rec=0.0004 | eval pix=0.0147 lat=0.0047 | 145 ms/step, осталось ~2.9 мин
+   1400/2500 loss=0.0164 l1=0.0052 l3=0.0184 rec=0.0003 | eval pix=0.0140 lat=0.0043 | 145 ms/step, осталось ~2.7 мин
+   1500/2500 loss=0.0149 l1=0.0041 l3=0.0182 rec=0.0003 | eval pix=0.0135 lat=0.0039 | 144 ms/step, осталось ~2.4 мин
+   1600/2500 loss=0.0142 l1=0.0046 l3=0.0155 rec=0.0003 | eval pix=0.0129 lat=0.0037 | 143 ms/step, осталось ~2.2 мин
+   1700/2500 loss=0.0133 l1=0.0041 l3=0.0155 rec=0.0003 | eval pix=0.0125 lat=0.0034 | 143 ms/step, осталось ~1.9 мин
+   1800/2500 loss=0.0151 l1=0.0041 l3=0.0183 rec=0.0003 | eval pix=0.0122 lat=0.0032 | 144 ms/step, осталось ~1.7 мин
+   1900/2500 loss=0.0139 l1=0.0045 l3=0.0153 rec=0.0003 | eval pix=0.0121 lat=0.0031 | 144 ms/step, осталось ~1.4 мин
+   2000/2500 loss=0.0112 l1=0.0035 l3=0.0135 rec=0.0002 | eval pix=0.0120 lat=0.0030 | 143 ms/step, осталось ~1.2 мин
+   2100/2500 loss=0.0110 l1=0.0026 l3=0.0140 rec=0.0003 | eval pix=0.0117 lat=0.0029 | 142 ms/step, осталось ~0.9 мин
+   2200/2500 loss=0.0100 l1=0.0026 l3=0.0127 rec=0.0002 | eval pix=0.0118 lat=0.0029 | 143 ms/step, осталось ~0.7 мин
+   2300/2500 loss=0.0115 l1=0.0032 l3=0.0150 rec=0.0002 | eval pix=0.0117 lat=0.0028 | 142 ms/step, осталось ~0.5 мин
+   2400/2500 loss=0.0110 l1=0.0030 l3=0.0149 rec=0.0002 | eval pix=0.0117 lat=0.0028 | 142 ms/step, осталось ~0.2 мин
+   2500/2500 loss=0.0106 l1=0.0031 l3=0.0132 rec=0.0002 | eval pix=0.0117 lat=0.0028 | 142 ms/step, осталось ~0.0 мин
+[jepa] сохранено: C:\ERV\projects-ex\jepa-lab\out\jepa_v5-jitter.pt  (5.9 мин)
+>> C:\Python312\python.exe train.py --mode pixel --steps 2500 --tag v5-jitter --world jitter --threads 8
+[jitter] радиус разброса 26.94 px (порог 6.0) -> C:\ERV\projects-ex\jepa-lab\out\ambiguity_jitter.json
+[pixel] params=0.95M steps=2500 batch=32 actions=9 horizon=6 world=jitter
+      1/2500 loss=1.5064 l1=0.6711 l3=0.6667 rec=0.6713 | eval pix=0.6577 lat=0.0170 | 601 ms/step, осталось ~25.0 мин
+    100/2500 loss=0.0840 l1=0.0373 l3=0.0374 rec=0.0372 | eval pix=0.0364 lat=0.0015 | 373 ms/step, осталось ~14.9 мин
+    200/2500 loss=0.0459 l1=0.0199 l3=0.0233 rec=0.0182 | eval pix=0.0202 lat=0.0121 | 372 ms/step, осталось ~14.2 мин
+    300/2500 loss=0.0323 l1=0.0147 l3=0.0221 rec=0.0051 | eval pix=0.0149 lat=0.0136 | 367 ms/step, осталось ~13.5 мин
+    400/2500 loss=0.0291 l1=0.0123 l3=0.0211 rec=0.0032 | eval pix=0.0111 lat=0.0135 | 391 ms/step, осталось ~13.7 мин
+    500/2500 loss=0.0272 l1=0.0111 l3=0.0208 rec=0.0025 | eval pix=0.0094 lat=0.0133 | 388 ms/step, осталось ~12.9 мин
+    600/2500 loss=0.0250 l1=0.0106 l3=0.0207 rec=0.0019 | eval pix=0.0083 lat=0.0134 | 384 ms/step, осталось ~12.2 мин
+    700/2500 loss=0.0235 l1=0.0104 l3=0.0196 rec=0.0014 | eval pix=0.0077 lat=0.0127 | 388 ms/step, осталось ~11.6 мин
+    800/2500 loss=0.0214 l1=0.0076 l3=0.0213 rec=0.0009 | eval pix=0.0071 lat=0.0127 | 390 ms/step, осталось ~11.1 мин
+    900/2500 loss=0.0261 l1=0.0114 l3=0.0206 rec=0.0014 | eval pix=0.0069 lat=0.0129 | 389 ms/step, осталось ~10.4 мин
+   1000/2500 loss=0.0185 l1=0.0063 l3=0.0191 rec=0.0010 | eval pix=0.0069 lat=0.0126 | 388 ms/step, осталось ~9.7 мин
+   1100/2500 loss=0.0179 l1=0.0053 l3=0.0180 rec=0.0008 | eval pix=0.0065 lat=0.0124 | 384 ms/step, осталось ~9.0 мин
+   1200/2500 loss=0.0169 l1=0.0065 l3=0.0169 rec=0.0004 | eval pix=0.0064 lat=0.0124 | 383 ms/step, осталось ~8.3 мин
+   1300/2500 loss=0.0195 l1=0.0075 l3=0.0188 rec=0.0006 | eval pix=0.0061 lat=0.0125 | 382 ms/step, осталось ~7.6 мин
+   1400/2500 loss=0.0154 l1=0.0051 l3=0.0157 rec=0.0005 | eval pix=0.0063 lat=0.0124 | 380 ms/step, осталось ~7.0 мин
+   1500/2500 loss=0.0197 l1=0.0076 l3=0.0188 rec=0.0004 | eval pix=0.0060 lat=0.0123 | 378 ms/step, осталось ~6.3 мин
+   1600/2500 loss=0.0200 l1=0.0093 l3=0.0158 rec=0.0006 | eval pix=0.0061 lat=0.0125 | 376 ms/step, осталось ~5.6 мин
+   1700/2500 loss=0.0165 l1=0.0069 l3=0.0153 rec=0.0004 | eval pix=0.0059 lat=0.0124 | 375 ms/step, осталось ~5.0 мин
+   1800/2500 loss=0.0221 l1=0.0089 l3=0.0191 rec=0.0004 | eval pix=0.0057 lat=0.0123 | 373 ms/step, осталось ~4.4 мин
+   1900/2500 loss=0.0191 l1=0.0086 l3=0.0151 rec=0.0005 | eval pix=0.0057 lat=0.0124 | 371 ms/step, осталось ~3.7 мин
+   2000/2500 loss=0.0150 l1=0.0057 l3=0.0156 rec=0.0004 | eval pix=0.0057 lat=0.0121 | 370 ms/step, осталось ~3.1 мин
+   2100/2500 loss=0.0146 l1=0.0049 l3=0.0147 rec=0.0004 | eval pix=0.0055 lat=0.0121 | 368 ms/step, осталось ~2.5 мин
+   2200/2500 loss=0.0159 l1=0.0054 l3=0.0172 rec=0.0004 | eval pix=0.0055 lat=0.0122 | 367 ms/step, осталось ~1.8 мин
+   2300/2500 loss=0.0182 l1=0.0067 l3=0.0170 rec=0.0004 | eval pix=0.0055 lat=0.0121 | 366 ms/step, осталось ~1.2 мин
+   2400/2500 loss=0.0165 l1=0.0052 l3=0.0184 rec=0.0003 | eval pix=0.0055 lat=0.0121 | 365 ms/step, осталось ~0.6 мин
+   2500/2500 loss=0.0192 l1=0.0075 l3=0.0182 rec=0.0004 | eval pix=0.0055 lat=0.0121 | 364 ms/step, осталось ~0.0 мин
+[pixel] сохранено: C:\ERV\projects-ex\jepa-lab\out\pixel_v5-jitter.pt  (15.2 мин)
+>> C:\Python312\python.exe probe.py --tag v5-jitter --world jitter --threads 8
+C:\ERV\projects-ex\jepa-lab\models.py:218: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\torch\csrc\autograd\generated\python_variable_methods.cpp:837.)
+  return [round(float(1 - r / t), 4) for r, t in zip(ss_res, ss_tot)]
+probe на 6336 латентах (R², 1.0 = идеально):
+    x: R²= 0.9991   MAE=  0.33
+    y: R²= 0.9990   MAE=  0.32
+   vx: R²= 0.9767   MAE=  0.43
+   vy: R²= 0.9768   MAE=  0.41
+>> C:\Python312\python.exe eval.py --tag v5-jitter --world jitter --zones 0,1,2,3,4,5,6,7,8 --seeds 10 --steps 20 --cost latent --pixel-episodes 2 --grid 0 --threads 8
+латентный планировщик [jitter]: 9 зон × 10 стартов, H=10, 128×8 CEM
+стоимость: latent
+  успех: 69%  шагов в среднем: 10.9  время решения (медиана): 66 мс, p90: 73 мс
+  корреляция латентная стоимость ↔ реальный промах (Спирмен): 0.163 на 979 решениях
+  случайные действия: 33.3%  delta=35.6 п.п.  интервал [22.2, 48.9]  лучше_случайных=True  отрыв_15=True
+  probe R²: x=0.999, y=0.999, vx=0.977, vy=0.977
+пиксельный планировщик: 2 стартов (это долго)
+  время решения (медиана): 8517 мс  [всего 111 с]
+
+сохранено: out/eval_v5-jitter_latent.json
+END jitter
+BEGIN noise
+>> C:\Python312\python.exe train.py --mode jepa --steps 2500 --tag v5-noise --world noise --threads 8
+[jepa] params=0.95M steps=2500 batch=32 actions=9 horizon=6 world=noise
+      1/2500 loss=0.3464 l1=0.0178 l3=0.0333 rec=0.6122 | eval pix=0.6019 lat=0.0181 | 498 ms/step, осталось ~20.7 мин
+    100/2500 loss=0.0236 l1=0.0007 l3=0.0012 rec=0.0441 | eval pix=0.0437 lat=0.0007 | 151 ms/step, осталось ~6.0 мин
+    200/2500 loss=0.0106 l1=0.0007 l3=0.0004 rec=0.0193 | eval pix=0.0238 lat=0.0006 | 149 ms/step, осталось ~5.7 мин
+    300/2500 loss=0.0072 l1=0.0018 l3=0.0032 rec=0.0063 | eval pix=0.0247 lat=0.0017 | 150 ms/step, осталось ~5.5 мин
+    400/2500 loss=0.0208 l1=0.0068 l3=0.0179 rec=0.0056 | eval pix=0.0197 lat=0.0070 | 152 ms/step, осталось ~5.3 мин
+    500/2500 loss=0.0294 l1=0.0100 l3=0.0250 rec=0.0047 | eval pix=0.0211 lat=0.0077 | 152 ms/step, осталось ~5.1 мин
+    600/2500 loss=0.0240 l1=0.0062 l3=0.0258 rec=0.0048 | eval pix=0.0207 lat=0.0071 | 152 ms/step, осталось ~4.8 мин
+    700/2500 loss=0.0226 l1=0.0067 l3=0.0233 rec=0.0046 | eval pix=0.0197 lat=0.0068 | 152 ms/step, осталось ~4.6 мин
+    800/2500 loss=0.0249 l1=0.0080 l3=0.0238 rec=0.0043 | eval pix=0.0188 lat=0.0058 | 153 ms/step, осталось ~4.3 мин
+    900/2500 loss=0.0202 l1=0.0049 l3=0.0234 rec=0.0045 | eval pix=0.0165 lat=0.0047 | 153 ms/step, осталось ~4.1 мин
+   1000/2500 loss=0.0165 l1=0.0039 l3=0.0184 rec=0.0043 | eval pix=0.0137 lat=0.0035 | 152 ms/step, осталось ~3.8 мин
+   1100/2500 loss=0.0126 l1=0.0028 l3=0.0139 rec=0.0041 | eval pix=0.0120 lat=0.0029 | 153 ms/step, осталось ~3.6 мин
+   1200/2500 loss=0.0109 l1=0.0025 l3=0.0107 rec=0.0041 | eval pix=0.0103 lat=0.0021 | 153 ms/step, осталось ~3.3 мин
+   1300/2500 loss=0.0105 l1=0.0024 l3=0.0112 rec=0.0040 | eval pix=0.0097 lat=0.0018 | 152 ms/step, осталось ~3.0 мин
+   1400/2500 loss=0.0096 l1=0.0021 l3=0.0096 rec=0.0040 | eval pix=0.0092 lat=0.0016 | 152 ms/step, осталось ~2.8 мин
+   1500/2500 loss=0.0071 l1=0.0014 l3=0.0068 rec=0.0039 | eval pix=0.0092 lat=0.0015 | 152 ms/step, осталось ~2.5 мин
+   1600/2500 loss=0.0075 l1=0.0017 l3=0.0066 rec=0.0039 | eval pix=0.0089 lat=0.0014 | 152 ms/step, осталось ~2.3 мин
+   1700/2500 loss=0.0077 l1=0.0016 l3=0.0078 rec=0.0040 | eval pix=0.0091 lat=0.0014 | 152 ms/step, осталось ~2.0 мин
+   1800/2500 loss=0.0083 l1=0.0019 l3=0.0082 rec=0.0039 | eval pix=0.0087 lat=0.0013 | 152 ms/step, осталось ~1.8 мин
+   1900/2500 loss=0.0075 l1=0.0016 l3=0.0070 rec=0.0039 | eval pix=0.0088 lat=0.0013 | 152 ms/step, осталось ~1.5 мин
+   2000/2500 loss=0.0072 l1=0.0014 l3=0.0070 rec=0.0039 | eval pix=0.0087 lat=0.0013 | 152 ms/step, осталось ~1.3 мин
+   2100/2500 loss=0.0073 l1=0.0015 l3=0.0069 rec=0.0038 | eval pix=0.0086 lat=0.0013 | 152 ms/step, осталось ~1.0 мин
+   2200/2500 loss=0.0083 l1=0.0019 l3=0.0082 rec=0.0038 | eval pix=0.0086 lat=0.0013 | 152 ms/step, осталось ~0.8 мин
+   2300/2500 loss=0.0086 l1=0.0017 l3=0.0095 rec=0.0038 | eval pix=0.0086 lat=0.0012 | 152 ms/step, осталось ~0.5 мин
+   2400/2500 loss=0.0075 l1=0.0016 l3=0.0067 rec=0.0038 | eval pix=0.0085 lat=0.0013 | 152 ms/step, осталось ~0.3 мин
+   2500/2500 loss=0.0081 l1=0.0016 l3=0.0085 rec=0.0039 | eval pix=0.0085 lat=0.0013 | 151 ms/step, осталось ~0.0 мин
+[jepa] сохранено: C:\ERV\projects-ex\jepa-lab\out\jepa_v5-noise.pt  (6.3 мин)
+>> C:\Python312\python.exe train.py --mode pixel --steps 2500 --tag v5-noise --world noise --threads 8
+[pixel] params=0.95M steps=2500 batch=32 actions=9 horizon=6 world=noise
+      1/2500 loss=1.3745 l1=0.6127 l3=0.6090 rec=0.6122 | eval pix=0.6008 lat=0.0186 | 655 ms/step, осталось ~27.3 мин
+    100/2500 loss=0.0743 l1=0.0331 l3=0.0328 rec=0.0330 | eval pix=0.0323 lat=0.0015 | 366 ms/step, осталось ~14.6 мин
+    200/2500 loss=0.0493 l1=0.0212 l3=0.0256 rec=0.0196 | eval pix=0.0210 lat=0.0137 | 367 ms/step, осталось ~14.1 мин
+    300/2500 loss=0.0380 l1=0.0164 l3=0.0252 rec=0.0083 | eval pix=0.0148 lat=0.0127 | 364 ms/step, осталось ~13.4 мин
+    400/2500 loss=0.0284 l1=0.0107 l3=0.0236 rec=0.0067 | eval pix=0.0103 lat=0.0129 | 361 ms/step, осталось ~12.6 мин
+    500/2500 loss=0.0213 l1=0.0078 l3=0.0195 rec=0.0048 | eval pix=0.0077 lat=0.0127 | 360 ms/step, осталось ~12.0 мин
+    600/2500 loss=0.0177 l1=0.0070 l3=0.0141 rec=0.0047 | eval pix=0.0069 lat=0.0125 | 360 ms/step, осталось ~11.4 мин
+    700/2500 loss=0.0158 l1=0.0058 l3=0.0133 rec=0.0045 | eval pix=0.0062 lat=0.0125 | 359 ms/step, осталось ~10.8 мин
+    800/2500 loss=0.0158 l1=0.0059 l3=0.0125 rec=0.0044 | eval pix=0.0061 lat=0.0123 | 359 ms/step, осталось ~10.2 мин
+    900/2500 loss=0.0146 l1=0.0055 l3=0.0112 rec=0.0043 | eval pix=0.0056 lat=0.0121 | 358 ms/step, осталось ~9.5 мин
+   1000/2500 loss=0.0160 l1=0.0060 l3=0.0139 rec=0.0043 | eval pix=0.0055 lat=0.0123 | 358 ms/step, осталось ~9.0 мин
+   1100/2500 loss=0.0136 l1=0.0053 l3=0.0099 rec=0.0044 | eval pix=0.0053 lat=0.0121 | 358 ms/step, осталось ~8.4 мин
+   1200/2500 loss=0.0152 l1=0.0057 l3=0.0124 rec=0.0043 | eval pix=0.0053 lat=0.0121 | 357 ms/step, осталось ~7.7 мин
+   1300/2500 loss=0.0136 l1=0.0050 l3=0.0111 rec=0.0041 | eval pix=0.0052 lat=0.0122 | 357 ms/step, осталось ~7.1 мин
+   1400/2500 loss=0.0133 l1=0.0047 l3=0.0112 rec=0.0041 | eval pix=0.0051 lat=0.0121 | 356 ms/step, осталось ~6.5 мин
+   1500/2500 loss=0.0135 l1=0.0052 l3=0.0096 rec=0.0041 | eval pix=0.0049 lat=0.0119 | 356 ms/step, осталось ~5.9 мин
+   1600/2500 loss=0.0129 l1=0.0051 l3=0.0093 rec=0.0041 | eval pix=0.0049 lat=0.0118 | 356 ms/step, осталось ~5.3 мин
+   1700/2500 loss=0.0148 l1=0.0060 l3=0.0107 rec=0.0044 | eval pix=0.0049 lat=0.0117 | 356 ms/step, осталось ~4.7 мин
+   1800/2500 loss=0.0126 l1=0.0048 l3=0.0094 rec=0.0040 | eval pix=0.0048 lat=0.0116 | 356 ms/step, осталось ~4.2 мин
+   1900/2500 loss=0.0137 l1=0.0053 l3=0.0104 rec=0.0041 | eval pix=0.0048 lat=0.0116 | 355 ms/step, осталось ~3.6 мин
+   2000/2500 loss=0.0127 l1=0.0051 l3=0.0088 rec=0.0044 | eval pix=0.0047 lat=0.0116 | 355 ms/step, осталось ~3.0 мин
+   2100/2500 loss=0.0119 l1=0.0046 l3=0.0082 rec=0.0040 | eval pix=0.0047 lat=0.0115 | 356 ms/step, осталось ~2.4 мин
+   2200/2500 loss=0.0124 l1=0.0048 l3=0.0093 rec=0.0039 | eval pix=0.0047 lat=0.0116 | 356 ms/step, осталось ~1.8 мин
+   2300/2500 loss=0.0124 l1=0.0048 l3=0.0104 rec=0.0039 | eval pix=0.0046 lat=0.0115 | 357 ms/step, осталось ~1.2 мин
+   2400/2500 loss=0.0109 l1=0.0048 l3=0.0065 rec=0.0039 | eval pix=0.0046 lat=0.0115 | 356 ms/step, осталось ~0.6 мин
+   2500/2500 loss=0.0120 l1=0.0047 l3=0.0095 rec=0.0040 | eval pix=0.0046 lat=0.0115 | 356 ms/step, осталось ~0.0 мин
+[pixel] сохранено: C:\ERV\projects-ex\jepa-lab\out\pixel_v5-noise.pt  (14.8 мин)
+>> C:\Python312\python.exe probe.py --tag v5-noise --world noise --threads 8
+C:\ERV\projects-ex\jepa-lab\models.py:218: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\torch\csrc\autograd\generated\python_variable_methods.cpp:837.)
+  return [round(float(1 - r / t), 4) for r, t in zip(ss_res, ss_tot)]
+probe на 6336 латентах (R², 1.0 = идеально):
+    x: R²= 0.9993   MAE=  0.31
+    y: R²= 0.9991   MAE=  0.36
+   vx: R²= 0.9818   MAE=  0.38
+   vy: R²= 0.9771   MAE=  0.44
+>> C:\Python312\python.exe eval.py --tag v5-noise --world noise --zones 0,1,2,3,4,5,6,7,8 --seeds 10 --steps 20 --cost latent --pixel-episodes 2 --grid 0 --threads 8
+латентный планировщик [noise]: 9 зон × 10 стартов, H=10, 128×8 CEM
+стоимость: latent
+  успех: 78%  шагов в среднем: 10.4  время решения (медиана): 65 мс, p90: 72 мс
+  корреляция латентная стоимость ↔ реальный промах (Спирмен): -0.066 на 936 решениях
+  случайные действия: 38.9%  delta=38.9 п.п.  интервал [25.6, 51.1]  лучше_случайных=True  отрыв_15=True
+  probe R²: x=0.999, y=0.999, vx=0.982, vy=0.977
+  шум: гасит шум  до чистого 0.2532  до шумного 0.2536
+пиксельный планировщик: 2 стартов (это долго)
+  время решения (медиана): 8493 мс  [всего 85 с]
+
+сохранено: out/eval_v5-noise_latent.json
+END noise
+BEGIN balls
+>> C:\Python312\python.exe train.py --mode jepa --steps 2500 --tag v5-balls --world balls --threads 8
+[jepa] params=0.95M steps=2500 batch=32 actions=9 horizon=6 world=balls
+      1/2500 loss=0.3666 l1=0.0167 l3=0.0341 rec=0.6542 | eval pix=0.6452 lat=0.0171 | 460 ms/step, осталось ~19.1 мин
+    100/2500 loss=0.0355 l1=0.0009 l3=0.0014 rec=0.0673 | eval pix=0.0669 lat=0.0009 | 153 ms/step, осталось ~6.1 мин
+    200/2500 loss=0.0127 l1=0.0017 l3=0.0031 rec=0.0179 | eval pix=0.0401 lat=0.0015 | 150 ms/step, осталось ~5.8 мин
+    300/2500 loss=0.0175 l1=0.0048 l3=0.0139 rec=0.0085 | eval pix=0.0254 lat=0.0046 | 150 ms/step, осталось ~5.5 мин
+    400/2500 loss=0.0216 l1=0.0062 l3=0.0195 rec=0.0060 | eval pix=0.0261 lat=0.0058 | 152 ms/step, осталось ~5.3 мин
+    500/2500 loss=0.0193 l1=0.0062 l3=0.0181 rec=0.0043 | eval pix=0.0256 lat=0.0059 | 152 ms/step, осталось ~5.1 мин
+    600/2500 loss=0.0204 l1=0.0054 l3=0.0218 rec=0.0034 | eval pix=0.0248 lat=0.0059 | 152 ms/step, осталось ~4.8 мин
+    700/2500 loss=0.0235 l1=0.0079 l3=0.0226 rec=0.0029 | eval pix=0.0234 lat=0.0057 | 152 ms/step, осталось ~4.5 мин
+    800/2500 loss=0.0223 l1=0.0058 l3=0.0253 rec=0.0028 | eval pix=0.0236 lat=0.0057 | 152 ms/step, осталось ~4.3 мин
+    900/2500 loss=0.0179 l1=0.0057 l3=0.0194 rec=0.0021 | eval pix=0.0239 lat=0.0055 | 152 ms/step, осталось ~4.1 мин
+   1000/2500 loss=0.0198 l1=0.0060 l3=0.0209 rec=0.0019 | eval pix=0.0229 lat=0.0052 | 152 ms/step, осталось ~3.8 мин
+   1100/2500 loss=0.0186 l1=0.0048 l3=0.0215 rec=0.0022 | eval pix=0.0234 lat=0.0052 | 152 ms/step, осталось ~3.5 мин
+   1200/2500 loss=0.0183 l1=0.0055 l3=0.0202 rec=0.0016 | eval pix=0.0232 lat=0.0052 | 152 ms/step, осталось ~3.3 мин
+   1300/2500 loss=0.0195 l1=0.0056 l3=0.0226 rec=0.0011 | eval pix=0.0224 lat=0.0049 | 152 ms/step, осталось ~3.0 мин
+   1400/2500 loss=0.0203 l1=0.0063 l3=0.0218 rec=0.0015 | eval pix=0.0223 lat=0.0049 | 152 ms/step, осталось ~2.8 мин
+   1500/2500 loss=0.0186 l1=0.0057 l3=0.0200 rec=0.0014 | eval pix=0.0228 lat=0.0048 | 152 ms/step, осталось ~2.5 мин
+   1600/2500 loss=0.0180 l1=0.0054 l3=0.0192 rec=0.0012 | eval pix=0.0224 lat=0.0047 | 152 ms/step, осталось ~2.3 мин
+   1700/2500 loss=0.0149 l1=0.0041 l3=0.0181 rec=0.0014 | eval pix=0.0223 lat=0.0046 | 152 ms/step, осталось ~2.0 мин
+   1800/2500 loss=0.0192 l1=0.0060 l3=0.0206 rec=0.0010 | eval pix=0.0223 lat=0.0046 | 152 ms/step, осталось ~1.8 мин
+   1900/2500 loss=0.0187 l1=0.0059 l3=0.0205 rec=0.0014 | eval pix=0.0222 lat=0.0044 | 151 ms/step, осталось ~1.5 мин
+   2000/2500 loss=0.0150 l1=0.0039 l3=0.0188 rec=0.0010 | eval pix=0.0223 lat=0.0044 | 151 ms/step, осталось ~1.3 мин
+   2100/2500 loss=0.0170 l1=0.0047 l3=0.0204 rec=0.0009 | eval pix=0.0222 lat=0.0044 | 151 ms/step, осталось ~1.0 мин
+   2200/2500 loss=0.0154 l1=0.0041 l3=0.0183 rec=0.0009 | eval pix=0.0220 lat=0.0043 | 151 ms/step, осталось ~0.8 мин
+   2300/2500 loss=0.0164 l1=0.0049 l3=0.0180 rec=0.0012 | eval pix=0.0222 lat=0.0043 | 151 ms/step, осталось ~0.5 мин
+   2400/2500 loss=0.0165 l1=0.0047 l3=0.0187 rec=0.0009 | eval pix=0.0222 lat=0.0043 | 151 ms/step, осталось ~0.3 мин
+   2500/2500 loss=0.0161 l1=0.0050 l3=0.0186 rec=0.0011 | eval pix=0.0221 lat=0.0043 | 151 ms/step, осталось ~0.0 мин
+[jepa] сохранено: C:\ERV\projects-ex\jepa-lab\out\jepa_v5-balls.pt  (6.3 мин)
+>> C:\Python312\python.exe train.py --mode pixel --steps 2500 --tag v5-balls --world balls --threads 8
+[pixel] params=0.95M steps=2500 batch=32 actions=9 horizon=6 world=balls
+      1/2500 loss=1.4693 l1=0.6553 l3=0.6509 rec=0.6542 | eval pix=0.6442 lat=0.0175 | 656 ms/step, осталось ~27.3 мин
+    100/2500 loss=0.1260 l1=0.0559 l3=0.0562 rec=0.0556 | eval pix=0.0548 lat=0.0014 | 353 ms/step, осталось ~14.1 мин
+    200/2500 loss=0.0732 l1=0.0314 l3=0.0443 rec=0.0213 | eval pix=0.0301 lat=0.0084 | 354 ms/step, осталось ~13.6 мин
+    300/2500 loss=0.0629 l1=0.0264 l3=0.0440 rec=0.0122 | eval pix=0.0244 lat=0.0095 | 356 ms/step, осталось ~13.1 мин
+    400/2500 loss=0.0574 l1=0.0230 l3=0.0430 rec=0.0086 | eval pix=0.0215 lat=0.0101 | 355 ms/step, осталось ~12.4 мин
+    500/2500 loss=0.0531 l1=0.0218 l3=0.0407 rec=0.0069 | eval pix=0.0208 lat=0.0116 | 356 ms/step, осталось ~11.9 мин
+    600/2500 loss=0.0464 l1=0.0168 l3=0.0397 rec=0.0054 | eval pix=0.0194 lat=0.0110 | 355 ms/step, осталось ~11.3 мин
+    700/2500 loss=0.0507 l1=0.0209 l3=0.0405 rec=0.0049 | eval pix=0.0175 lat=0.0120 | 357 ms/step, осталось ~10.7 мин
+    800/2500 loss=0.0518 l1=0.0203 l3=0.0424 rec=0.0048 | eval pix=0.0179 lat=0.0118 | 356 ms/step, осталось ~10.1 мин
+    900/2500 loss=0.0445 l1=0.0186 l3=0.0362 rec=0.0036 | eval pix=0.0166 lat=0.0117 | 356 ms/step, осталось ~9.5 мин
+   1000/2500 loss=0.0429 l1=0.0162 l3=0.0379 rec=0.0032 | eval pix=0.0163 lat=0.0119 | 356 ms/step, осталось ~8.9 мин
+   1100/2500 loss=0.0430 l1=0.0165 l3=0.0377 rec=0.0034 | eval pix=0.0156 lat=0.0121 | 355 ms/step, осталось ~8.3 мин
+   1200/2500 loss=0.0417 l1=0.0158 l3=0.0369 rec=0.0027 | eval pix=0.0158 lat=0.0118 | 356 ms/step, осталось ~7.7 мин
+   1300/2500 loss=0.0405 l1=0.0148 l3=0.0383 rec=0.0022 | eval pix=0.0155 lat=0.0118 | 356 ms/step, осталось ~7.1 мин
+   1400/2500 loss=0.0440 l1=0.0172 l3=0.0380 rec=0.0024 | eval pix=0.0146 lat=0.0116 | 355 ms/step, осталось ~6.5 мин
+   1500/2500 loss=0.0425 l1=0.0173 l3=0.0360 rec=0.0026 | eval pix=0.0140 lat=0.0116 | 355 ms/step, осталось ~5.9 мин
+   1600/2500 loss=0.0388 l1=0.0148 l3=0.0345 rec=0.0023 | eval pix=0.0139 lat=0.0117 | 355 ms/step, осталось ~5.3 мин
+   1700/2500 loss=0.0379 l1=0.0147 l3=0.0344 rec=0.0021 | eval pix=0.0139 lat=0.0120 | 355 ms/step, осталось ~4.7 мин
+   1800/2500 loss=0.0389 l1=0.0149 l3=0.0353 rec=0.0019 | eval pix=0.0136 lat=0.0117 | 355 ms/step, осталось ~4.1 мин
+   1900/2500 loss=0.0371 l1=0.0145 l3=0.0341 rec=0.0021 | eval pix=0.0134 lat=0.0119 | 355 ms/step, осталось ~3.5 мин
+   2000/2500 loss=0.0368 l1=0.0132 l3=0.0367 rec=0.0016 | eval pix=0.0128 lat=0.0122 | 355 ms/step, осталось ~3.0 мин
+   2100/2500 loss=0.0359 l1=0.0133 l3=0.0339 rec=0.0015 | eval pix=0.0127 lat=0.0121 | 355 ms/step, осталось ~2.4 мин
+   2200/2500 loss=0.0339 l1=0.0119 l3=0.0327 rec=0.0015 | eval pix=0.0126 lat=0.0122 | 355 ms/step, осталось ~1.8 мин
+   2300/2500 loss=0.0386 l1=0.0140 l3=0.0362 rec=0.0019 | eval pix=0.0125 lat=0.0122 | 355 ms/step, осталось ~1.2 мин
+   2400/2500 loss=0.0367 l1=0.0132 l3=0.0353 rec=0.0011 | eval pix=0.0124 lat=0.0122 | 355 ms/step, осталось ~0.6 мин
+   2500/2500 loss=0.0400 l1=0.0165 l3=0.0349 rec=0.0017 | eval pix=0.0124 lat=0.0122 | 355 ms/step, осталось ~0.0 мин
+[pixel] сохранено: C:\ERV\projects-ex\jepa-lab\out\pixel_v5-balls.pt  (14.8 мин)
+>> C:\Python312\python.exe probe.py --tag v5-balls --world balls --threads 8
+C:\ERV\projects-ex\jepa-lab\models.py:218: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\torch\csrc\autograd\generated\python_variable_methods.cpp:837.)
+  return [round(float(1 - r / t), 4) for r, t in zip(ss_res, ss_tot)]
+probe на 6336 латентах (R², 1.0 = идеально):
+    x: R²= 0.4650   MAE=  8.93
+    y: R²= 0.4063   MAE=  9.27
+   vx: R²= 0.6505   MAE=  1.73
+   vy: R²= 0.6656   MAE=  1.80
+>> C:\Python312\python.exe eval.py --tag v5-balls --world balls --zones 0,1,2,3,4,5,6,7,8 --seeds 10 --steps 20 --cost latent --pixel-episodes 2 --grid 0 --threads 8
+латентный планировщик [balls]: 9 зон × 10 стартов, H=10, 128×8 CEM
+стоимость: latent
+  успех: 73%  шагов в среднем: 9.0  время решения (медиана): 64 мс, p90: 70 мс
+  корреляция латентная стоимость ↔ реальный промах (Спирмен): 0.153 на 812 решениях
+  случайные действия: 38.9%  delta=34.4 п.п.  интервал [22.2, 46.7]  лучше_случайных=True  отрыв_15=True
+  probe R²: x=0.465, y=0.406, vx=0.650, vy=0.666
+пиксельный планировщик: 2 стартов (это долго)
+  время решения (медиана): 8441 мс  [всего 59 с]
+
+сохранено: out/eval_v5-balls_latent.json
+END balls
+BEGIN floor
+>> C:\Python312\python.exe train.py --mode jepa --steps 2500 --tag v5-floor --world floor --threads 8
+[jepa] params=0.95M steps=2500 batch=32 actions=9 horizon=6 world=floor
+      1/2500 loss=0.3362 l1=0.0158 l3=0.0317 rec=0.5987 | eval pix=0.5854 lat=0.0159 | 394 ms/step, осталось ~16.4 мин
+    100/2500 loss=0.0264 l1=0.0006 l3=0.0011 rec=0.0504 | eval pix=0.0505 lat=0.0006 | 142 ms/step, осталось ~5.7 мин
+    200/2500 loss=0.0095 l1=0.0004 l3=0.0005 rec=0.0173 | eval pix=0.0246 lat=0.0005 | 139 ms/step, осталось ~5.3 мин
+    300/2500 loss=0.0070 l1=0.0021 l3=0.0038 rec=0.0045 | eval pix=0.0246 lat=0.0020 | 138 ms/step, осталось ~5.1 мин
+    400/2500 loss=0.0167 l1=0.0062 l3=0.0132 rec=0.0030 | eval pix=0.0188 lat=0.0055 | 140 ms/step, осталось ~4.9 мин
+    500/2500 loss=0.0207 l1=0.0068 l3=0.0192 rec=0.0029 | eval pix=0.0180 lat=0.0069 | 140 ms/step, осталось ~4.7 мин
+    600/2500 loss=0.0232 l1=0.0068 l3=0.0250 rec=0.0018 | eval pix=0.0174 lat=0.0069 | 141 ms/step, осталось ~4.5 мин
+    700/2500 loss=0.0241 l1=0.0070 l3=0.0271 rec=0.0015 | eval pix=0.0181 lat=0.0068 | 140 ms/step, осталось ~4.2 мин
+    800/2500 loss=0.0217 l1=0.0062 l3=0.0239 rec=0.0016 | eval pix=0.0163 lat=0.0058 | 141 ms/step, осталось ~4.0 мин
+    900/2500 loss=0.0187 l1=0.0056 l3=0.0219 rec=0.0012 | eval pix=0.0140 lat=0.0049 | 141 ms/step, осталось ~3.7 мин
+   1000/2500 loss=0.0109 l1=0.0032 l3=0.0132 rec=0.0009 | eval pix=0.0105 lat=0.0034 | 140 ms/step, осталось ~3.5 мин
+   1100/2500 loss=0.0102 l1=0.0030 l3=0.0115 rec=0.0008 | eval pix=0.0082 lat=0.0024 | 140 ms/step, осталось ~3.3 мин
+   1200/2500 loss=0.0084 l1=0.0024 l3=0.0099 rec=0.0006 | eval pix=0.0070 lat=0.0020 | 141 ms/step, осталось ~3.1 мин
+   1300/2500 loss=0.0081 l1=0.0019 l3=0.0104 rec=0.0005 | eval pix=0.0066 lat=0.0019 | 141 ms/step, осталось ~2.8 мин
+   1400/2500 loss=0.0067 l1=0.0019 l3=0.0080 rec=0.0006 | eval pix=0.0066 lat=0.0017 | 141 ms/step, осталось ~2.6 мин
+   1500/2500 loss=0.0068 l1=0.0018 l3=0.0085 rec=0.0008 | eval pix=0.0062 lat=0.0016 | 140 ms/step, осталось ~2.3 мин
+   1600/2500 loss=0.0058 l1=0.0013 l3=0.0083 rec=0.0005 | eval pix=0.0061 lat=0.0015 | 140 ms/step, осталось ~2.1 мин
+   1700/2500 loss=0.0058 l1=0.0015 l3=0.0074 rec=0.0006 | eval pix=0.0055 lat=0.0015 | 140 ms/step, осталось ~1.9 мин
+   1800/2500 loss=0.0053 l1=0.0015 l3=0.0060 rec=0.0004 | eval pix=0.0055 lat=0.0014 | 140 ms/step, осталось ~1.6 мин
+   1900/2500 loss=0.0065 l1=0.0018 l3=0.0081 rec=0.0004 | eval pix=0.0054 lat=0.0014 | 140 ms/step, осталось ~1.4 мин
+   2000/2500 loss=0.0060 l1=0.0018 l3=0.0073 rec=0.0004 | eval pix=0.0054 lat=0.0013 | 140 ms/step, осталось ~1.2 мин
+   2100/2500 loss=0.0067 l1=0.0018 l3=0.0084 rec=0.0004 | eval pix=0.0053 lat=0.0013 | 140 ms/step, осталось ~0.9 мин
+   2200/2500 loss=0.0068 l1=0.0015 l3=0.0096 rec=0.0003 | eval pix=0.0053 lat=0.0013 | 140 ms/step, осталось ~0.7 мин
+   2300/2500 loss=0.0060 l1=0.0017 l3=0.0074 rec=0.0005 | eval pix=0.0053 lat=0.0013 | 140 ms/step, осталось ~0.5 мин
+   2400/2500 loss=0.0072 l1=0.0020 l3=0.0084 rec=0.0004 | eval pix=0.0052 lat=0.0013 | 140 ms/step, осталось ~0.2 мин
+   2500/2500 loss=0.0063 l1=0.0017 l3=0.0074 rec=0.0004 | eval pix=0.0052 lat=0.0013 | 140 ms/step, осталось ~0.0 мин
+[jepa] сохранено: C:\ERV\projects-ex\jepa-lab\out\jepa_v5-floor.pt  (5.8 мин)
+>> C:\Python312\python.exe train.py --mode pixel --steps 2500 --tag v5-floor --world floor --threads 8
+[pixel] params=0.95M steps=2500 batch=32 actions=9 horizon=6 world=floor
+      1/2500 loss=1.3404 l1=0.5972 l3=0.5944 rec=0.5987 | eval pix=0.5844 lat=0.0165 | 594 ms/step, осталось ~24.7 мин
+    100/2500 loss=0.0866 l1=0.0387 l3=0.0384 rec=0.0385 | eval pix=0.0378 lat=0.0015 | 342 ms/step, осталось ~13.7 мин
+    200/2500 loss=0.0439 l1=0.0189 l3=0.0240 rec=0.0157 | eval pix=0.0189 lat=0.0084 | 344 ms/step, осталось ~13.2 мин
+    300/2500 loss=0.0329 l1=0.0134 l3=0.0244 rec=0.0068 | eval pix=0.0130 lat=0.0113 | 342 ms/step, осталось ~12.5 мин
+    400/2500 loss=0.0236 l1=0.0092 l3=0.0177 rec=0.0039 | eval pix=0.0081 lat=0.0129 | 344 ms/step, осталось ~12.0 мин
+    500/2500 loss=0.0183 l1=0.0068 l3=0.0173 rec=0.0031 | eval pix=0.0052 lat=0.0129 | 342 ms/step, осталось ~11.4 мин
+    600/2500 loss=0.0139 l1=0.0042 l3=0.0154 rec=0.0020 | eval pix=0.0044 lat=0.0124 | 344 ms/step, осталось ~10.9 мин
+    700/2500 loss=0.0145 l1=0.0050 l3=0.0143 rec=0.0019 | eval pix=0.0039 lat=0.0126 | 345 ms/step, осталось ~10.3 мин
+    800/2500 loss=0.0107 l1=0.0035 l3=0.0120 rec=0.0013 | eval pix=0.0029 lat=0.0125 | 344 ms/step, осталось ~9.7 мин
+    900/2500 loss=0.0076 l1=0.0025 l3=0.0086 rec=0.0012 | eval pix=0.0029 lat=0.0126 | 344 ms/step, осталось ~9.2 мин
+   1000/2500 loss=0.0091 l1=0.0026 l3=0.0103 rec=0.0011 | eval pix=0.0024 lat=0.0125 | 343 ms/step, осталось ~8.6 мин
+   1100/2500 loss=0.0061 l1=0.0018 l3=0.0071 rec=0.0007 | eval pix=0.0020 lat=0.0124 | 344 ms/step, осталось ~8.0 мин
+   1200/2500 loss=0.0062 l1=0.0021 l3=0.0070 rec=0.0007 | eval pix=0.0021 lat=0.0125 | 343 ms/step, осталось ~7.4 мин
+   1300/2500 loss=0.0066 l1=0.0021 l3=0.0084 rec=0.0006 | eval pix=0.0019 lat=0.0123 | 344 ms/step, осталось ~6.9 мин
+   1400/2500 loss=0.0066 l1=0.0018 l3=0.0078 rec=0.0009 | eval pix=0.0016 lat=0.0124 | 344 ms/step, осталось ~6.3 мин
+   1500/2500 loss=0.0071 l1=0.0021 l3=0.0077 rec=0.0012 | eval pix=0.0016 lat=0.0124 | 344 ms/step, осталось ~5.7 мин
+   1600/2500 loss=0.0044 l1=0.0013 l3=0.0054 rec=0.0006 | eval pix=0.0015 lat=0.0122 | 344 ms/step, осталось ~5.2 мин
+   1700/2500 loss=0.0062 l1=0.0016 l3=0.0076 rec=0.0008 | eval pix=0.0014 lat=0.0122 | 344 ms/step, осталось ~4.6 мин
+   1800/2500 loss=0.0041 l1=0.0016 l3=0.0045 rec=0.0005 | eval pix=0.0014 lat=0.0121 | 344 ms/step, осталось ~4.0 мин
+   1900/2500 loss=0.0048 l1=0.0015 l3=0.0056 rec=0.0005 | eval pix=0.0014 lat=0.0121 | 343 ms/step, осталось ~3.4 мин
+   2000/2500 loss=0.0058 l1=0.0022 l3=0.0060 rec=0.0007 | eval pix=0.0013 lat=0.0121 | 343 ms/step, осталось ~2.9 мин
+   2100/2500 loss=0.0043 l1=0.0014 l3=0.0046 rec=0.0005 | eval pix=0.0013 lat=0.0120 | 344 ms/step, осталось ~2.3 мин
+   2200/2500 loss=0.0048 l1=0.0015 l3=0.0063 rec=0.0005 | eval pix=0.0012 lat=0.0120 | 343 ms/step, осталось ~1.7 мин
+   2300/2500 loss=0.0051 l1=0.0015 l3=0.0063 rec=0.0008 | eval pix=0.0012 lat=0.0120 | 343 ms/step, осталось ~1.1 мин
+   2400/2500 loss=0.0054 l1=0.0016 l3=0.0065 rec=0.0006 | eval pix=0.0012 lat=0.0120 | 343 ms/step, осталось ~0.6 мин
+   2500/2500 loss=0.0049 l1=0.0019 l3=0.0054 rec=0.0005 | eval pix=0.0012 lat=0.0120 | 343 ms/step, осталось ~0.0 мин
+[pixel] сохранено: C:\ERV\projects-ex\jepa-lab\out\pixel_v5-floor.pt  (14.3 мин)
+>> C:\Python312\python.exe probe.py --tag v5-floor --world floor --threads 8
+C:\ERV\projects-ex\jepa-lab\models.py:218: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\torch\csrc\autograd\generated\python_variable_methods.cpp:837.)
+  return [round(float(1 - r / t), 4) for r, t in zip(ss_res, ss_tot)]
+probe на 6336 латентах (R², 1.0 = идеально):
+    x: R²= 0.9984   MAE=  0.46
+    y: R²= 0.9989   MAE=  0.33
+   vx: R²= 0.9603   MAE=  0.58
+   vy: R²= 0.9729   MAE=  0.44
+>> C:\Python312\python.exe eval.py --tag v5-floor --world floor --zones 0,1,2,3,4,5,6,7,8 --seeds 10 --steps 20 --cost latent --pixel-episodes 2 --grid 0 --threads 8
+латентный планировщик [floor]: 9 зон × 10 стартов, H=10, 128×8 CEM
+стоимость: latent
+  успех: 79%  шагов в среднем: 10.5  время решения (медиана): 65 мс, p90: 70 мс
+  корреляция латентная стоимость ↔ реальный промах (Спирмен): 0.016 на 942 решениях
+  случайные действия: 41.1%  delta=37.8 п.п.  интервал [23.3, 50.0]  лучше_случайных=True  отрыв_15=True
+  probe R²: x=0.998, y=0.999, vx=0.960, vy=0.973
+пиксельный планировщик: 2 стартов (это долго)
+  время решения (медиана): 8361 мс  [всего 177 с]
+
+сохранено: out/eval_v5-floor_latent.json
+END floor
+DRIVER_DONE
