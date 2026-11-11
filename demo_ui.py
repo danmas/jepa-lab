@@ -20,7 +20,7 @@ import torch
 from PIL import Image
 
 from chat import describe_state
-from data import ZONE_CENTERS, ZONE_HALF, ZONES, find_zone
+from data import ACTIONS, ACTION_NAMES, GRAVITY, IMPULSE, ZONE_CENTERS, ZONE_HALF, ZONES, find_zone
 from models import load_model
 from plan import load_probe, execute
 
@@ -118,6 +118,7 @@ PAGE = """<!DOCTYPE html>
   .report strong.bad { color: var(--bad); }
   .steps { margin: 8px 0 0; padding-left: 18px; }
   .steps li { margin: 2px 0; }
+  .caption { color: #d9d3c5; font-size: 13px; line-height: 1.4; margin: 10px 2px 0; }
   .note { color: var(--muted); font-size: 13px; margin-top: 14px; }
   @media (max-width: 860px) {
     .bench { grid-template-columns: 1fr; }
@@ -133,6 +134,7 @@ PAGE = """<!DOCTYPE html>
   <div class="bench">
     <div class="stage">
       <canvas id="view" width="384" height="384"></canvas>
+      <p class="caption">Вид сбоку, не сверху: верх картинки — верх. Мяч тянет вниз слабая тяжесть, стены его отталкивают. Жёлтая стрелка — толчок в масштабе поля. Прямой короче косого, «на месте» стрелки не даёт. Тяжесть слабее прямого толчка примерно в 27 раз, поэтому отдельной стрелкой в том же масштабе её не разглядеть.</p>
       <div class="play">
         <button id="toggle" type="button">пауза</button>
         <input id="scrub" type="range" min="0" max="0" value="0">
@@ -172,20 +174,84 @@ const frameLabel = document.getElementById("frame-label");
 const toggle = document.getElementById("toggle");
 const go = document.getElementById("go");
 let frames = [];
+let marks = [];
 let zone = null;
+let outcome = null;
 let timer = null;
 let playing = true;
+const SCALE = 6;
+
+function drawArrow(x, y, dx, dy) {
+  const len = Math.hypot(dx, dy);
+  if (len < 2) return;
+  const tipX = x + dx;
+  const tipY = y + dy;
+  const ang = Math.atan2(dy, dx);
+  const head = Math.min(11, len * 0.38);
+  ctx.strokeStyle = "#f2c14e";
+  ctx.fillStyle = "#f2c14e";
+  ctx.lineWidth = 3;
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(tipX - Math.cos(ang) * head * 0.6, tipY - Math.sin(ang) * head * 0.6);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(tipX, tipY);
+  ctx.lineTo(tipX - head * Math.cos(ang - 0.45), tipY - head * Math.sin(ang - 0.45));
+  ctx.lineTo(tipX - head * Math.cos(ang + 0.45), tipY - head * Math.sin(ang + 0.45));
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawTrajectory() {
+  if (marks.length < 2) return;
+  ctx.strokeStyle = "#4da3ff";
+  ctx.fillStyle = "#4da3ff";
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  marks.forEach((m, idx) => {
+    const x = m.x * SCALE;
+    const y = m.y * SCALE;
+    if (idx === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  marks.forEach((m) => {
+    ctx.beginPath();
+    ctx.arc(m.x * SCALE, m.y * SCALE, 3, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+function drawPushVectors() {
+  marks.forEach((m) => {
+    drawArrow(m.x * SCALE, m.y * SCALE, m.push[0] * SCALE, m.push[1] * SCALE);
+  });
+}
 
 function draw(i) {
+  const last = frames.length ? frames.length - 1 : 0;
+  const atEnd = frames.length > 0 && i === last;
   ctx.fillStyle = "#111";
   ctx.fillRect(0, 0, 384, 384);
   if (frames[i]) ctx.drawImage(frames[i], 0, 0);
   if (zone) {
-    const s = 6, half = 8;
-    ctx.strokeStyle = "#3dd68c";
-    ctx.lineWidth = 2;
-    ctx.strokeRect((zone[0] - half) * s, (zone[1] - half) * s, half * 2 * s, half * 2 * s);
+    const half = 8;
+    ctx.strokeStyle = atEnd && outcome === "ok" ? "#4da3ff"
+      : atEnd && outcome === "bad" ? "#ff5a5a"
+      : "#3dd68c";
+    ctx.lineWidth = 3;
+    ctx.strokeRect((zone[0] - half) * SCALE, (zone[1] - half) * SCALE, half * 2 * SCALE, half * 2 * SCALE);
   }
+  if (atEnd && outcome === "ok") {
+    drawTrajectory();
+    drawPushVectors();
+  }
+  const m = marks[i];
+  if (m && !(atEnd && outcome === "ok")) drawArrow(m.x * SCALE, m.y * SCALE, m.push[0] * SCALE, m.push[1] * SCALE);
   frameLabel.textContent = "кадр " + i + (frames.length ? " / " + (frames.length - 1) : "");
   scrub.value = String(i);
 }
@@ -204,7 +270,12 @@ function play() {
     if (t - last > 180) {
       last = t;
       let i = Number(scrub.value) + 1;
-      if (i >= frames.length) i = 0;
+      if (i >= frames.length) {
+        playing = false;
+        toggle.textContent = "играть";
+        draw(frames.length - 1);
+        return;
+      }
       draw(i);
     }
     timer = requestAnimationFrame(step);
@@ -216,6 +287,7 @@ scrub.addEventListener("input", () => { playing = false; toggle.textContent = "�
 toggle.addEventListener("click", () => {
   playing = !playing;
   toggle.textContent = playing ? "пауза" : "играть";
+  if (playing && frames.length && Number(scrub.value) >= frames.length - 1) draw(0);
   if (playing) play(); else stop();
 });
 
@@ -261,6 +333,8 @@ async function run() {
       return img;
     }));
     zone = data.center;
+    marks = data.marks || [];
+    outcome = data.success ? "ok" : "bad";
     scrub.max = String(Math.max(0, frames.length - 1));
     playing = true;
     toggle.textContent = "пауза";
@@ -279,7 +353,10 @@ async function run() {
       "<div>" + esc(data.report) + "</div>" +
       "<ol class='steps'>" + items + "</ol>";
   } catch (err) {
-    report.textContent = String(err.message || err);
+    const msg = String(err.message || err);
+    report.textContent = msg === "Failed to fetch"
+      ? "Программа расчёта не запущена. В каталоге лаборатории выполните python demo_ui.py и обновите страницу."
+      : msg;
   } finally {
     go.disabled = false;
   }
@@ -298,6 +375,32 @@ LOCK = threading.Lock()
 MODEL = None
 EMA = None
 PROBE = None
+
+
+PUSH = {name: [float(ACTIONS[i][0]), float(ACTIONS[i][1])] for i, name in enumerate(ACTION_NAMES)}
+
+
+def blob_center(frame: np.ndarray) -> list:
+    """Центр светлого пятна на кадре 64×64. Ось y вниз, как на картинке."""
+    w = (np.clip(frame, -1, 1) + 1) / 2
+    total = float(w.sum())
+    if total < 1e-6:
+        return [32.0, 32.0]
+    ys, xs = np.mgrid[0:frame.shape[0], 0:frame.shape[1]]
+    return [round(float((w * xs).sum() / total), 2), round(float((w * ys).sum() / total), 2)]
+
+
+def frame_marks(frames, steps) -> list:
+    """Толчок, который привёл к этому кадру. Длина — величина импульса в точках поля."""
+    pushes = [[0.0, 0.0]]
+    if len(frames) > 1:
+        pushes.append([0.0, 0.0])
+    for step in steps:
+        pushes.append(PUSH[step["action"]])
+    pushes = pushes[:len(frames)]
+    while len(pushes) < len(frames):
+        pushes.append([0.0, 0.0])
+    return [{"x": c[0], "y": c[1], "push": p} for c, p in zip(map(blob_center, frames), pushes)]
 
 
 def png_b64(frame: np.ndarray) -> str:
@@ -341,6 +444,9 @@ def run_phrase(text: str, seed: int, cost: str) -> dict:
         "think_ms": think_ms,
         "report": f"мяч в ({xy[0]:.0f}, {xy[1]:.0f}), {status}. {report}",
         "steps": res["steps"],
+        "marks": frame_marks(frames, res["steps"]),
+        "gravity_down": GRAVITY,
+        "impulse": IMPULSE,
         "frames": [png_b64(fr) for fr in frames],
     }
 
