@@ -220,10 +220,19 @@ def denoise_report(model, ema, n=256):
     z_noisy = ema(torch.from_numpy(noisy[:, 2]))
     dist_clean = float((z_pred - z_clean).norm(dim=1).mean())
     dist_noisy = float((z_pred - z_noisy).norm(dim=1).mean())
+    # Мёртвая зона: зазор меньше 2% от большего расстояния — это ничья, а не «гасит шум».
+    gap = (dist_noisy - dist_clean) / max(dist_noisy, 1e-9)
+    if abs(gap) < 0.02:
+        label = "ничья"
+    elif gap > 0:
+        label = "гасит шум"
+    else:
+        label = "копирует шум"
     return {
         "dist_clean": dist_clean,
         "dist_noisy": dist_noisy,
-        "label": "гасит шум" if dist_clean < dist_noisy else "копирует шум",
+        "gap_rel": gap,
+        "label": label,
     }
 
 
