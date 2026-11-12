@@ -27,6 +27,7 @@ from data import (
 from models import load_model, world_of
 from plan import load_probe, execute
 from numeric.plan import execute as execute_numeric
+from numeric_dt.plan import execute as execute_dt
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 VIEW = 384  # 64 * 6, как в глазах, не в поиске
@@ -163,8 +164,17 @@ PAGE = """<!DOCTYPE html>
       <select id="model">
         <option value="pixel" selected>пиксельная</option>
         <option value="numeric">числовая</option>
+        <option value="numeric-dt">с шагом dt</option>
       </select>
       <p class="knob-note" id="model-note" hidden>Числовая JEPA, сид обучения 0, только плоский мир. В сеть идут четыре числа, не кадр. Поиск мерит положение мяча по зонду. Это не замер пиксельной v4.</p>
+      <div id="dt-row" hidden>
+        <label for="dt">Шаг dt</label>
+        <select id="dt">
+          <option value="1/60">1/60 с — экстраполяция</option>
+          <option value="1/30" selected>1/30 с — внутри обучения</option>
+          <option value="1/15">1/15 с — экстраполяция</option>
+        </select>
+      </div>
       <label for="world">Мир</label>
       <select id="world">
         <option value="flat" selected>плоский</option>
@@ -199,7 +209,7 @@ PAGE = """<!DOCTYPE html>
       </div>
       <button class="go" id="go" type="button">Довести мяч</button>
       <div class="report" id="report">Нажмите кнопку или выберите зону. Один прогон — до пары секунд на CPU.</div>
-      <p class="note">Каждое нажатие берёт новый сид, поэтому та же фраза идёт другим путём. Потолок 20 реальных шагов, поиск 128×8, горизонт 10. На плоском мире latent попадает примерно в 8 случаях из 10. Промах — нормальный исход, не ошибка страницы.</p>
+      <p class="note" id="run-note">Каждое нажатие берёт новый сид, поэтому та же фраза идёт другим путём. Потолок 20 реальных шагов, поиск 128×8, горизонт 10. На плоском мире latent попадает примерно в 8 случаях из 10. Промах — нормальный исход, не ошибка страницы.</p>
     </div>
   </div>
 </main>
@@ -231,6 +241,11 @@ const ZONE_TABLE = [
 ];
 const CAPTION_PIXEL = "Вид сбоку, не сверху: верх картинки — верх. Мяч тянет вниз слабая тяжесть, стены его отталкивают. Кадр — тот, который получает модель. Жёлтая стрелка — выбранный толчок в масштабе поля, без подмены пробуксовкой. Прямой короче косого, «на месте» стрелки не даёт. ";
 const CAPTION_NUMERIC = "Вид сбоку, не сверху: верх картинки — верх. Мяч тянет вниз слабая тяжесть, стены его отталкивают. Кадр для вас: числовая модель получает четыре числа, не картинку. Жёлтая стрелка — выбранный толчок в масштабе поля. Прямой короче косого, «на месте» стрелки не даёт. ";
+const CAPTION_DT = "Вид сбоку, не сверху: верх картинки — верх. Мяч тянет вниз тяжесть 9 px/с², толчок — 240 px/с². Кадр для вас: модель получает пять чисел, положение, скорость в пикселях в секунду и dt, не картинку. Жёлтая стрелка — направление толчка, не путь за этот dt. ";
+const NOTE_PIXEL = "Каждое нажатие берёт новый сид, поэтому та же фраза идёт другим путём. Потолок 20 реальных шагов, поиск 128×8, горизонт 10. На плоском мире latent попадает примерно в 8 случаях из 10. Промах — нормальный исход, не ошибка страницы.";
+const NOTE_DT = "Каждое нажатие берёт новый сид, поэтому та же фраза идёт другим путём. Потолок — 20 шагов выбранного dt, не одна секунда. Поиск 128×8, горизонт 10. Это показ руки B, не замер. Промах — нормальный исход, не ошибка страницы.";
+const NOTE_NUMERIC = "Числовая JEPA, сид обучения 0, только плоский мир. В сеть идут четыре числа, не кадр. Поиск мерит положение мяча по зонду. Это не замер пиксельной v4.";
+const NOTE_DT_MODEL = "JEPA с шагом dt, рука B, сид обучения 0. В сеть идут пять чисел, скорость в пикселях в секунду. Физика — новый интегратор, не шаг пиксельного кадра. Поиск мерит положение по зонду. Это не замер.";
 
 function centersOf(n) {
   if (n === 0) return [];
@@ -273,17 +288,30 @@ function gravitySentence(steps) {
 }
 
 function syncModel() {
-  const numeric = document.getElementById("model").value === "numeric";
+  const mode = document.getElementById("model").value;
+  const numeric = mode === "numeric" || mode === "numeric-dt";
   const world = document.getElementById("world");
   for (const opt of world.options) opt.disabled = numeric && opt.value !== "flat";
   if (numeric && world.value !== "flat") world.value = "flat";
   document.getElementById("cost").disabled = numeric;
-  document.getElementById("model-note").hidden = !numeric;
+  const note = document.getElementById("model-note");
+  note.hidden = mode === "pixel";
+  note.textContent = mode === "numeric-dt" ? NOTE_DT_MODEL : NOTE_NUMERIC;
+  document.getElementById("dt-row").hidden = mode !== "numeric-dt";
+  document.getElementById("run-note").textContent = mode === "numeric-dt" ? NOTE_DT : NOTE_PIXEL;
   syncKnobs();
 }
 
+function dtSentence() {
+  const v = document.getElementById("dt").value;
+  if (v === "1/60") return "Сейчас dt = 1/60 с: это экстраполяция, 0.5× от 1/30.";
+  if (v === "1/15") return "Сейчас dt = 1/15 с: это экстраполяция, 2× от 1/30.";
+  return "Сейчас dt = 1/30 с: внутри отрезка, на котором училась рука B.";
+}
+
 function syncKnobs() {
-  const numeric = document.getElementById("model").value === "numeric";
+  const mode = document.getElementById("model").value;
+  const numeric = mode === "numeric";
   const floor = document.getElementById("world").value === "floor";
   document.getElementById("floor-knobs").hidden = !floor;
   const h = Number(document.getElementById("bump-h").value);
@@ -304,8 +332,9 @@ function syncKnobs() {
   const zoneWarn = document.getElementById("zone-warn");
   zoneWarn.hidden = !floor || zones.length === 0;
   zoneWarn.textContent = zones.length ? "Холм заходит в зоны: " + zones.join(", ") + "." : "";
-  const head = numeric ? CAPTION_NUMERIC : CAPTION_PIXEL;
-  document.getElementById("caption").textContent = head + gravitySentence(floor ? gs : 3);
+  const head = mode === "numeric-dt" ? CAPTION_DT : (numeric ? CAPTION_NUMERIC : CAPTION_PIXEL);
+  const tail = mode === "numeric-dt" ? dtSentence() : gravitySentence(floor ? gs : 3);
+  document.getElementById("caption").textContent = head + tail;
 }
 
 function drawArrow(x, y, dx, dy) {
@@ -462,6 +491,7 @@ async function run() {
         seed,
         cost: document.getElementById("cost").value,
         model: document.getElementById("model").value,
+        dt: document.getElementById("dt").value,
         world: document.getElementById("world").value,
         bump_h: Number(document.getElementById("bump-h").value),
         bump_n: Number(document.getElementById("bump-n").value),
@@ -508,6 +538,7 @@ async function run() {
 
 document.getElementById("go").addEventListener("click", run);
 document.getElementById("model").addEventListener("change", syncModel);
+document.getElementById("dt").addEventListener("change", syncKnobs);
 document.getElementById("world").addEventListener("change", syncKnobs);
 ["bump-h", "bump-n", "g-steps"].forEach((id) => {
   document.getElementById(id).addEventListener("input", syncKnobs);
@@ -619,7 +650,24 @@ def floor_request(data: dict) -> dict:
     }
 
 
-def run_phrase(text: str, seed: int, cost: str, world: str, knobs=None, model: str = "pixel") -> dict:
+def _dt_report(res: dict) -> str:
+    status = "цель достигнута" if res["success"] else "промах"
+    xy = res["final_pos"]
+    extra = ""
+    if res["dt"] == "1/60":
+        extra = " Это экстраполяция: 0.5× от 1/30."
+    elif res["dt"] == "1/15":
+        extra = " Это экстраполяция: 2× от 1/30."
+    return (
+        f"мяч в ({xy[0]:.0f}, {xy[1]:.0f}), {status}. "
+        "JEPA с шагом dt, рука B, сид обучения 0. "
+        f"dt = {res['dt']} с. Поиск ведёт мяч по положению из зонда. Это не замер."
+        + extra
+    )
+
+
+def run_phrase(text: str, seed: int, cost: str, world: str, knobs=None,
+               model: str = "pixel", dt_key: str = "1/30") -> dict:
     zone = find_zone(text)
     if zone is None:
         names = ", ".join(z["name"] for z in ZONES)
@@ -657,6 +705,37 @@ def run_phrase(text: str, seed: int, cost: str, world: str, knobs=None, model: s
             "train_seed": 0,
             "gravity_down": GRAVITY,
             "impulse": IMPULSE,
+            "frames": [png_b64(fr) for fr in frames],
+        }
+    if model == "numeric-dt":
+        if world != "flat":
+            raise ValueError("Модель с шагом dt не ведёт пиксельные миры.")
+        with LOCK:
+            with torch.no_grad():
+                res = execute_dt(zone, seed=seed, dt_key=dt_key, horizon=10, max_steps=20)
+                frames = res.pop("frames")
+                ball = res.pop("ball", None)
+        think_ms = int(round(sum(s["plan_time"] for s in res["steps"]) * 1000))
+        xy = res["final_pos"]
+        return {
+            "zone": zone,
+            "zone_name": res["zone_name"],
+            "center": list(ZONE_CENTERS[zone]),
+            "half": ZONE_HALF,
+            "success": res["success"],
+            "steps_used": res["steps_used"],
+            "miss_px": res["miss_px"],
+            "final_pos": xy,
+            "think_ms": think_ms,
+            "report": _dt_report(res),
+            "steps": res["steps"],
+            "marks": frame_marks(frames, res["steps"], ball),
+            "world": world,
+            "model": "numeric-dt",
+            "seed": seed,
+            "train_seed": 0,
+            "arm": "B",
+            "dt": res["dt"],
             "frames": [png_b64(fr) for fr in frames],
         }
     weight = 1.0 if cost == "mixed" else 0.0
@@ -749,8 +828,11 @@ class Handler(BaseHTTPRequestHandler):
             cost = data.get("cost", "latent")
             world = data.get("world", "flat")
             model_name = data.get("model", "pixel")
-            if model_name not in ("pixel", "numeric"):
-                raise ValueError("model: pixel или numeric")
+            if model_name not in ("pixel", "numeric", "numeric-dt"):
+                raise ValueError("model: pixel, numeric или numeric-dt")
+            dt_key = data.get("dt", "1/30")
+            if model_name == "numeric-dt" and dt_key not in ("1/60", "1/30", "1/15"):
+                raise ValueError("dt: 1/60, 1/30 или 1/15")
             if cost not in ("latent", "mixed"):
                 raise ValueError("cost: latent или mixed")
             if world not in TAGS:
@@ -759,8 +841,10 @@ class Handler(BaseHTTPRequestHandler):
                 raise ValueError("пустая фраза")
             if model_name == "numeric" and world != "flat":
                 raise ValueError("Числовая модель училась только на плоском мире.")
+            if model_name == "numeric-dt" and world != "flat":
+                raise ValueError("Модель с шагом dt не ведёт пиксельные миры.")
             knobs = floor_request(data) if world == "floor" else None
-            payload = run_phrase(text, seed, cost, world, knobs, model_name)
+            payload = run_phrase(text, seed, cost, world, knobs, model_name, dt_key)
             raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
             self._send(200, raw, "application/json; charset=utf-8")
         except ValueError as exc:
