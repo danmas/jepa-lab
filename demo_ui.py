@@ -28,6 +28,7 @@ from models import load_model, world_of
 from plan import load_probe, execute
 from numeric.plan import execute as execute_numeric
 from numeric_dt.plan import execute as execute_dt
+from numeric_walls.plan import execute as execute_walls
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 VIEW = 384  # 64 * 6, как в глазах, не в поиске
@@ -165,6 +166,7 @@ PAGE = """<!DOCTYPE html>
         <option value="pixel" selected>пиксельная</option>
         <option value="numeric">числовая</option>
         <option value="numeric-dt">с шагом dt</option>
+        <option value="numeric-walls">стенки</option>
       </select>
       <p class="knob-note" id="model-note" hidden>Числовая JEPA, сид обучения 0, только плоский мир. В сеть идут четыре числа, не кадр. Поиск мерит положение мяча по зонду. Это не замер пиксельной v4.</p>
       <div id="dt-row" hidden>
@@ -173,6 +175,24 @@ PAGE = """<!DOCTYPE html>
           <option value="1/60">1/60 с — экстраполяция</option>
           <option value="1/30" selected>1/30 с — внутри обучения</option>
           <option value="1/15">1/15 с — экстраполяция</option>
+        </select>
+      </div>
+      <div id="walls-row" hidden>
+        <label for="walls-axis">Ось</label>
+        <select id="walls-axis">
+          <option value="W" selected>ширина</option>
+          <option value="H">высота</option>
+        </select>
+        <label for="walls-variant">Стенки в предикторе</label>
+        <select id="walls-variant">
+          <option value="vis" selected>видны</option>
+          <option value="hid">скрыты</option>
+        </select>
+        <label for="walls-span">Размер поля</label>
+        <select id="walls-span">
+          <option value="12">12 — экстраполяция</option>
+          <option value="20" selected>20 — внутри диапазона</option>
+          <option value="32">32 — экстраполяция</option>
         </select>
       </div>
       <label for="world">Мир</label>
@@ -224,6 +244,7 @@ const go = document.getElementById("go");
 let frames = [];
 let marks = [];
 let zone = null;
+let walls = null;
 let outcome = null;
 let timer = null;
 let playing = true;
@@ -244,8 +265,11 @@ const CAPTION_NUMERIC = "Вид сбоку, не сверху: верх карт
 const CAPTION_DT = "Вид сбоку, не сверху: верх картинки — верх. Мяч тянет вниз тяжесть 9 px/с², толчок — 240 px/с². Кадр для вас: модель получает пять чисел, положение, скорость в пикселях в секунду и dt, не картинку. Жёлтая стрелка — направление толчка, не путь за этот dt. ";
 const NOTE_PIXEL = "Каждое нажатие берёт новый сид, поэтому та же фраза идёт другим путём. Потолок 20 реальных шагов, поиск 128×8, горизонт 10. На плоском мире latent попадает примерно в 8 случаях из 10. Промах — нормальный исход, не ошибка страницы.";
 const NOTE_DT = "Каждое нажатие берёт новый сид, поэтому та же фраза идёт другим путём. Потолок — 20 шагов выбранного dt, не одна секунда. Поиск 128×8, горизонт 10. Это показ руки B, не замер. Промах — нормальный исход, не ошибка страницы.";
+const NOTE_WALLS = "Каждое нажатие берёт новый сид. Потолок — 20 шагов dt = 1/30, не одна секунда. Поиск 128×8, горизонт 10. Размеры 12 и 32 — экстраполяция. Это показ, не замер. Промах — нормальный исход, не ошибка страницы. Победителя нет.";
 const NOTE_NUMERIC = "Числовая JEPA, сид обучения 0, только плоский мир. В сеть идут четыре числа, не кадр. Поиск мерит положение мяча по зонду. Это не замер пиксельной v4.";
 const NOTE_DT_MODEL = "JEPA с шагом dt, рука B, сид обучения 0. В сеть идут пять чисел, скорость в пикселях в секунду. Физика — новый интегратор, не шаг пиксельного кадра. Поиск мерит положение по зонду. Это не замер.";
+const NOTE_WALLS_MODEL = "JEPA со стенками, протокол диапазона, сид обучения 0. Кодировщик получает пять чисел мяча. Видимый предиктор получает четыре стенки, скрытый их не получает. dt всегда 1/30, этот пункт время не проверяет. Поиск мерит положение по зонду. Это не замер.";
+const CAPTION_WALLS = "Вид сбоку, не сверху: верх картинки — верх. Кадр для вас: кодировщик получает пять чисел мяча, не картинку. Видимый предиктор получает четыре стенки, скрытый их не получает. Светлая рамка — предел центра мяча. ";
 
 function centersOf(n) {
   if (n === 0) return [];
@@ -289,17 +313,36 @@ function gravitySentence(steps) {
 
 function syncModel() {
   const mode = document.getElementById("model").value;
-  const numeric = mode === "numeric" || mode === "numeric-dt";
+  const numeric = mode === "numeric" || mode === "numeric-dt" || mode === "numeric-walls";
   const world = document.getElementById("world");
   for (const opt of world.options) opt.disabled = numeric && opt.value !== "flat";
   if (numeric && world.value !== "flat") world.value = "flat";
   document.getElementById("cost").disabled = numeric;
   const note = document.getElementById("model-note");
   note.hidden = mode === "pixel";
-  note.textContent = mode === "numeric-dt" ? NOTE_DT_MODEL : NOTE_NUMERIC;
+  note.textContent = mode === "numeric-walls" ? NOTE_WALLS_MODEL
+    : mode === "numeric-dt" ? NOTE_DT_MODEL : NOTE_NUMERIC;
   document.getElementById("dt-row").hidden = mode !== "numeric-dt";
-  document.getElementById("run-note").textContent = mode === "numeric-dt" ? NOTE_DT : NOTE_PIXEL;
+  document.getElementById("walls-row").hidden = mode !== "numeric-walls";
+  document.getElementById("run-note").textContent = mode === "numeric-walls" ? NOTE_WALLS
+    : mode === "numeric-dt" ? NOTE_DT : NOTE_PIXEL;
   syncKnobs();
+}
+
+function wallsSentence() {
+  const axis = document.getElementById("walls-axis").value;
+  const span = document.getElementById("walls-span").value;
+  const variant = document.getElementById("walls-variant").value;
+  const see = variant === "vis"
+    ? "Сейчас стенки видны предиктору."
+    : "Сейчас предиктор стенок не получает.";
+  const axisText = axis === "W"
+    ? "Меняется ширина, верх и низ остаются 5 и 58."
+    : "Меняется высота, лево и право остаются 5 и 58.";
+  let size = "Размер 20 внутри отрезка от 16 до 24, не включая 24.";
+  if (span === "12") size = "Размер 12 — экстраполяция, 3/4 от края 16.";
+  if (span === "32") size = "Размер 32 — экстраполяция, 4/3 от края 24.";
+  return see + " " + axisText + " " + size + " Протокол диапазона, сид обучения 0. dt = 1/30, этот пункт время не проверяет. Это показ, не замер.";
 }
 
 function dtSentence() {
@@ -332,8 +375,12 @@ function syncKnobs() {
   const zoneWarn = document.getElementById("zone-warn");
   zoneWarn.hidden = !floor || zones.length === 0;
   zoneWarn.textContent = zones.length ? "Холм заходит в зоны: " + zones.join(", ") + "." : "";
-  const head = mode === "numeric-dt" ? CAPTION_DT : (numeric ? CAPTION_NUMERIC : CAPTION_PIXEL);
-  const tail = mode === "numeric-dt" ? dtSentence() : gravitySentence(floor ? gs : 3);
+  const head = mode === "numeric-walls" ? CAPTION_WALLS
+    : mode === "numeric-dt" ? CAPTION_DT
+    : (numeric ? CAPTION_NUMERIC : CAPTION_PIXEL);
+  const tail = mode === "numeric-walls" ? wallsSentence()
+    : mode === "numeric-dt" ? dtSentence()
+    : gravitySentence(floor ? gs : 3);
   document.getElementById("caption").textContent = head + tail;
 }
 
@@ -394,6 +441,12 @@ function draw(i) {
   ctx.fillStyle = "#111";
   ctx.fillRect(0, 0, 384, 384);
   if (frames[i]) ctx.drawImage(frames[i], 0, 0);
+  if (walls) {
+    const left = walls[0], right = walls[1], top = walls[2], bottom = walls[3];
+    ctx.strokeStyle = "#e8e8e8";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(left * SCALE, top * SCALE, (right - left) * SCALE, (bottom - top) * SCALE);
+  }
   if (zone) {
     const half = 8;
     ctx.strokeStyle = atEnd && outcome === "ok" ? "#4da3ff"
@@ -492,6 +545,9 @@ async function run() {
         cost: document.getElementById("cost").value,
         model: document.getElementById("model").value,
         dt: document.getElementById("dt").value,
+        axis: document.getElementById("walls-axis").value,
+        walls_variant: document.getElementById("walls-variant").value,
+        span: Number(document.getElementById("walls-span").value),
         world: document.getElementById("world").value,
         bump_h: Number(document.getElementById("bump-h").value),
         bump_n: Number(document.getElementById("bump-n").value),
@@ -507,6 +563,7 @@ async function run() {
       return img;
     }));
     zone = data.center;
+    walls = data.walls || null;
     marks = data.marks || [];
     outcome = data.success ? "ok" : "bad";
     scrub.max = String(Math.max(0, frames.length - 1));
@@ -539,6 +596,9 @@ async function run() {
 document.getElementById("go").addEventListener("click", run);
 document.getElementById("model").addEventListener("change", syncModel);
 document.getElementById("dt").addEventListener("change", syncKnobs);
+["walls-axis", "walls-variant", "walls-span"].forEach((id) => {
+  document.getElementById(id).addEventListener("change", syncKnobs);
+});
 document.getElementById("world").addEventListener("change", syncKnobs);
 ["bump-h", "bump-n", "g-steps"].forEach((id) => {
   document.getElementById(id).addEventListener("input", syncKnobs);
@@ -666,8 +726,41 @@ def _dt_report(res: dict) -> str:
     )
 
 
+def _walls_report(res: dict) -> str:
+    status = "цель достигнута" if res["success"] else "промах"
+    xy = res["final_pos"]
+    see = ("предиктор получает стенки" if res["walls_variant"] == "vis"
+           else "предиктор стенок не получает")
+    extra = ""
+    if res["span"] == 12:
+        extra = " Размер 12 — экстраполяция: 3/4 от края 16."
+    elif res["span"] == 32:
+        extra = " Размер 32 — экстраполяция: 4/3 от края 24."
+    outside = " Цель недостижима: зона вне стенок." if res["zone_outside"] else ""
+    return (
+        f"мяч в ({xy[0]:.0f}, {xy[1]:.0f}), {status}. "
+        f"JEPA со стенками, протокол диапазона, сид обучения 0, ось {res['axis']}, "
+        f"размер {res['span']}. {see}. dt = 1/30, этот показ время не проверяет. Это не замер."
+        + extra + outside
+    )
+
+
+def _walls_fields(data: dict):
+    axis = data.get("axis", "W")
+    variant = data.get("walls_variant", "vis")
+    span = 20 if "span" not in data or data.get("span") is None else data.get("span")
+    if axis not in ("W", "H"):
+        raise ValueError("axis: W или H")
+    if variant not in ("vis", "hid"):
+        raise ValueError("walls_variant: vis или hid")
+    if isinstance(span, bool) or not isinstance(span, int) or span not in (12, 20, 32):
+        raise ValueError("span: 12, 20 или 32")
+    return axis, variant, span
+
+
 def run_phrase(text: str, seed: int, cost: str, world: str, knobs=None,
-               model: str = "pixel", dt_key: str = "1/30") -> dict:
+               model: str = "pixel", dt_key: str = "1/30",
+               axis: str = "W", walls_variant: str = "vis", span: int = 20) -> dict:
     zone = find_zone(text)
     if zone is None:
         names = ", ".join(z["name"] for z in ZONES)
@@ -736,6 +829,44 @@ def run_phrase(text: str, seed: int, cost: str, world: str, knobs=None,
             "train_seed": 0,
             "arm": "B",
             "dt": res["dt"],
+            "frames": [png_b64(fr) for fr in frames],
+        }
+    if model == "numeric-walls":
+        if world != "flat":
+            raise ValueError("Модель стенок не ведёт пиксельные миры.")
+        with LOCK:
+            with torch.no_grad():
+                res = execute_walls(
+                    zone, seed=seed, axis=axis, variant=walls_variant, span=span,
+                    horizon=10, max_steps=20)
+                frames = res.pop("frames")
+                ball = res.pop("ball", None)
+        think_ms = int(round(sum(s["plan_time"] for s in res["steps"]) * 1000))
+        xy = res["final_pos"]
+        return {
+            "zone": zone,
+            "zone_name": res["zone_name"],
+            "center": list(ZONE_CENTERS[zone]),
+            "half": ZONE_HALF,
+            "success": res["success"],
+            "steps_used": res["steps_used"],
+            "miss_px": res["miss_px"],
+            "final_pos": xy,
+            "think_ms": think_ms,
+            "report": _walls_report(res),
+            "steps": res["steps"],
+            "marks": frame_marks(frames, res["steps"], ball),
+            "world": world,
+            "model": "numeric-walls",
+            "seed": seed,
+            "train_seed": 0,
+            "protocol": "range",
+            "axis": res["axis"],
+            "walls_variant": res["walls_variant"],
+            "span": res["span"],
+            "walls": res["walls"],
+            "zone_outside": res["zone_outside"],
+            "dt": "1/30",
             "frames": [png_b64(fr) for fr in frames],
         }
     weight = 1.0 if cost == "mixed" else 0.0
@@ -828,11 +959,14 @@ class Handler(BaseHTTPRequestHandler):
             cost = data.get("cost", "latent")
             world = data.get("world", "flat")
             model_name = data.get("model", "pixel")
-            if model_name not in ("pixel", "numeric", "numeric-dt"):
-                raise ValueError("model: pixel, numeric или numeric-dt")
+            if model_name not in ("pixel", "numeric", "numeric-dt", "numeric-walls"):
+                raise ValueError("model: pixel, numeric, numeric-dt или numeric-walls")
             dt_key = data.get("dt", "1/30")
             if model_name == "numeric-dt" and dt_key not in ("1/60", "1/30", "1/15"):
                 raise ValueError("dt: 1/60, 1/30 или 1/15")
+            axis, walls_variant, span = ("W", "vis", 20)
+            if model_name == "numeric-walls":
+                axis, walls_variant, span = _walls_fields(data)
             if cost not in ("latent", "mixed"):
                 raise ValueError("cost: latent или mixed")
             if world not in TAGS:
@@ -843,8 +977,12 @@ class Handler(BaseHTTPRequestHandler):
                 raise ValueError("Числовая модель училась только на плоском мире.")
             if model_name == "numeric-dt" and world != "flat":
                 raise ValueError("Модель с шагом dt не ведёт пиксельные миры.")
+            if model_name == "numeric-walls" and world != "flat":
+                raise ValueError("Модель стенок не ведёт пиксельные миры.")
             knobs = floor_request(data) if world == "floor" else None
-            payload = run_phrase(text, seed, cost, world, knobs, model_name, dt_key)
+            payload = run_phrase(
+                text, seed, cost, world, knobs, model_name, dt_key,
+                axis, walls_variant, span)
             raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
             self._send(200, raw, "application/json; charset=utf-8")
         except ValueError as exc:

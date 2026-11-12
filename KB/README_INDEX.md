@@ -36,6 +36,7 @@ python chat.py --tag v4
 | [README_report_2.md](README_report_2.md) | **Отчёт 2 для руководства** — четыре усложнения полигона, без техники |
 | [README_report_3.md](README_report_3.md) | **Отчёт 3 для руководства** — на странице виден шаг времени, без техники |
 | [README_DT_DEMO.md](README_DT_DEMO.md) | Техническая заметка показа: одна сеть с явным `dt`, не замер |
+| [README_WALLS.md](README_WALLS.md) | Стенки как параметр мира: 24 сети, раскатка, без победителя |
 | [README_WORLDS.md](README_WORLDS.md) | Четыре мира v5: пробуксовка, помехи, два мяча, бугры. Ярлыки на 90 эпизодах |
 
 ### 2. Быстрый поиск по темам
@@ -57,6 +58,7 @@ python chat.py --tag v4
 | Как поменять физику мяча | [README_DEV.md](README_DEV.md) → «Эксперименты» |
 | Что показать начальству | [README_report.md](README_report.md) — первый отчёт; [README_report_2.md](README_report_2.md) — четыре усложнения; [README_report_3.md](README_report_3.md) — шаг времени на странице |
 | Где описан показ сети с явным dt | [README_DT_DEMO.md](README_DT_DEMO.md) |
+| Где стенки вынесены в параметр мира | [README_WALLS.md](README_WALLS.md) |
 | Где план держится на пробуксовке, помехах, втором мяче и буграх | [README_WORLDS.md](README_WORLDS.md) |
 
 ## Состав репозитория
@@ -70,8 +72,9 @@ python chat.py --tag v4
 | `plan.py` | CEM в латенте + MPC, `--cost latent\|mixed` |
 | `eval.py` | успех, время, корреляция, сетка зон, пиксельный baseline |
 | `chat.py` | фраза → план → отчёт. Дефолт стоимости — `latent`, потолок 20 шагов |
-| `demo_ui.py` | страница проверки на `:8765`, POST `/api/run`; модели `pixel`, `numeric`, `numeric-dt` |
+| `demo_ui.py` | страница проверки на `:8765`, POST `/api/run`; модели `pixel`, `numeric`, `numeric-dt`, `numeric-walls` |
 | `numeric_dt/` | интегратор и JEPA с явным `dt`; на странице обучена только рука B, сид 0 |
+| `numeric_walls/` | JEPA со стенками как параметром мира; на странице протокол диапазона, сид 0 |
 | `_check_numeric_dt.py` | контрольные сдвиги нового интегратора |
 | `imagine.py` | раскатка архивного эксперимента v0.2 |
 | `AGENTS.md` | правила работы ИИ-агентов в проекте |
