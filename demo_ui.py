@@ -26,6 +26,7 @@ from data import (
 )
 from models import load_model, world_of
 from plan import load_probe, execute
+from numeric.plan import execute as execute_numeric
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 VIEW = 384  # 64 * 6, как в глазах, не в поиске
@@ -158,6 +159,12 @@ PAGE = """<!DOCTYPE html>
       <textarea id="phrase">мяч в верхний левый угол</textarea>
       <label>Зона</label>
       <div class="zones" id="zones"></div>
+      <label for="model">Модель</label>
+      <select id="model">
+        <option value="pixel" selected>пиксельная</option>
+        <option value="numeric">числовая</option>
+      </select>
+      <p class="knob-note" id="model-note" hidden>Числовая JEPA, сид обучения 0, только плоский мир. В сеть идут четыре числа, не кадр. Поиск мерит положение мяча по зонду. Это не замер пиксельной v4.</p>
       <label for="world">Мир</label>
       <select id="world">
         <option value="flat" selected>плоский</option>
@@ -179,8 +186,8 @@ PAGE = """<!DOCTYPE html>
       </div>
       <div class="row">
         <div>
-          <label for="seed">Стартовый сид</label>
-          <input id="seed" type="number" value="1" min="0" step="1">
+          <label for="seed">Сид прогона</label>
+          <input id="seed" type="text" value="" readonly>
         </div>
         <div>
           <label for="cost">Стоимость плана</label>
@@ -192,7 +199,7 @@ PAGE = """<!DOCTYPE html>
       </div>
       <button class="go" id="go" type="button">Довести мяч</button>
       <div class="report" id="report">Нажмите кнопку или выберите зону. Один прогон — до пары секунд на CPU.</div>
-      <p class="note">Потолок 20 реальных шагов, поиск 128×8, горизонт 10. На плоском мире latent попадает примерно в 8 случаях из 10. Промах — нормальный исход, не ошибка страницы.</p>
+      <p class="note">Каждое нажатие берёт новый сид, поэтому та же фраза идёт другим путём. Потолок 20 реальных шагов, поиск 128×8, горизонт 10. На плоском мире latent попадает примерно в 8 случаях из 10. Промах — нормальный исход, не ошибка страницы.</p>
     </div>
   </div>
 </main>
@@ -222,7 +229,8 @@ const ZONE_TABLE = [
   ["нижний центр", 32, 50],
   ["нижний правый", 50, 50]
 ];
-const CAPTION_HEAD = "Вид сбоку, не сверху: верх картинки — верх. Мяч тянет вниз слабая тяжесть, стены его отталкивают. Кадр — тот, который получает модель. Жёлтая стрелка — выбранный толчок в масштабе поля, без подмены пробуксовкой. Прямой короче косого, «на месте» стрелки не даёт. ";
+const CAPTION_PIXEL = "Вид сбоку, не сверху: верх картинки — верх. Мяч тянет вниз слабая тяжесть, стены его отталкивают. Кадр — тот, который получает модель. Жёлтая стрелка — выбранный толчок в масштабе поля, без подмены пробуксовкой. Прямой короче косого, «на месте» стрелки не даёт. ";
+const CAPTION_NUMERIC = "Вид сбоку, не сверху: верх картинки — верх. Мяч тянет вниз слабая тяжесть, стены его отталкивают. Кадр для вас: числовая модель получает четыре числа, не картинку. Жёлтая стрелка — выбранный толчок в масштабе поля. Прямой короче косого, «на месте» стрелки не даёт. ";
 
 function centersOf(n) {
   if (n === 0) return [];
@@ -264,7 +272,18 @@ function gravitySentence(steps) {
   return text + ".";
 }
 
+function syncModel() {
+  const numeric = document.getElementById("model").value === "numeric";
+  const world = document.getElementById("world");
+  for (const opt of world.options) opt.disabled = numeric && opt.value !== "flat";
+  if (numeric && world.value !== "flat") world.value = "flat";
+  document.getElementById("cost").disabled = numeric;
+  document.getElementById("model-note").hidden = !numeric;
+  syncKnobs();
+}
+
 function syncKnobs() {
+  const numeric = document.getElementById("model").value === "numeric";
   const floor = document.getElementById("world").value === "floor";
   document.getElementById("floor-knobs").hidden = !floor;
   const h = Number(document.getElementById("bump-h").value);
@@ -285,7 +304,8 @@ function syncKnobs() {
   const zoneWarn = document.getElementById("zone-warn");
   zoneWarn.hidden = !floor || zones.length === 0;
   zoneWarn.textContent = zones.length ? "Холм заходит в зоны: " + zones.join(", ") + "." : "";
-  document.getElementById("caption").textContent = CAPTION_HEAD + gravitySentence(floor ? gs : 3);
+  const head = numeric ? CAPTION_NUMERIC : CAPTION_PIXEL;
+  document.getElementById("caption").textContent = head + gravitySentence(floor ? gs : 3);
 }
 
 function drawArrow(x, y, dx, dy) {
@@ -311,10 +331,10 @@ function drawArrow(x, y, dx, dy) {
   ctx.fill();
 }
 
-function drawTrajectory() {
+function drawTrajectory(color) {
   if (marks.length < 2) return;
-  ctx.strokeStyle = "#4da3ff";
-  ctx.fillStyle = "#4da3ff";
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
   ctx.lineWidth = 2.5;
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
@@ -353,12 +373,12 @@ function draw(i) {
     ctx.lineWidth = 3;
     ctx.strokeRect((zone[0] - half) * SCALE, (zone[1] - half) * SCALE, half * 2 * SCALE, half * 2 * SCALE);
   }
-  if (atEnd && outcome === "ok") {
-    drawTrajectory();
+  if (atEnd && outcome) {
+    drawTrajectory(outcome === "ok" ? "#4da3ff" : "#ff5a5a");
     drawPushVectors();
   }
   const m = marks[i];
-  if (m && !(atEnd && outcome === "ok")) drawArrow(m.x * SCALE, m.y * SCALE, m.push[0] * SCALE, m.push[1] * SCALE);
+  if (m && !(atEnd && outcome)) drawArrow(m.x * SCALE, m.y * SCALE, m.push[0] * SCALE, m.push[1] * SCALE);
   frameLabel.textContent = "кадр " + i + (frames.length ? " / " + (frames.length - 1) : "");
   scrub.value = String(i);
 }
@@ -417,8 +437,20 @@ function esc(s) {
   return String(s).replace(/[&<>]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 }
 
+function freshSeed() {
+  const el = document.getElementById("seed");
+  const prev = el.value;
+  let n;
+  do {
+    n = Math.floor(Math.random() * 1000000000);
+  } while (String(n) === prev);
+  el.value = String(n);
+  return n;
+}
+
 async function run() {
   const text = document.getElementById("phrase").value.trim();
+  const seed = freshSeed();
   go.disabled = true;
   report.textContent = "Перебирает толчки в латенте…";
   try {
@@ -427,8 +459,9 @@ async function run() {
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({
         text,
-        seed: Number(document.getElementById("seed").value),
+        seed,
         cost: document.getElementById("cost").value,
+        model: document.getElementById("model").value,
         world: document.getElementById("world").value,
         bump_h: Number(document.getElementById("bump-h").value),
         bump_n: Number(document.getElementById("bump-n").value),
@@ -458,7 +491,7 @@ async function run() {
       " → (" + s.pos[0] + ", " + s.pos[1] + "), " + Math.round(s.plan_time * 1000) + " мс</li>"
     ).join("");
     report.innerHTML =
-      "<div>фраза → зона «" + esc(data.zone_name) + "» (" + data.center[0] + ", " + data.center[1] + ")</div>" +
+      "<div>фраза → зона «" + esc(data.zone_name) + "» (" + data.center[0] + ", " + data.center[1] + "), сид " + esc(data.seed) + "</div>" +
       "<div><strong class='" + klass + "'>" + head + "</strong> за " + data.steps_used +
       " шагов, до центра " + data.miss_px + " px. Поиск в сумме " + data.think_ms + " мс.</div>" +
       "<div>" + esc(data.report) + "</div>" +
@@ -474,11 +507,12 @@ async function run() {
 }
 
 document.getElementById("go").addEventListener("click", run);
+document.getElementById("model").addEventListener("change", syncModel);
 document.getElementById("world").addEventListener("change", syncKnobs);
 ["bump-h", "bump-n", "g-steps"].forEach((id) => {
   document.getElementById(id).addEventListener("input", syncKnobs);
 });
-syncKnobs();
+syncModel();
 loadZones().catch((err) => { report.textContent = String(err); });
 draw(0);
 </script>
@@ -585,11 +619,46 @@ def floor_request(data: dict) -> dict:
     }
 
 
-def run_phrase(text: str, seed: int, cost: str, world: str, knobs=None) -> dict:
+def run_phrase(text: str, seed: int, cost: str, world: str, knobs=None, model: str = "pixel") -> dict:
     zone = find_zone(text)
     if zone is None:
         names = ", ".join(z["name"] for z in ZONES)
         raise ValueError("Не понял цель. Например: «мяч в верхний левый угол». Зоны: " + names)
+    if model == "numeric":
+        if world != "flat":
+            raise ValueError("Числовая модель училась только на плоском мире.")
+        with LOCK:
+            with torch.no_grad():
+                res = execute_numeric(zone, seed=seed, horizon=10, max_steps=20)
+                frames = res.pop("frames")
+                ball = res.pop("ball", None)
+        think_ms = int(round(sum(s["plan_time"] for s in res["steps"]) * 1000))
+        status = "цель достигнута" if res["success"] else "промах"
+        xy = res["final_pos"]
+        return {
+            "zone": zone,
+            "zone_name": res["zone_name"],
+            "center": list(ZONE_CENTERS[zone]),
+            "half": ZONE_HALF,
+            "success": res["success"],
+            "steps_used": res["steps_used"],
+            "miss_px": res["miss_px"],
+            "final_pos": xy,
+            "think_ms": think_ms,
+            "report": (
+                f"мяч в ({xy[0]:.0f}, {xy[1]:.0f}), {status}. "
+                "Числовая JEPA, сид обучения 0. Поиск ведёт мяч по положению из зонда."
+            ),
+            "steps": res["steps"],
+            "marks": frame_marks(frames, res["steps"], ball),
+            "world": world,
+            "model": "numeric",
+            "seed": seed,
+            "train_seed": 0,
+            "gravity_down": GRAVITY,
+            "impulse": IMPULSE,
+            "frames": [png_b64(fr) for fr in frames],
+        }
     weight = 1.0 if cost == "mixed" else 0.0
     model, ema, probe, tag, slip = bundle(world)
     if weight and probe is None:
@@ -631,6 +700,8 @@ def run_phrase(text: str, seed: int, cost: str, world: str, knobs=None) -> dict:
         "world": world,
         "gravity_down": GRAVITY,
         "impulse": IMPULSE,
+        "model": "pixel",
+        "seed": seed,
         "frames": [png_b64(fr) for fr in frames],
     }
     if floor:
@@ -677,14 +748,19 @@ class Handler(BaseHTTPRequestHandler):
             seed = int(data.get("seed", 1))
             cost = data.get("cost", "latent")
             world = data.get("world", "flat")
+            model_name = data.get("model", "pixel")
+            if model_name not in ("pixel", "numeric"):
+                raise ValueError("model: pixel или numeric")
             if cost not in ("latent", "mixed"):
                 raise ValueError("cost: latent или mixed")
             if world not in TAGS:
                 raise ValueError("world: flat, jitter, noise, balls или floor")
             if not text:
                 raise ValueError("пустая фраза")
+            if model_name == "numeric" and world != "flat":
+                raise ValueError("Числовая модель училась только на плоском мире.")
             knobs = floor_request(data) if world == "floor" else None
-            payload = run_phrase(text, seed, cost, world, knobs)
+            payload = run_phrase(text, seed, cost, world, knobs, model_name)
             raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
             self._send(200, raw, "application/json; charset=utf-8")
         except ValueError as exc:
