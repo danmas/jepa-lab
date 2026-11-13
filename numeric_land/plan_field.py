@@ -130,12 +130,17 @@ def _frame(x, y, vx, vy, fuel, grounded, action):
 
 
 def run_episode(seed: int, g: float, models=None, max_steps: int = EPISODE_CAP,
-                horizon: int = HORIZON):
+                horizon: int = HORIZON, start_xy=None):
     """MPC: первое действие плана, затем переплан. Кадры — симулятор большого поля."""
     if models is None:
         models = bundle()
     encoder, predictor, probe = models
-    x, y, vx, vy, _empty = start_and_actions(int(seed), 0)
+    if start_xy is not None:
+        x, y = float(start_xy[0]), float(start_xy[1])
+        vx, vy = 0.0, 0.0
+        _empty = None
+    else:
+        x, y, vx, vy, _empty = start_and_actions(int(seed), 0)
     start_y = float(y)
     fuel = FUEL0
     grounded = False

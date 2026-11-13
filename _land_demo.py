@@ -13,7 +13,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from numeric_land.data import MAX_THRUST
 from numeric_land.field import (
-    EPISODE_CAP, FUEL0, GROUND, PAD_CENTER, outcome as outcome_of,
+    EPISODE_CAP, FIELD_W, FUEL0, GROUND, PAD_CENTER, outcome as outcome_of,
     start_and_actions, step_field as step_raw,
 )
 
@@ -32,9 +32,13 @@ def apply_step(state, action, g):
     return out
 
 
-def start_of(seed, g):
-    """Тот же порядок розыгрыша, что в спеке. g поток не двигает."""
-    x, y, vx, vy, _actions = start_and_actions(int(seed), 0)
+def start_of(seed, g, start_xy=None):
+    """Старт от сида (розыгрыш спеки) либо по выбранной кликом точке (vx=vy=0)."""
+    if start_xy is not None:
+        x, y = float(start_xy[0]), float(start_xy[1])
+        vx, vy = 0.0, 0.0
+    else:
+        x, y, vx, vy, _actions = start_and_actions(int(seed), 0)
     return {
         "x": x, "y": y, "vx": vx, "vy": vy,
         "fuel": FUEL0, "grounded": False, "action": 1, "g": float(g),
@@ -74,8 +78,12 @@ _LIVE = {}
 _LIVE_SEQ = itertools.count(1)
 
 
-def _start_live(seed, g, horizon=HORIZON):
-    x, y, vx, vy, _actions = start_and_actions(int(seed), 0)
+def _start_live(seed, g, horizon=HORIZON, start_xy=None):
+    if start_xy is not None:
+        x, y = float(start_xy[0]), float(start_xy[1])
+        vx, vy = 0.0, 0.0
+    else:
+        x, y, vx, vy, _actions = start_and_actions(int(seed), 0)
     run_id = f"run{next(_LIVE_SEQ)}"
     _LIVE[run_id] = {
         "x": float(x), "y": float(y), "vx": float(vx), "vy": float(vy),
@@ -121,14 +129,15 @@ def _live_plan_step(run_id):
     if len(s["frames"]) > 1200:
         del s["frames"][:-1200]
     return _live_episode(run_id)
-def rollout(seed, g, mode, horizon=HORIZON):
+def rollout(seed, g, mode, horizon=HORIZON, start_xy=None):
     if mode == "plan":
         from numeric_land.plan_field import run_episode
-        episode = run_episode(int(seed), float(g), horizon=int(horizon))
+        episode = run_episode(int(seed), float(g), horizon=int(horizon),
+                              start_xy=start_xy)
         episode["mode"] = "plan"
         episode["horizon"] = int(horizon)
         return episode
-    state = start_of(seed, g)
+    state = start_of(seed, g, start_xy=start_xy)
     frames = [_public(state)]
     for _ in range(EPISODE):
         if state["grounded"]:
@@ -269,8 +278,13 @@ PAGE = """<!DOCTYPE html>
                 </div>
               </div>
               <label for="horizon">Горизонт плана (шагов)</label>
-              <input id="horizon" type="number" min="1" max="450" step="1" value="40" title="На сколько шагов вперёд сеть смотрит, выбирая действие. Больше — дальше видит, но дольше считает.">
-      <button class="go" id="plan" type="button">план сети</button>
+                            <input id="horizon" type="number" min="1" max="450" step="1" value="40" title="На сколько шагов вперёд сеть смотрит, выбирая действие. Больше — дальше видит, но дольше считает.">
+                    <label>Старт по клику на экране</label>
+                    <div class="row">
+                      <button class="go" id="clear-start" type="button">сбросить старт</button>
+                      <span id="start-note" style="align-self:center;font-size:13px;color:var(--muted);">старт от сида (клик по канвасу — поставить точку)</span>
+                    </div>
+                    <button class="go" id="plan" type="button">план сети</button>
             <button class="go" id="live" type="button">живой план (по шагам)</button>
             <button class="go" id="example" type="button">правило в коде</button>
             <button class="go" id="fall" type="button">просто падать</button>
@@ -301,6 +315,7 @@ let frames = [];
 let cursor = 0;
 let playing = false;
 let timer = null;
+let clickStart = null;   // стартовая точка {x, y} по клику, в мировых координатах (canvas)
 
 function gValue() { return Number(document.getElementById("g").value); }
 function seedValue() { return Number(document.getElementById("seed").value); }
@@ -308,6 +323,31 @@ function horizonValue() { return Number(document.getElementById("horizon").value
 
 function wx(x) { return (x - X0) * S; }
 function wy(y) { return (y - Y0) * S; }
+
+// клик по канвасу -> стартовая точка (px -> мировые координаты, vx=vy=0 на сервере)
+canvas.addEventListener("click", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) * (VW / rect.width);
+  const my = (e.clientY - rect.top) * (VH / rect.height);
+  const x = Math.round((X0 + mx / S) * 2) / 2;
+  const y = Math.round((Y0 + my / S) * 2) / 2;
+  clickStart = { x, y };
+  document.getElementById("start-note").textContent =
+    "старт: x " + x + ", y " + y + " (клик — сменить, «сбросить» — к сиду)";
+  if (frames.length) draw(frames[cursor], frames.slice(0, cursor + 1));
+});
+
+function clearStart() {
+  clickStart = null;
+  document.getElementById("start-note").textContent =
+    "старт от сида (клик по канвасу — поставить точку)";
+  if (frames.length) draw(frames[cursor], frames.slice(0, cursor + 1));
+}
+
+function startPayload() {
+  if (clickStart) return {start_x: clickStart.x, start_y: clickStart.y};
+  return {};
+}
 
 function draw(frame, trail) {
   ctx.clearRect(0, 0, VW, VH);
@@ -365,8 +405,22 @@ function draw(frame, trail) {
     ctx.lineTo(x - sx * SHIP, y + frac * SHIP);
     ctx.stroke();
   }
+  if (clickStart) {
+    const csx = wx(clickStart.x);
+    const csy = wy(clickStart.y);
+    ctx.strokeStyle = "#4da3ff";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 3]);
+    ctx.beginPath();
+    ctx.arc(csx, csy, 13, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#4da3ff";
+    ctx.beginPath();
+    ctx.arc(csx, csy, 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
-
 function show(index) {
   if (!frames.length) return;
   cursor = Math.max(0, Math.min(frames.length - 1, index));
@@ -440,7 +494,7 @@ async function runLive() {
     const start = await fetch("/api/live/start", {
           method: "POST",
           headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({g: gValue(), seed: seedValue(), horizon: horizonValue()})
+          body: JSON.stringify({g: gValue(), seed: seedValue(), horizon: horizonValue(), ...startPayload()})
         });
     const startData = await start.json();
     if (!start.ok) { reportBox.textContent = startData.error || "ошибка"; return; }
@@ -486,7 +540,7 @@ async function run(mode) {
     const res = await fetch("/api/run", {
           method: "POST",
           headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({g: gValue(), seed: seedValue(), mode, horizon: horizonValue()})
+          body: JSON.stringify({g: gValue(), seed: seedValue(), mode, horizon: horizonValue(), ...startPayload()})
         });
     const data = await res.json();
     if (!res.ok) { reportBox.textContent = data.error || "ошибка"; return; }
@@ -517,6 +571,7 @@ document.getElementById("plan").onclick = () => run("plan");
 document.getElementById("live").onclick = () => runLive();
 document.getElementById("example").onclick = () => run("example");
 document.getElementById("fall").onclick = () => run("fall");
+document.getElementById("clear-start").onclick = () => clearStart();
 document.getElementById("toggle").onclick = () => playing ? stop() : play();
 document.getElementById("scrub").oninput = (e) => { stop(); show(Number(e.target.value)); };
 const box = document.getElementById("actions");
@@ -557,6 +612,13 @@ class Handler(BaseHTTPRequestHandler):
         try:
             payload = json.loads(raw.decode("utf-8"))
             path = self.path.split("?", 1)[0]
+            start_xy = None
+            if "start_x" in payload and "start_y" in payload:
+                sx = float(payload["start_x"])
+                sy = float(payload["start_y"])
+                if not (0 <= sx <= FIELD_W and 0 < sy < GROUND):
+                    raise ValueError("старт вне поля")
+                start_xy = (sx, sy)
             if path == "/api/run":
                 mode = payload.get("mode", "example")
                 if mode not in ("example", "fall", "plan"):
@@ -567,7 +629,8 @@ class Handler(BaseHTTPRequestHandler):
                 horizon = int(payload.get("horizon", HORIZON))
                 if not 1 <= horizon <= 450:
                     raise ValueError("горизонт вне 1…450")
-                data = rollout(int(payload.get("seed", 0)), g, mode, horizon=horizon)
+                data = rollout(int(payload.get("seed", 0)), g, mode,
+                               horizon=horizon, start_xy=start_xy)
             elif path == "/api/live/start":
                 g = float(payload.get("g", 8))
                 if not 0 < g <= 40:
@@ -575,7 +638,8 @@ class Handler(BaseHTTPRequestHandler):
                 horizon = int(payload.get("horizon", HORIZON))
                 if not 1 <= horizon <= 450:
                     raise ValueError("горизонт вне 1…450")
-                run_id, data = _start_live(int(payload.get("seed", 0)), g, horizon=horizon)
+                run_id, data = _start_live(int(payload.get("seed", 0)), g,
+                                           horizon=horizon, start_xy=start_xy)
                 data["run_id"] = run_id
             elif path == "/api/live/step":
                 run_id = str(payload.get("run_id", ""))
