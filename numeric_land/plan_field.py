@@ -129,7 +129,8 @@ def _frame(x, y, vx, vy, fuel, grounded, action):
     }
 
 
-def run_episode(seed: int, g: float, models=None, max_steps: int = EPISODE_CAP):
+def run_episode(seed: int, g: float, models=None, max_steps: int = EPISODE_CAP,
+                horizon: int = HORIZON):
     """MPC: первое действие плана, затем переплан. Кадры — симулятор большого поля."""
     if models is None:
         models = bundle()
@@ -144,7 +145,8 @@ def run_episode(seed: int, g: float, models=None, max_steps: int = EPISODE_CAP):
         if grounded:
             break
         seq, _cost, elapsed = cem_plan(
-            encoder, predictor, probe, x, y, vx, vy, fuel, g, seed=int(seed) + t)
+            encoder, predictor, probe, x, y, vx, vy, fuel, g,
+            horizon=int(horizon), seed=int(seed) + t)
         plan_s += float(elapsed)
         action = int(seq[0])
         x, y, vx, vy, fuel, grounded = step_field(

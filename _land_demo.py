@@ -17,6 +17,8 @@ from numeric_land.field import (
     start_and_actions, step_field as step_raw,
 )
 
+HORIZON = 40  # дефолт горизонта плана; переопределяется из интерфейса
+
 EPISODE = 450
 
 
@@ -72,13 +74,13 @@ _LIVE = {}
 _LIVE_SEQ = itertools.count(1)
 
 
-def _start_live(seed, g):
+def _start_live(seed, g, horizon=HORIZON):
     x, y, vx, vy, _actions = start_and_actions(int(seed), 0)
     run_id = f"run{next(_LIVE_SEQ)}"
     _LIVE[run_id] = {
         "x": float(x), "y": float(y), "vx": float(vx), "vy": float(vy),
         "fuel": FUEL0, "grounded": False, "g": float(g), "seed": int(seed),
-        "t": 0, "frames": [],
+        "horizon": int(horizon), "t": 0, "frames": [],
     }
     ep = _live_episode(run_id)
     return run_id, ep
@@ -95,7 +97,7 @@ def _live_episode(run_id):
         result = "не сел"
     return {
         "g": s["g"], "seed": s["seed"], "mode": "plan-live",
-        "result": result, "steps": s["t"],
+        "horizon": s["horizon"], "result": result, "steps": s["t"],
         "frame": last, "frames": s["frames"],
     }
 
@@ -109,7 +111,7 @@ def _live_plan_step(run_id):
     encoder, predictor, probe = bundle()
     seq, _cost, _elapsed = cem_plan(
         encoder, predictor, probe, s["x"], s["y"], s["vx"], s["vy"], s["fuel"],
-        s["g"], seed=int(s["seed"]) + s["t"])
+        s["g"], horizon=int(s["horizon"]), seed=int(s["seed"]) + s["t"])
     action = int(seq[0])
     nxt = _public(apply_step(s, action, s["g"]))
     s["x"], s["y"], s["vx"], s["vy"], s["fuel"], s["grounded"] = (
@@ -119,13 +121,12 @@ def _live_plan_step(run_id):
     if len(s["frames"]) > 1200:
         del s["frames"][:-1200]
     return _live_episode(run_id)
-
-
-def rollout(seed, g, mode):
+def rollout(seed, g, mode, horizon=HORIZON):
     if mode == "plan":
         from numeric_land.plan_field import run_episode
-        episode = run_episode(int(seed), float(g))
+        episode = run_episode(int(seed), float(g), horizon=int(horizon))
         episode["mode"] = "plan"
+        episode["horizon"] = int(horizon)
         return episode
     state = start_of(seed, g)
     frames = [_public(state)]
@@ -263,10 +264,12 @@ PAGE = """<!DOCTYPE html>
           <input id="g" type="number" min="2" max="20" step="1" value="8">
         </div>
         <div>
-          <label for="seed">Сид старта</label>
-          <input id="seed" type="number" min="0" max="999999" step="1" value="89000">
-        </div>
-      </div>
+                  <label for="seed">Сид старта</label>
+                  <input id="seed" type="number" min="0" max="999999" step="1" value="89000">
+                </div>
+              </div>
+              <label for="horizon">Горизонт плана (шагов)</label>
+              <input id="horizon" type="number" min="1" max="450" step="1" value="40" title="На сколько шагов вперёд сеть смотрит, выбирая действие. Больше — дальше видит, но дольше считает.">
       <button class="go" id="plan" type="button">план сети</button>
             <button class="go" id="live" type="button">живой план (по шагам)</button>
             <button class="go" id="example" type="button">правило в коде</button>
@@ -301,6 +304,7 @@ let timer = null;
 
 function gValue() { return Number(document.getElementById("g").value); }
 function seedValue() { return Number(document.getElementById("seed").value); }
+function horizonValue() { return Number(document.getElementById("horizon").value); }
 
 function wx(x) { return (x - X0) * S; }
 function wy(y) { return (y - Y0) * S; }
@@ -434,10 +438,10 @@ async function runLive() {
   let runId = null;
   try {
     const start = await fetch("/api/live/start", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({g: gValue(), seed: seedValue()})
-    });
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({g: gValue(), seed: seedValue(), horizon: horizonValue()})
+        });
     const startData = await start.json();
     if (!start.ok) { reportBox.textContent = startData.error || "ошибка"; return; }
     runId = startData.run_id;
@@ -480,10 +484,10 @@ async function run(mode) {
   setBusy(mode, true);
   try {
     const res = await fetch("/api/run", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({g: gValue(), seed: seedValue(), mode})
-    });
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({g: gValue(), seed: seedValue(), mode, horizon: horizonValue()})
+        });
     const data = await res.json();
     if (!res.ok) { reportBox.textContent = data.error || "ошибка"; return; }
     frames = data.frames;
@@ -560,12 +564,18 @@ class Handler(BaseHTTPRequestHandler):
                 g = float(payload.get("g", 8))
                 if not 0 < g <= 40:
                     raise ValueError("g вне 0…40")
-                data = rollout(int(payload.get("seed", 0)), g, mode)
+                horizon = int(payload.get("horizon", HORIZON))
+                if not 1 <= horizon <= 450:
+                    raise ValueError("горизонт вне 1…450")
+                data = rollout(int(payload.get("seed", 0)), g, mode, horizon=horizon)
             elif path == "/api/live/start":
                 g = float(payload.get("g", 8))
                 if not 0 < g <= 40:
                     raise ValueError("g вне 0…40")
-                run_id, data = _start_live(int(payload.get("seed", 0)), g)
+                horizon = int(payload.get("horizon", HORIZON))
+                if not 1 <= horizon <= 450:
+                    raise ValueError("горизонт вне 1…450")
+                run_id, data = _start_live(int(payload.get("seed", 0)), g, horizon=horizon)
                 data["run_id"] = run_id
             elif path == "/api/live/step":
                 run_id = str(payload.get("run_id", ""))
