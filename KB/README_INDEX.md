@@ -60,6 +60,7 @@ python chat.py --tag v4
 | Где описан показ сети с явным dt | [README_DT_DEMO.md](README_DT_DEMO.md) |
 | Где стенки вынесены в параметр мира | [README_WALLS.md](README_WALLS.md) |
 | Где доля поля сравнивается с абсолютным масштабом | [README_SCALE.md](README_SCALE.md) |
+| Где посадка учится без формулы отскока | [README_LAND.md](README_LAND.md) |
 | Где план держится на пробуксовке, помехах, втором мяче и буграх | [README_WORLDS.md](README_WORLDS.md) |
 
 ## Состав репозитория
