@@ -6,12 +6,14 @@
 Физика — step_field. demo_ui.py эта страница не меняет.
 """
 import argparse
+import itertools
 import json
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from numeric_land.data import MAX_THRUST
 from numeric_land.field import (
-    FUEL0, GROUND, PAD_CENTER, outcome as outcome_of,
+    EPISODE_CAP, FUEL0, GROUND, PAD_CENTER, outcome as outcome_of,
     start_and_actions, step_field as step_raw,
 )
 
@@ -62,6 +64,61 @@ def choose_action(state, g):
 
 def outcome(state):
     return outcome_of(state["x"], state["y"], state["vy"], state["grounded"])
+
+
+# --- живой показ: один шаг плана за запрос -----------------------------
+
+_LIVE = {}
+_LIVE_SEQ = itertools.count(1)
+
+
+def _start_live(seed, g):
+    x, y, vx, vy, _actions = start_and_actions(int(seed), 0)
+    run_id = f"run{next(_LIVE_SEQ)}"
+    _LIVE[run_id] = {
+        "x": float(x), "y": float(y), "vx": float(vx), "vy": float(vy),
+        "fuel": FUEL0, "grounded": False, "g": float(g), "seed": int(seed),
+        "t": 0, "frames": [],
+    }
+    ep = _live_episode(run_id)
+    return run_id, ep
+
+
+def _live_episode(run_id):
+    """Собрать ответ из текущего состояния сессии."""
+    s = _LIVE[run_id]
+    last = s["frames"][-1] if s["frames"] else _public(s)
+    result = None
+    if s["grounded"]:
+        result = outcome_of(s["x"], s["y"], s["vy"], True)
+    elif s["t"] >= EPISODE_CAP:
+        result = "не сел"
+    return {
+        "g": s["g"], "seed": s["seed"], "mode": "plan-live",
+        "result": result, "steps": s["t"],
+        "frame": last, "frames": s["frames"],
+    }
+
+
+def _live_plan_step(run_id):
+    """Один шаг CEM: план сети -> первое действие -> интегратор."""
+    s = _LIVE[run_id]
+    if s["grounded"] or s["t"] >= EPISODE_CAP:
+        return _live_episode(run_id)
+    from numeric_land.plan_field import bundle, cem_plan
+    encoder, predictor, probe = bundle()
+    seq, _cost, _elapsed = cem_plan(
+        encoder, predictor, probe, s["x"], s["y"], s["vx"], s["vy"], s["fuel"],
+        s["g"], seed=int(s["seed"]) + s["t"])
+    action = int(seq[0])
+    nxt = _public(apply_step(s, action, s["g"]))
+    s["x"], s["y"], s["vx"], s["vy"], s["fuel"], s["grounded"] = (
+        nxt["x"], nxt["y"], nxt["vx"], nxt["vy"], nxt["fuel"], nxt["grounded"])
+    s["t"] += 1
+    s["frames"].append({**nxt, "action": action})
+    if len(s["frames"]) > 1200:
+        del s["frames"][:-1200]
+    return _live_episode(run_id)
 
 
 def rollout(seed, g, mode):
@@ -211,8 +268,9 @@ PAGE = """<!DOCTYPE html>
         </div>
       </div>
       <button class="go" id="plan" type="button">план сети</button>
-      <button class="go" id="example" type="button">правило в коде</button>
-      <button class="go" id="fall" type="button">просто падать</button>
+            <button class="go" id="live" type="button">живой план (по шагам)</button>
+            <button class="go" id="example" type="button">правило в коде</button>
+            <button class="go" id="fall" type="button">просто падать</button>
       <label>Ручной шаг, три на три</label>
       <div class="actions" id="actions"></div>
       <div class="report" id="report">Старт ещё не построен.</div>
@@ -353,7 +411,7 @@ function setReport(data) {
 }
 
 function setBusy(mode, busy) {
-  for (const id of ["plan", "example", "fall"]) {
+  for (const id of ["plan", "live", "example", "fall"]) {
     const btn = document.getElementById(id);
     btn.disabled = busy;
   }
@@ -364,6 +422,49 @@ function setBusy(mode, busy) {
   } else if (plan.dataset.label) {
     plan.textContent = plan.dataset.label;
     delete plan.dataset.label;
+  }
+}
+
+let liveActive = null;
+
+async function runLive() {
+  stop();
+  const reportBox = document.getElementById("report");
+  setBusy("live", true);
+  let runId = null;
+  try {
+    const start = await fetch("/api/live/start", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({g: gValue(), seed: seedValue()})
+    });
+    const startData = await start.json();
+    if (!start.ok) { reportBox.textContent = startData.error || "ошибка"; return; }
+    runId = startData.run_id;
+    frames = startData.frames.length ? startData.frames : [startData.frame];
+    reportBox.textContent = "живой план — шаг 0";
+    show(0);
+    for (let t = 1; ; t++) {
+      const res = await fetch("/api/live/step", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({run_id: runId})
+      });
+      const data = await res.json();
+      if (!res.ok) { reportBox.textContent = data.error || "ошибка"; break; }
+      frames = data.frames;
+      reportBox.textContent = "живой план — шаг " + data.steps;
+      show(frames.length - 1);
+      if (data.result) {
+        setReport({frames, result: data.result, g: data.g, seed: data.seed});
+        break;
+      }
+    }
+  } catch (e) {
+    reportBox.textContent = "ошибка: " + e;
+  } finally {
+    liveActive = null;
+    setBusy("live", false);
   }
 }
 
@@ -409,6 +510,7 @@ async function manual(action) {
 }
 
 document.getElementById("plan").onclick = () => run("plan");
+document.getElementById("live").onclick = () => runLive();
 document.getElementById("example").onclick = () => run("example");
 document.getElementById("fall").onclick = () => run("fall");
 document.getElementById("toggle").onclick = () => playing ? stop() : play();
@@ -459,6 +561,17 @@ class Handler(BaseHTTPRequestHandler):
                 if not 0 < g <= 40:
                     raise ValueError("g вне 0…40")
                 data = rollout(int(payload.get("seed", 0)), g, mode)
+            elif path == "/api/live/start":
+                g = float(payload.get("g", 8))
+                if not 0 < g <= 40:
+                    raise ValueError("g вне 0…40")
+                run_id, data = _start_live(int(payload.get("seed", 0)), g)
+                data["run_id"] = run_id
+            elif path == "/api/live/step":
+                run_id = str(payload.get("run_id", ""))
+                if run_id not in _LIVE:
+                    raise ValueError("нет такой сессии")
+                data = _live_plan_step(run_id)
             elif path == "/api/step":
                 data = _manual(payload)
             else:
