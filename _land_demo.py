@@ -352,19 +352,46 @@ function setReport(data) {
     + ", топливо " + last.fuel.toFixed(2);
 }
 
+function setBusy(mode, busy) {
+  for (const id of ["plan", "example", "fall"]) {
+    const btn = document.getElementById(id);
+    btn.disabled = busy;
+  }
+  const plan = document.getElementById("plan");
+  if (busy) {
+    plan.dataset.label = plan.textContent;
+    plan.textContent = "план сети — считаю…";
+  } else if (plan.dataset.label) {
+    plan.textContent = plan.dataset.label;
+    delete plan.dataset.label;
+  }
+}
+
 async function run(mode) {
   stop();
-  const res = await fetch("/api/run", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({g: gValue(), seed: seedValue(), mode})
-  });
-  const data = await res.json();
-  if (!res.ok) { document.getElementById("report").textContent = data.error || "ошибка"; return; }
-  frames = data.frames;
-  setReport(data);
-  show(0);
-  play();
+  const reportBox = document.getElementById("report");
+  if (mode === "plan") {
+    reportBox.textContent = "Строю план сети… это может занять до минуты.";
+    reportBox.innerHTML = "<span style='color:#1c1915;'>Строю план сети… это может занять до минуты.</span>";
+  } else {
+    reportBox.textContent = "Считаю…";
+  }
+  setBusy(mode, true);
+  try {
+    const res = await fetch("/api/run", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({g: gValue(), seed: seedValue(), mode})
+    });
+    const data = await res.json();
+    if (!res.ok) { reportBox.textContent = data.error || "ошибка"; return; }
+    frames = data.frames;
+    setReport(data);
+    show(0);
+    play();
+  } finally {
+    setBusy(mode, false);
+  }
 }
 
 async function manual(action) {
