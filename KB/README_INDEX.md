@@ -61,6 +61,7 @@ python chat.py --tag v4
 | Где стенки вынесены в параметр мира | [README_WALLS.md](README_WALLS.md) |
 | Где доля поля сравнивается с абсолютным масштабом | [README_SCALE.md](README_SCALE.md) |
 | Где посадка учится без формулы отскока | [README_LAND.md](README_LAND.md) |
+| Где большое поле посадки и бак 10 | [README_LAND_FIELD.md](README_LAND_FIELD.md) |
 | Где план держится на пробуксовке, помехах, втором мяче и буграх | [README_WORLDS.md](README_WORLDS.md) |
 
 ## Состав репозитория

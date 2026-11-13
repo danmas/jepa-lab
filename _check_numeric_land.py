@@ -135,13 +135,20 @@ def check_tag_and_sources():
     else:
         raise SystemExit("чужой тег прошёл")
     root = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(OUT, "land_range_vis_s0.pt")
+    before = os.stat(path) if os.path.isfile(path) else None
     proc = subprocess.run(
         [sys.executable, "-m", "numeric_land.train", "--tag", "numeric-scale"],
         cwd=root, capture_output=True, text=True)
     if proc.returncode == 0:
         raise SystemExit("чужой тег дошёл до обучения")
-    path = os.path.join(OUT, "land_range_vis_s0.pt")
-    if os.path.isfile(path):
+    after = os.stat(path) if os.path.isfile(path) else None
+    created = before is None and after is not None
+    touched = (
+        before is not None and after is not None
+        and (before.st_mtime_ns, before.st_size) != (after.st_mtime_ns, after.st_size)
+    )
+    if created or touched:
         raise SystemExit("чужой тег записал чекпоинт")
     package = os.path.join(root, "numeric_land")
     for name in os.listdir(package):
