@@ -59,6 +59,7 @@ python chat.py --tag v4
 | Что показать начальству | [README_report.md](README_report.md) — первый отчёт; [README_report_2.md](README_report_2.md) — четыре усложнения; [README_report_3.md](README_report_3.md) — шаг времени на странице |
 | Где описан показ сети с явным dt | [README_DT_DEMO.md](README_DT_DEMO.md) |
 | Где стенки вынесены в параметр мира | [README_WALLS.md](README_WALLS.md) |
+| Где доля поля сравнивается с абсолютным масштабом | [README_SCALE.md](README_SCALE.md) |
 | Где план держится на пробуксовке, помехах, втором мяче и буграх | [README_WORLDS.md](README_WORLDS.md) |
 
 ## Состав репозитория
