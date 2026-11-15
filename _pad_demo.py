@@ -286,6 +286,8 @@ PAGE = """<!DOCTYPE html>
       <label>Ручной шаг, три на три</label>
       <div class="actions" id="actions"></div>
       <div class="report" id="report">Старт ещё не построен.</div>
+      <p id="phase-line" style="margin:6px 0 0;font-size:13px;color:var(--muted);">
+        фаза: —&nbsp;&nbsp;синий = прицел&nbsp;|&nbsp;оранжевый = торможение (высота &lt; 40)</p>
       <p class="note">Мягкая посадка: первое касание в [pad−8, pad+8] и vy&lt;8. Порог 8 — «удар». Замер плана — 30 сидов 94000–94029 на клетку. Ноль мягких — допустимый итог, победителя нет.</p>
     </div>
   </div>
@@ -343,6 +345,10 @@ function draw(frame, trail) {
   for (let y = Y0; y <= GROUND; y += 16) { ctx.moveTo(0, wy(y)); ctx.lineTo(VW, wy(y)); }
   ctx.stroke();
   const groundY = wy(GROUND);
+  // тормозная зона: ниже этой высоты план должен гасить vy
+  const BRAKE_ALT = 40;
+  ctx.strokeStyle = "#e2b340"; ctx.lineWidth = 1; ctx.setLineDash([6, 4]);
+  ctx.beginPath(); ctx.moveTo(0, wy(GROUND - BRAKE_ALT)); ctx.lineTo(VW, wy(GROUND - BRAKE_ALT)); ctx.stroke(); ctx.setLineDash([]);
   ctx.strokeStyle = "#3c4a40"; ctx.lineWidth = 2; ctx.beginPath();
   ctx.moveTo(0, groundY); ctx.lineTo(VW, groundY); ctx.stroke();
   // площадка в текущем центре pad
@@ -359,11 +365,14 @@ function draw(frame, trail) {
   trail.forEach((p, i) => { const c = i === 0 ? "moveTo" : "lineTo"; ctx[c](wx(p.x), wy(p.y)); });
   ctx.stroke();
   // корпус
-  const x = wx(frame.x), y = wy(frame.y);
-  ctx.fillStyle = frame.grounded ? "#f2d48a" : "#f7f1e4";
-  ctx.beginPath(); ctx.moveTo(x, y - SHIP); ctx.lineTo(x - SHIP*0.55, y);
-  ctx.lineTo(x + SHIP*0.55, y); ctx.closePath(); ctx.fill();
+  const h = GROUND - frame.y;
+  const phase = frame.grounded ? "касание" : (h > 40 ? "прицел" : "торможение");
+  const phaseColor = phase === "касание" ? "#f2d48a" : (phase === "прицел" ? "#4da3ff" : "#ff9d3c");
   const a = frame.action | 0, iy = Math.floor(a/3), ix = a % 3;
+    const x = wx(frame.x), y = wy(frame.y);
+  ctx.fillStyle = phaseColor;
+    ctx.beginPath(); ctx.moveTo(x, y - SHIP); ctx.lineTo(x - SHIP*0.55, y);
+    ctx.lineTo(x + SHIP*0.55, y); ctx.closePath(); ctx.fill();
   const sx = ix - 1, frac = [0,0.5,1][iy];
   if (frac > 0 || sx !== 0) {
     ctx.strokeStyle = "#e2b340"; ctx.lineWidth = 3; ctx.beginPath();
@@ -391,7 +400,10 @@ function show(index) {
     "x " + f.x.toFixed(2) + "  y " + f.y.toFixed(2) +
     "  vx " + f.vx.toFixed(2) + "  vy " + f.vy.toFixed(2) +
     "  топливо " + f.fuel.toFixed(2) + "  действие " + NAMES[f.action] +
-    (f.grounded ? "  касание" : "");
+    (f.grounded ? "  касание" : "") + "   фаза: " + (GROUND - f.y > 40 ? "прицел" : "торможение");
+  const ph = f.grounded ? "касание" : (GROUND - f.y > 40 ? "прицел" : "торможение");
+  const phColor = ph === "касание" ? "#1d6b45" : (ph === "прицел" ? "#4da3ff" : "#ff9d3c");
+  document.getElementById("phase-line").innerHTML = 'фаза: <b style="color:' + phColor + '">' + ph + '</b>  синий = прицел | оранжевый = торможение (высота < 40)';
 }
 function stop() { playing = false; if (timer) clearInterval(timer); timer = null;
   document.getElementById("toggle").textContent = "пуск"; }
