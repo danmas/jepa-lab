@@ -65,6 +65,7 @@ python chat.py --tag v4
 | Где площадка — параметр мира | [README_LAND_PAD.md](README_LAND_PAD.md) |
 | Где демо площадки (центр ползунком) | `_pad_demo.py` → http://127.0.0.1:8767 |
 | Диагноз качества посадки (vy vs прицел) | [README_LANDING_DIAGNOSIS.md](README_LANDING_DIAGNOSIS.md) |
+| Где цель — вход предиктора | [README_LAND_GOAL.md](README_LAND_GOAL.md) |
 | Где план держится на пробуксовке, помехах, втором мяче и буграх | [README_WORLDS.md](README_WORLDS.md) |
 ## Состав репозитория
 
