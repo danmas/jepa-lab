@@ -88,20 +88,24 @@ python -m numeric_land.train_field --tag numeric-land-field --only range-vis-0
 
 (это реальный вывод `python chat.py`, промах 9.4 px — в пределах половины зоны 10.7 px)
 
-### Посадка, площадка как параметр окна (`_pad_demo.py`)
+### Посадка, площадка как параметр окна и цель (`_pad_demo.py`)
 
-Демо центра площадки (см. `KB/README_LAND_PAD.md`):
+Демо центра площадки и цели (см. `KB/README_LAND_PAD.md`, `KB/README_LAND_GOAL.md`):
 
 ```bash
 python _pad_demo.py            # http://127.0.0.1:8767
 ```
 
-Центр площадки — ползунок (106…406), сеть видимая/скрытая, план смотрит в текущий центр.
-Кнопки те же: «план сети», «живой план (по шагам)», «правило в коде», «просто падать», ручной шаг.
-Старт — кликом по канвасу. Для плана нужны чекпоинты `out/landp_range_{vis|hid}_s0.pt`:
+Центр площадки — ползунок (106…406). Селектор **сети**: `pad-vis` / `pad-hid` (тройка мира
+`(g/9, 1, pad_x/512)`) и `goal-vis` / `goal-hid` (та же тройка плюс желаемая vy — четвёрка).
+Поле **«желаемая vy»** задаёт цель для сетей `goal`. Кнопки: «план сети», «живой план (по шагам)»,
+«правило в коде», «просто падать», ручной шаг. Старт — кликом по канвасу.
+
+Чекпоинты площадки и цели:
 
 ```bash
-python -m numeric_land.train_pad --tag numeric-land-pad
+python -m numeric_land.train_pad  --tag numeric-land-pad     # out/landp_*
+python -m numeric_land.train_goal --tag numeric-land-goal    # out/landg_*
 ```
 
 ## Эксперимент 2: планирование в латенте (v0.3)

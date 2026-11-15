@@ -1,10 +1,10 @@
-"""Демо площадки как параметра окна (numeric-land-pad).
+"""Демо площадки: сети площадки (numeric-land-pad) и сети цели (numeric-land-goal).
 
     python _pad_demo.py
     открыть http://127.0.0.1:8767
 
 Кодировщик заморожен из out/landf_range_vis_s0.pt. План смотрит в текущий центр.
-Видимый предиктор получает (g/9, 1, pad_x/512), скрытый эту тройку не получает.
+Сеть площадки (pad) видит тройку (g/9, 1, pad_x/512); сеть цели (goal) — ещё и желаемую vy.
 """
 import argparse
 import itertools
@@ -30,14 +30,39 @@ _RIDGE_LAM = 1e-2
 _PROBE_TRAIN = 3072
 
 
+# Семейство сети: площадка (pad, тройка мира) или цель (goal, четвёрка с желаемой vy).
+_FAMILIES = {
+    "pad-vis": ("pad", "vis"),
+    "pad-hid": ("pad", "hid"),
+    "goal-vis": ("goal", "vis"),
+    "goal-hid": ("goal", "hid"),
+}
+_TRAIN_MODULE = {"pad": "pad", "goal": "goal"}
+_TAG = {"pad": "numeric-land-pad", "goal": "numeric-land-goal"}
+
+
+def _parts(variant: str):
+    if variant not in _FAMILIES:
+        raise ValueError("сеть: pad-vis, pad-hid, goal-vis или goal-hid")
+    return _FAMILIES[variant]
+
+
 def _load(variant: str):
-    path = ckpt_path(variant, 0)
+    family, sub = _parts(variant)
+    if family == "pad":
+        from numeric_land.train_pad import ckpt_path as path_of
+        pg = __import__("numeric_land.pad", fromlist=["probe_states"])
+    else:
+        from numeric_land.train_goal import ckpt_path as path_of
+        pg = __import__("numeric_land.goal", fromlist=["probe_states"])
+    tag = _TAG[family]
+    path = path_of(sub, 0)
     if not os.path.isfile(path):
         raise ValueError(
             f"нет {os.path.basename(path)}. Сначала:\n"
-            "python -m numeric_land.train_pad --tag numeric-land-pad")
+            f"python -m numeric_land.train_{_TRAIN_MODULE[family]} --tag {tag}")
     ck = torch.load(path, map_location="cpu", weights_only=False)
-    if ck.get("tag") != "numeric-land-pad" or ck.get("variant") != variant:
+    if ck.get("tag") != tag or ck.get("variant") != sub:
         raise ValueError(path)
     encoder = BallEncoder()
     predictor = LandPredictor(int(ck["n_world"]))
@@ -49,13 +74,13 @@ def _load(variant: str):
     predictor.eval()
     ema.eval()
 
-    states = probe_states()
+    states = pg.probe_states()
     scaled = torch.from_numpy(scale_state(states))
     target = torch.from_numpy(np.array(states, np.float32, copy=True))
     with torch.no_grad():
         z = ema(scaled)
     probe = fit_readout(z[:_PROBE_TRAIN], target[:_PROBE_TRAIN], lam=_RIDGE_LAM)
-    return encoder, predictor, probe, ck["n_world"]
+    return encoder, predictor, probe, int(ck["n_world"])
 
 
 # --- симулятор ------------------------------------------------------------
@@ -90,13 +115,19 @@ def _public(state):
     }
 
 
-def rollout(seed, g, pad, variant, mode, horizon=40, start_xy=None):
+def rollout(seed, g, pad, variant, mode, horizon=40, start_xy=None, desired_vy=0.0):
     enc, pred, probe, _nw = _load(variant)
     models = (enc, pred, probe)
+    family, _sub = _parts(variant)
     if mode == "plan":
-        from numeric_land.plan_pad import run_episode
-        ep = run_episode(int(seed), float(g), float(pad), models,
-                         max_steps=450 if False else 450)
+        if family == "goal":
+            from numeric_land.plan_goal import run_episode
+            ep = run_episode(int(seed), float(g), float(pad), float(desired_vy),
+                             models, max_steps=450)
+            ep["desired_vy"] = float(desired_vy)
+        else:
+            from numeric_land.plan_pad import run_episode
+            ep = run_episode(int(seed), float(g), float(pad), models, max_steps=450)
         ep["mode"] = "plan"
         ep["horizon"] = horizon
         ep["variant"] = variant
@@ -152,12 +183,13 @@ _LIVE = {}
 _LIVE_SEQ = itertools.count(1)
 
 
-def _start_live(seed, g, pad, variant, horizon, start_xy=None):
+def _start_live(seed, g, pad, variant, horizon, start_xy=None, desired_vy=0.0):
     st = start_of(seed, start_xy=start_xy)
     run_id = f"run{next(_LIVE_SEQ)}"
     _LIVE[run_id] = {"x": st["x"], "y": st["y"], "vx": st["vx"], "vy": st["vy"],
                      "fuel": st["fuel"], "grounded": st["grounded"],
                      "g": float(g), "pad": float(pad), "variant": variant,
+                     "desired_vy": float(desired_vy),
                      "seed": int(seed), "horizon": int(horizon),
                      "t": 0, "frames": []}
     return run_id, _live_episode(run_id)
@@ -175,6 +207,7 @@ def _live_episode(run_id):
         result = "не сел"
     return {"g": s["g"], "seed": s["seed"], "pad_x": s["pad"],
             "variant": s["variant"], "mode": "plan-live",
+            "desired_vy": s.get("desired_vy", 0.0),
             "horizon": s["horizon"], "result": result, "steps": s["t"],
             "frame": last, "frames": s["frames"]}
 
@@ -183,11 +216,19 @@ def _live_plan_step(run_id):
     s = _LIVE[run_id]
     if s["grounded"] or s["t"] >= 450:
         return _live_episode(run_id)
-    from numeric_land.plan_pad import cem_plan
+    family, _sub = _parts(s["variant"])
     enc, pred, probe, _nw = _load(s["variant"])
-    seq, _c, _e = cem_plan(
-        enc, pred, probe, s["x"], s["y"], s["vx"], s["vy"], s["fuel"],
-        s["g"], s["pad"], horizon=int(s["horizon"]), seed=int(s["seed"]) + s["t"])
+    if family == "goal":
+        from numeric_land.plan_goal import cem_plan
+        seq, _c, _e = cem_plan(
+            enc, pred, probe, s["x"], s["y"], s["vx"], s["vy"], s["fuel"],
+            s["g"], s["pad"], s.get("desired_vy", 0.0),
+            horizon=int(s["horizon"]), seed=int(s["seed"]) + s["t"])
+    else:
+        from numeric_land.plan_pad import cem_plan
+        seq, _c, _e = cem_plan(
+            enc, pred, probe, s["x"], s["y"], s["vx"], s["vy"], s["fuel"],
+            s["g"], s["pad"], horizon=int(s["horizon"]), seed=int(s["seed"]) + s["t"])
     action = int(seq[0])
     frame = {"x": s["x"], "y": s["y"], "vx": s["vx"], "vy": s["vy"],
              "fuel": s["fuel"], "grounded": s["grounded"]}
@@ -249,7 +290,7 @@ PAGE = """<!DOCTYPE html>
 <body>
 <main>
   <h1>Площадка как параметр окна</h1>
-  <p class="lead">Центр площадки — параметр окна, интегратор его не видит. Единица сети видит тройку мира <code>(g/9, 1, pad_x/512)</code>, скрытая — не видит. «План сети» — CEM на выбранной сети, горизонт 40, потолок 450. «Живой план» — один шаг за запрос. «Правило» — короткое правило в коде. «Падение» тягу не включает. Клик по экрану — точка старта.</p>
+  <p class="lead">Центр площадки — параметр окна, интегратор его не видит. Сеть площадки видит тройку мира <code>(g/9, 1, pad_x/512)</code>, её скрытый близнец — нет. Сеть цели <b>дополнительно</b> видит желаемую скорость посадки <code>desired_vy/120</code> — четвёрку <code>(g/9, 1, pad_x/512, desired_vy/120)</code>; её скрытый близнец тройку и цель не видит. Покрути «желаемую vy» и сравни <b>goal-vis</b> с <b>goal-hid</b>: видимая сеть реагирует на цель, скрытая — нет. «План сети» — CEM, горизонт 40, потолок 450. «Живой план» — один шаг за запрос. Клик по экрану — точка старта.</p>
   <div class="bench">
     <div class="stage">
       <canvas id="view" width="960" height="496"></canvas>
@@ -271,9 +312,13 @@ PAGE = """<!DOCTYPE html>
       <input id="horizon" type="number" min="1" max="450" step="1" value="40">
       <label for="variant">Сеть</label>
       <select id="variant">
-        <option value="vis">видимая (центр виден)</option>
-        <option value="hid" selected>скрытая (центр не виден)</option>
+        <option value="pad-vis">площадка, видимая (тройка мира)</option>
+        <option value="pad-hid" selected>площадка, скрытая</option>
+        <option value="goal-vis">цель, видимая (тройка + желаемая vy)</option>
+        <option value="goal-hid">цель, скрытая (контроль)</option>
       </select>
+      <label for="desired_vy">Желаемая vy при посадке (только для сети цели)</label>
+      <input id="desired_vy" type="number" min="0" max="120" step="1" value="0">
       <label>Старт по клику на экране</label>
       <div class="row">
         <button class="go" id="clear-start" type="button">сбросить старт</button>
@@ -288,7 +333,7 @@ PAGE = """<!DOCTYPE html>
       <div class="report" id="report">Старт ещё не построен.</div>
       <p id="phase-line" style="margin:6px 0 0;font-size:13px;color:var(--muted);">
         фаза: —&nbsp;&nbsp;синий = прицел&nbsp;|&nbsp;оранжевый = торможение (высота &lt; 40)</p>
-      <p class="note">Мягкая посадка: первое касание в [pad−8, pad+8] и vy&lt;8. Порог 8 — «удар». Замер плана — 30 сидов 94000–94029 на клетку. Ноль мягких — допустимый итог, победителя нет.</p>
+      <p class="note">Мягкая посадка: первое касание в [pad−8, pad+8] и vy&lt;8. Порог 8 — «удар». Сети площадки обучены на сидах 94000…, сети цели — на 97000…. Ноль мягких — допустимый итог, победителя нет: у сетей цели выигрыш виден в предсказании (реакция на цель), а не в числе посадок на g=20.</p>
     </div>
   </div>
 </main>
@@ -310,6 +355,7 @@ function gValue() { return Number(document.getElementById("g").value); }
 function seedValue() { return Number(document.getElementById("seed").value); }
 function horizonValue() { return Number(document.getElementById("horizon").value); }
 function variantValue() { return document.getElementById("variant").value; }
+function desiredVyValue() { return Number(document.getElementById("desired_vy").value) || 0; }
 
 function wx(x) { return (x - X0) * S; }
 function wy(y) { return (y - Y0) * S; }
@@ -419,9 +465,11 @@ function setReport(data) {
   const cls = data.result === "мягкая" ? "ok" : "bad";
   const box = document.getElementById("report");
   box.dataset.result = data.result;
+  const goalNote = (data.variant || "").indexOf("goal") === 0
+    ? ", желаемая vy " + (data.desired_vy == null ? 0 : data.desired_vy) : "";
   box.innerHTML = "<strong class='" + cls + "'>" + data.result + "</strong>\\n"
     + "шагов " + (data.frames.length - 1) + ", g " + data.g +
-    ", центр " + data.pad_x + ", " + data.variant + "\\n"
+    ", центр " + data.pad_x + ", сеть " + data.variant + goalNote + "\\n"
     + "финиш x " + last.x.toFixed(2) + ", vy " + last.vy.toFixed(2) +
     ", топливо " + last.fuel.toFixed(2);
 }
@@ -441,7 +489,8 @@ async function run(mode) {
     const res = await fetch("/api/run", {method:"POST",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({g:gValue(), seed:seedValue(), mode,
-        pad:padValue(), variant:variantValue(), horizon:horizonValue(), ...startPayload()})});
+        pad:padValue(), variant:variantValue(), horizon:horizonValue(),
+        desired_vy:desiredVyValue(), ...startPayload()})});
     const data = await res.json();
     if (!res.ok) { reportBox.textContent = data.error || "ошибка"; return; }
     frames = data.frames; runResult = data;
@@ -458,7 +507,8 @@ async function runLive() {
     const start = await fetch("/api/live/start", {method:"POST",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({g:gValue(), seed:seedValue(), pad:padValue(),
-        variant:variantValue(), horizon:horizonValue(), ...startPayload()})});
+        variant:variantValue(), horizon:horizonValue(),
+        desired_vy:desiredVyValue(), ...startPayload()})});
     const startData = await start.json();
     if (!start.ok) { reportBox.textContent = startData.error || "ошибка"; return; }
     runId = startData.run_id;
@@ -483,7 +533,7 @@ async function manual(action) {
   const res = await fetch("/api/step", {method:"POST",
     headers:{"Content-Type":"application/json"},
     body: JSON.stringify({g:gValue(), seed:seedValue(), action, frames,
-      pad:padValue(), variant:variantValue()})});
+      pad:padValue(), variant:variantValue(), desired_vy:desiredVyValue()})});
   const data = await res.json();
   if (!res.ok) { document.getElementById("report").textContent = data.error || "ошибка"; return; }
   frames = data.frames; setReport(data); show(frames.length - 1);
@@ -537,9 +587,12 @@ class Handler(BaseHTTPRequestHandler):
             pad = float(payload.get("pad", 256))
             if not 106 <= pad <= 406:
                 raise ValueError("центр вне 106…406")
-            variant = str(payload.get("variant", "hid"))
-            if variant not in ("vis", "hid"):
-                raise ValueError("вариант: vis или hid")
+            variant = str(payload.get("variant", "pad-hid"))
+            if variant not in _FAMILIES:
+                raise ValueError("сеть: pad-vis, pad-hid, goal-vis или goal-hid")
+            desired_vy = float(payload.get("desired_vy", 0.0))
+            if not 0.0 <= desired_vy <= 120.0:
+                raise ValueError("желаемая vy вне 0…120")
             if path == "/api/run":
                 mode = payload.get("mode", "example")
                 if mode not in ("example", "fall", "plan"):
@@ -551,7 +604,8 @@ class Handler(BaseHTTPRequestHandler):
                 if not 1 <= horizon <= 450:
                     raise ValueError("горизонт вне 1…450")
                 data = rollout(int(payload.get("seed", 0)), g, pad, variant,
-                               mode, horizon=horizon, start_xy=start_xy)
+                               mode, horizon=horizon, start_xy=start_xy,
+                               desired_vy=desired_vy)
             elif path == "/api/live/start":
                 g = float(payload.get("g", 8))
                 if not 0 < g <= 40:
@@ -561,7 +615,7 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError("горизонт вне 1…450")
                 run_id, data = _start_live(int(payload.get("seed", 0)), g, pad,
                                            variant, horizon,
-                                           start_xy=start_xy)
+                                           start_xy=start_xy, desired_vy=desired_vy)
                 data["run_id"] = run_id
             elif path == "/api/live/step":
                 run_id = str(payload.get("run_id", ""))
@@ -569,6 +623,7 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError("нет такой сессии")
                 data = _live_plan_step(run_id)
             elif path == "/api/step":
+                payload.setdefault("desired_vy", desired_vy)
                 data = _manual(payload, pad, variant)
             else:
                 raise ValueError("неизвестный путь")
@@ -600,6 +655,7 @@ def _manual(payload, pad, variant):
     frames = list(frames) + [_public(nxt)]
     return {"g": g, "seed": int(payload.get("seed", 0)), "pad_x": float(pad),
             "variant": variant, "mode": "manual",
+            "desired_vy": float(payload.get("desired_vy", 0.0)),
             "result": outcome_at(nxt["x"], nxt["y"], nxt["vy"],
                                  nxt["grounded"], pad),
             "frames": frames}
