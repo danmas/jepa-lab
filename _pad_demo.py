@@ -23,6 +23,7 @@ from numeric_land.pad import (
     outcome_at, probe_states, same_start,
 )
 from numeric_land.train_pad import OUT, ckpt_path
+from numeric_land import tracks as _tracks
 
 # --- загрузка моделей ----------------------------------------------------
 
@@ -284,6 +285,25 @@ PAGE = """<!DOCTYPE html>
   .report strong.bad { color: var(--bad); }
   .note { color: var(--muted); font-size: 13px; margin-top: 12px; }
   .caption { color: #d9d3c5; font-size: 13px; line-height: 1.4; margin: 10px 2px 0; }
+  .tracks { margin-top: 30px; }
+  .tracks h2 { font-size: 21px; font-weight: 650; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .tr-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: 14px; margin-top: 14px; align-items: start; }
+  .tr-box { background: #111; border-radius: 12px; padding: 10px; min-width: 0; }
+  .tr-box h3 { color: #d9d3c5; font-size: 13px; font-weight: 600; margin: 2px 2px 8px; }
+  .tr-box canvas { background: #111; border-radius: 8px; cursor: default; }
+  .tr-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: end;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px 14px; }
+  .tr-bar label { margin: 0; }
+  .tr-bar select, .tr-bar input { width: auto; min-width: 120px; margin: 0; }
+  .tr-bar button { padding: 8px 14px; cursor: pointer; background: #1c1915;
+    color: #f3efe6; font-weight: 650; }
+  .tr-facts { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 12px 2px 0;
+    font-size: 13px; color: var(--muted); }
+  .tr-facts b { color: var(--ink); }
+  .tr-facts .warn { color: #8d2f2f; }
+  @media (max-width: 860px) { .tr-grid { grid-template-columns: 1fr; } }
   @media (max-width: 860px) { .bench { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -336,6 +356,40 @@ PAGE = """<!DOCTYPE html>
       <p class="note">Мягкая посадка: первое касание в [pad−8, pad+8] и vy&lt;8. Порог 8 — «удар». Сети площадки обучены на сидах 94000…, сети цели — на 97000…. Ноль мягких — допустимый итог, победителя нет: у сетей цели выигрыш виден в предсказании (реакция на цель), а не в числе посадок на g=20.</p>
     </div>
   </div>
+  <section class="tracks">
+    <h2>Обучающие треки — что видит модель</h2>
+    <p class="lead">Предиктор учится не на полётах, а на <b>окнах</b>: три случайных толчка подряд,
+      старт всегда у самой земли. Здесь ровно те числа, что уходят в обучение, а не
+      приблизительная картинка. Сравни три вида на одном сиде: окно, полный полёт-источник
+      и траекторию правила посадки.</p>
+    <div class="tr-bar">
+      <div>
+        <label for="tr-kind">Что показать</label>
+        <select id="tr-kind">
+          <option value="window">окно обучения — 3 шага</option>
+          <option value="flight">полный полёт — случайные толчки</option>
+          <option value="expert">траектория правила — посадка</option>
+        </select>
+      </div>
+      <div>
+        <label for="tr-seed">Сид окна</label>
+        <input id="tr-seed" type="number" min="0" max="999999999" step="1" value="100000">
+      </div>
+      <button id="tr-go" type="button">показать трек</button>
+    </div>
+    <div class="tr-grid">
+      <div class="tr-box">
+        <h3>общая картина — поле 512</h3>
+        <canvas id="tr-view" width="960" height="496"></canvas>
+      </div>
+      <div class="tr-box">
+        <h3>увеличение окна — видно, что в нём</h3>
+        <canvas id="tr-zoom" width="520" height="496"></canvas>
+      </div>
+    </div>
+    <div class="tr-facts" id="tr-facts">Нажми «показать трек».</div>
+    <p class="caption" id="tr-caption"></p>
+  </section>
 </main>
 <script>
 const X0 = 160, Y0 = 416;
@@ -549,6 +603,165 @@ document.getElementById("scrub").oninput = (e) => { stop(); show(Number(e.target
 const box = document.getElementById("actions");
 NAMES.forEach((name, i) => { const b = document.createElement("button");
   b.type="button"; b.textContent=name; b.onclick=()=>manual(i); box.appendChild(b); });
+
+// ===== обучающие треки =====
+const TR_VW = (352 - X0) * S, TR_VH = (GROUND - Y0) * S + GROUND_PAD;
+const TR_ZW = 520, TR_ZH = 496;
+const TR_COL = { window: "#4da3ff", flight: "#8a7bd8", expert: "#2f9e62" };
+const TR_TITLE = { window: "окно обучения", flight: "полный полёт (случайные толчки)",
+  expert: "траектория правила — посадка" };
+const TR_WHY = {
+  window: "Это ровно то, что уходит в обучение: четыре состояния и три случайных действия. Старт — у самой земли, до касания окно не доходит, поэтому на общей картинке оно выглядит точкой.",
+  flight: "Полёт-источник: те же случайные толчки, но все 450. Обучение берёт из него только первые три шага. Обрати внимание, куда он уходит.",
+  expert: "Траектория правила посадки: оно садится, и обычно мягко. Такие окна мы добавили в обучение — и мягких посадок всё равно нет."
+};
+const trView = document.getElementById("tr-view");
+const trZoom = document.getElementById("tr-zoom");
+const trCtx = trView.getContext("2d");
+const trCtxZ = trZoom.getContext("2d");
+
+function trBg(c, w, h) { c.clearRect(0, 0, w, h); c.fillStyle = "#14181f"; c.fillRect(0, 0, w, h); }
+
+function trPad(c, pad, mx, my, gy) {
+  const a = mx(pad - 8), b = mx(pad + 8);
+  c.fillStyle = "#2f9e62";
+  c.fillRect(Math.min(a, b), gy - 4, Math.max(2, Math.abs(b - a)), 4);
+  c.strokeStyle = "#8fd0a8"; c.lineWidth = 1; c.setLineDash([4, 3]);
+  c.beginPath();
+  c.moveTo(a, gy - 12); c.lineTo(a, gy);
+  c.moveTo(b, gy - 12); c.lineTo(b, gy);
+  c.stroke(); c.setLineDash([]);
+}
+
+function trArrow(c, x, y, action, len) {
+  if (action == null) return;
+  const iy = Math.floor(action / 3), ix = action % 3;
+  const sx = ix - 1, frac = [0, 0.5, 1][iy];
+  c.strokeStyle = "#e2b340"; c.lineWidth = 2; c.beginPath();
+  c.moveTo(x, y); c.lineTo(x - sx * len, y + frac * len); c.stroke();
+}
+
+// точка выхода за кадр + подпись
+function trExit(c, p, mx, my, w, h, label) {
+  let px = mx(p.x), py = my(p.y);
+  const cx = Math.max(6, Math.min(w - 6, px));
+  const cy = Math.max(14, Math.min(h - 6, py));
+  if (Math.abs(cx - px) < 1 && Math.abs(cy - py) < 1) return;
+  c.fillStyle = "#f2d48a";
+  c.beginPath(); c.arc(cx, cy, 4, 0, Math.PI * 2); c.fill();
+  c.font = "12px Segoe UI"; c.fillText(label, Math.min(cx + 8, w - 210), cy + 4);
+}
+
+function drawTracks(data) {
+  const tr = data.track, ctx = data.context;
+  const col = TR_COL[tr.kind] || "#4da3ff";
+
+  // ---------- общая картина: та же рамка, что у симулятора ----------
+  trBg(trCtx, TR_VW, TR_VH);
+  trCtx.strokeStyle = "#2a3140"; trCtx.lineWidth = 1; trCtx.beginPath();
+  for (let x = 160; x <= 352; x += 16) { trCtx.moveTo(wx(x), 0); trCtx.lineTo(wx(x), wy(GROUND)); }
+  for (let y = Y0; y <= GROUND; y += 16) { trCtx.moveTo(0, wy(y)); trCtx.lineTo(TR_VW, wy(y)); }
+  trCtx.stroke();
+  const gy = wy(GROUND);
+  trCtx.strokeStyle = "#3c4a40"; trCtx.lineWidth = 2;
+  trCtx.beginPath(); trCtx.moveTo(0, gy); trCtx.lineTo(TR_VW, gy); trCtx.stroke();
+  trPad(trCtx, tr.pad_x, wx, wy, gy);
+  if (ctx) {
+    trCtx.strokeStyle = "#6f6688"; trCtx.lineWidth = 1.5;
+    trCtx.setLineDash([5, 4]); trCtx.beginPath();
+    ctx.points.forEach((p, i) => { const f = i === 0 ? "moveTo" : "lineTo"; trCtx[f](wx(p.x), wy(p.y)); });
+    trCtx.stroke(); trCtx.setLineDash([]);
+    trExit(trCtx, ctx.points[ctx.points.length - 1], wx, wy, TR_VW, TR_VH,
+      "полёт уходит вверх за кадр");
+  }
+  trCtx.strokeStyle = col; trCtx.lineWidth = 2.5; trCtx.beginPath();
+  tr.points.forEach((p, i) => { const f = i === 0 ? "moveTo" : "lineTo"; trCtx[f](wx(p.x), wy(p.y)); });
+  trCtx.stroke();
+  const r = tr.n_actions <= 6 ? 4.5 : 2;
+  tr.points.forEach((p) => {
+    trCtx.fillStyle = col;
+    trCtx.beginPath(); trCtx.arc(wx(p.x), wy(p.y), r, 0, Math.PI * 2); trCtx.fill();
+    trArrow(trCtx, wx(p.x), wy(p.y), p.action, 16);
+  });
+  const p0 = tr.points[0];
+  trCtx.fillStyle = "#f2d48a"; trCtx.font = "12px Segoe UI";
+  trCtx.fillText("старт", wx(p0.x) + 9, wy(p0.y) - 7);
+  trCtx.fillStyle = col; trCtx.font = "600 14px Segoe UI";
+  trCtx.fillText(TR_TITLE[tr.kind] || tr.kind, 12, 22);
+  trCtx.fillStyle = "#8a8478"; trCtx.font = "12px Segoe UI";
+  trCtx.fillText("поле 512 · земля внизу · зелёное = площадка", 12, 40);
+
+  // ---------- увеличение: подгоняем под сам трек ----------
+  trBg(trCtxZ, TR_ZW, TR_ZH);
+  const xs = tr.points.map(p => p.x), ys = tr.points.map(p => p.y);
+  let minx = Math.min(...xs), maxx = Math.max(...xs);
+  let miny = Math.min(...ys), maxy = Math.max(...ys);
+  const spread = Math.max(maxx - minx, maxy - miny, 1.0);
+  const m = spread * 0.22;
+  minx -= m; maxx += m; miny -= m; maxy += m;
+  const kz = Math.min(TR_ZW / (maxx - minx), TR_ZH / (maxy - miny));
+  const zox = (TR_ZW - (maxx - minx) * kz) / 2, zoy = (TR_ZH - (maxy - miny) * kz) / 2;
+  const zx = (x) => zox + (x - minx) * kz;
+  const zy = (y) => zoy + (y - miny) * kz;
+  if (zy(GROUND) >= 0 && zy(GROUND) <= TR_ZH) {
+    trCtxZ.strokeStyle = "#3c4a40"; trCtxZ.lineWidth = 2;
+    trCtxZ.beginPath(); trCtxZ.moveTo(0, zy(GROUND)); trCtxZ.lineTo(TR_ZW, zy(GROUND)); trCtxZ.stroke();
+  }
+  trPad(trCtxZ, tr.pad_x, zx, zy, zy(GROUND));
+  trCtxZ.strokeStyle = col; trCtxZ.lineWidth = 2.5; trCtxZ.beginPath();
+  tr.points.forEach((p, i) => { const f = i === 0 ? "moveTo" : "lineTo"; trCtxZ[f](zx(p.x), zy(p.y)); });
+  trCtxZ.stroke();
+  tr.points.forEach((p, i) => {
+    trCtxZ.fillStyle = col;
+    trCtxZ.beginPath(); trCtxZ.arc(zx(p.x), zy(p.y), 5, 0, Math.PI * 2); trCtxZ.fill();
+    trArrow(trCtxZ, zx(p.x), zy(p.y), p.action, Math.min(40, kz * 1.4));
+    trCtxZ.fillStyle = "#d9d3c5"; trCtxZ.font = "11px Segoe UI";
+    trCtxZ.fillText("ш" + i, zx(p.x) + 8, zy(p.y) - 8);
+  });
+  trCtxZ.fillStyle = "#8a8478"; trCtxZ.font = "12px Segoe UI";
+  trCtxZ.fillText("участок " + (maxx - minx).toFixed(2) + " × " + (maxy - miny).toFixed(2) +
+    " единиц · зелёное = площадка", 12, 20);
+}
+
+function trFacts(tr, ctx) {
+  const fall = tr.height_from > 0 ? (100 * tr.height_covered / tr.height_from) : 0;
+  const cells = [
+    "вид: <b>" + (TR_TITLE[tr.kind] || tr.kind) + "</b>",
+    "сид <b>" + tr.seed + "</b>",
+    "g <b>" + tr.g + "</b>",
+    "центр площадки <b>" + tr.pad_x + "</b>",
+    "шагов <b>" + tr.n_actions + "</b> (" + tr.duration_s + " с)",
+    "высота <b>" + tr.height_from + " → " + tr.height_to + "</b>",
+    "покрыто высоты <b class='warn'>" + tr.height_covered + "</b>",
+    "доля падения <b>" + fall.toFixed(2) + "%</b>",
+    "касание: <b>" + (tr.touched ? "да" : "нет") + "</b>",
+    "результат: <b>" + tr.result + "</b>"
+  ];
+  if (ctx) cells.push("полёт-источник: <b>" + ctx.n_actions + "</b> шагов, высота <b>" +
+    ctx.height_from + " → " + ctx.height_to + "</b>");
+  document.getElementById("tr-facts").innerHTML = cells.join(" &nbsp;·&nbsp; ");
+  document.getElementById("tr-caption").textContent = TR_WHY[tr.kind] || "";
+}
+
+async function trLoad() {
+  const seed = Number(document.getElementById("tr-seed").value) || 0;
+  const kind = document.getElementById("tr-kind").value;
+  const box = document.getElementById("tr-facts");
+  box.textContent = "считаю…";
+  try {
+    const res = await fetch("/api/track", {method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({kind, seed})});
+    const data = await res.json();
+    if (!res.ok) { box.textContent = data.error || "ошибка"; return; }
+    drawTracks(data); trFacts(data.track, data.context);
+  } catch (e) { box.textContent = "ошибка: " + e; }
+}
+document.getElementById("tr-go").onclick = trLoad;
+document.getElementById("tr-kind").onchange = trLoad;
+document.getElementById("tr-seed").onchange = trLoad;
+trLoad();
+
 </script>
 </body>
 </html>
@@ -578,6 +791,15 @@ class Handler(BaseHTTPRequestHandler):
         try:
             payload = json.loads(raw.decode("utf-8"))
             path = self.path.split("?", 1)[0]
+            if path == "/api/track":
+                kind = str(payload.get("kind", "window"))
+                seed = int(payload.get("seed", 100000))
+                if not 0 <= seed <= 999_999_999:
+                    raise ValueError("сид вне 0…999999999")
+                body = json.dumps(_tracks.build(kind, seed),
+                                  ensure_ascii=False).encode("utf-8")
+                self._send(200, body, "application/json; charset=utf-8")
+                return
             start_xy = None
             if "start_x" in payload and "start_y" in payload:
                 sx = float(payload["start_x"]); sy = float(payload["start_y"])
