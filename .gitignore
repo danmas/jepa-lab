@@ -14,6 +14,8 @@ __pycache__/
 logs/
 KB/logs/
 pg-mcp.log
+*.log
+rollout_expert.err
 
 # Локальное окружение
 .venv/
