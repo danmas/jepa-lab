@@ -15,7 +15,7 @@
 
 - Пакет `numeric_land/expert.py` — правило посадки, параметризованное целью `(pad_x, desired_vy)` (то же, что кнопка «правило в коде»): пул окон из траекторий правила и смесь `make_batch_mixed` (случайные окна + экспертные, доля `expert_frac`).
 - Пакет `numeric_land/train_expert.py`, тег `numeric-land-expert`, шесть сетей `out/lande_range_{vis|hid}_s{0|1|2}.pt`. Кодировщик/EMA заморожены из `landf_range_vis_s0.pt`. Контроль `python _check_numeric_land_expert.py`.
-- Замер `numeric_land/rollout_expert.py` (метрики: мягкость, `|finish_x − pad_x|`, попадание в окно ±8, «оба»), отчёт `out/numeric_land_expert_rollout.json`. Заметка `KB/README_LAND_EXPERT.md`.
+- Замер `numeric_land/rollout_expert.py` (метрики: мягкость, `|finish_x − pad_x|`, попадание в окно ±8, «оба»), отчёт `out/numeric_land_expert_rollout.json`. Заметка `KB/README_LAND_EXPERT.md`, отчёт для руководства `KB/README_report_4.md`.
 
 ### Результат (отрицательный)
 

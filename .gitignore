@@ -15,7 +15,7 @@ logs/
 KB/logs/
 pg-mcp.log
 *.log
-rollout_expert.err
+*.err
 
 # Локальное окружение
 .venv/
