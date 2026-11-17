@@ -79,7 +79,28 @@ def main():
     if not (MAX_THRUST > G_HI):
         raise SystemExit("тяга не перекрывает всю обученную тяжесть")
 
-    # 7. Прежние контроли живы
+    # 7. Пакет обучения наведению: тег, путь, отказ чужим тегам
+    from numeric_land import train_hover as TH
+    if TH.TAG != "numeric-land-hover":
+        raise SystemExit(TH.TAG)
+    for other in ("numeric-land-goal", "numeric-land-expert", "numeric-land-pad", ""):
+        try:
+            TH.refuse_tag(other)
+        except SystemExit:
+            pass
+        else:
+            raise SystemExit(f"пакет наведения принял чужой тег {other!r}")
+    if not TH.ckpt_path("vis", 0).endswith("landh_range_vis_s0.pt"):
+        raise SystemExit(TH.ckpt_path("vis", 0))
+    for name in ("landg", "lande"):
+        try:
+            TH._save(os.path.join(root, "out", name + "_x.pt"), {})
+        except RuntimeError:
+            pass
+        else:
+            raise SystemExit("пакет наведения пишет чужое имя файла")
+
+    # 8. Прежние контроли живы
     for chk in ("_check_numeric_land_field.py", "_check_numeric_land_pad.py",
                 "_check_numeric_land_goal.py", "_check_numeric_land_expert.py",
                 "_check_numeric_land_tracks.py"):

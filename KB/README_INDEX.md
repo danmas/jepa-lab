@@ -72,6 +72,7 @@ python chat.py --tag v4
 | Где экспертные траектории проверены (посадка в центр) | [README_LAND_EXPERT.md](README_LAND_EXPERT.md) |
 | Где видно, что модель видит при обучении | [README_LAND_TRACKS.md](README_LAND_TRACKS.md) |
 | Где объяснено, почему мягких посадок мало | [README_LAND_HOVER.md](README_LAND_HOVER.md) |
+| Где показано, что точность раскатки не спасает план | [README_LAND_HOVER.md](README_LAND_HOVER.md) → «Дообучение на новом учителе» |
 | Где план держится на пробуксовке, помехах, втором мяче и буграх | [README_WORLDS.md](README_WORLDS.md) |
 ## Состав репозитория
 

@@ -38,14 +38,17 @@ _FAMILIES = {
     "pad-hid": ("pad", "hid"),
     "goal-vis": ("goal", "vis"),
     "goal-hid": ("goal", "hid"),
+    "hover-vis": ("hover", "vis"),
+    "hover-hid": ("hover", "hid"),
 }
-_TRAIN_MODULE = {"pad": "pad", "goal": "goal"}
-_TAG = {"pad": "numeric-land-pad", "goal": "numeric-land-goal"}
+_TRAIN_MODULE = {"pad": "pad", "goal": "goal", "hover": "hover"}
+_TAG = {"pad": "numeric-land-pad", "goal": "numeric-land-goal",
+        "hover": "numeric-land-hover"}
 
 
 def _parts(variant: str):
     if variant not in _FAMILIES:
-        raise ValueError("сеть: pad-vis, pad-hid, goal-vis или goal-hid")
+        raise ValueError("сеть: pad-vis, pad-hid, goal-vis, goal-hid, hover-vis или hover-hid")
     return _FAMILIES[variant]
 
 
@@ -54,6 +57,9 @@ def _load(variant: str):
     if family == "pad":
         from numeric_land.train_pad import ckpt_path as path_of
         pg = __import__("numeric_land.pad", fromlist=["probe_states"])
+    elif family == "hover":
+        from numeric_land.train_hover import ckpt_path as path_of
+        pg = __import__("numeric_land.goal", fromlist=["probe_states"])
     else:
         from numeric_land.train_goal import ckpt_path as path_of
         pg = __import__("numeric_land.goal", fromlist=["probe_states"])
@@ -122,7 +128,7 @@ def rollout(seed, g, pad, variant, mode, horizon=40, start_xy=None, desired_vy=0
     models = (enc, pred, probe)
     family, _sub = _parts(variant)
     if mode == "plan":
-        if family == "goal":
+        if family in ("goal", "hover"):
             from numeric_land.plan_goal import run_episode
             ep = run_episode(int(seed), float(g), float(pad), float(desired_vy),
                              models, max_steps=450)
@@ -223,7 +229,7 @@ def _live_plan_step(run_id):
         return _live_episode(run_id)
     family, _sub = _parts(s["variant"])
     enc, pred, probe, _nw = _load(s["variant"])
-    if family == "goal":
+    if family in ("goal", "hover"):
         from numeric_land.plan_goal import cem_plan
         seq, _c, _e = cem_plan(
             enc, pred, probe, s["x"], s["y"], s["vx"], s["vy"], s["fuel"],
@@ -340,6 +346,8 @@ PAGE = """<!DOCTYPE html>
         <option value="pad-hid" selected>площадка, скрытая</option>
         <option value="goal-vis">цель, видимая (тройка + желаемая vy)</option>
         <option value="goal-hid">цель, скрытая (контроль)</option>
+        <option value="hover-vis">наведение, видимая (окна с наведением)</option>
+        <option value="hover-hid">наведение, скрытая (контроль)</option>
       </select>
       <label for="desired_vy">Желаемая vy при посадке (только для сети цели)</label>
       <input id="desired_vy" type="number" min="0" max="120" step="1" value="0">

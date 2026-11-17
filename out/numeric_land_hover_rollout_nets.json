@@ -1,0 +1,52 @@
+{
+  "families": {
+    "goal": [
+      "landg_range_vis_s0.pt",
+      "numeric-land-goal"
+    ],
+    "expert": [
+      "lande_range_vis_s0.pt",
+      "numeric-land-expert"
+    ],
+    "hover": [
+      "landh_range_vis_s0.pt",
+      "numeric-land-hover"
+    ]
+  },
+  "nets_only": true,
+  "nets": {
+    "goal": {
+      "tag": "numeric-land-goal",
+      "n_world": 4,
+      "r2": {
+        "x": 0.996866,
+        "y": 0.988241,
+        "vx": 0.999223,
+        "vy": 0.99975,
+        "fuel": -0.0675
+      }
+    },
+    "expert": {
+      "tag": "numeric-land-expert",
+      "n_world": 4,
+      "r2": {
+        "x": 0.996866,
+        "y": 0.988241,
+        "vx": 0.999223,
+        "vy": 0.99975,
+        "fuel": -0.0675
+      }
+    },
+    "hover": {
+      "tag": "numeric-land-hover",
+      "n_world": 4,
+      "r2": {
+        "x": 0.996866,
+        "y": 0.988241,
+        "vx": 0.999223,
+        "vy": 0.99975,
+        "fuel": -0.0675
+      }
+    }
+  }
+}
