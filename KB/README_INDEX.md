@@ -40,6 +40,7 @@ python chat.py --tag v4
 | [README_WALLS.md](README_WALLS.md) | Стенки как параметр мира: 24 сети, раскатка, без победителя |
 | [README_WORLDS.md](README_WORLDS.md) | Четыре мира v5: пробуксовка, помехи, два мяча, бугры. Ярлыки на 90 эпизодах |
 | [README_LAND_TRACKS.md](README_LAND_TRACKS.md) | Обучающие треки на демо площадки: окно, полёт, правило — что видит модель |
+| [README_LAND_HOVER.md](README_LAND_HOVER.md) | Почему мягких посадок мало: причина (тяга ни при чём) и правило с наведением |
 
 ### 2. Быстрый поиск по темам
 
@@ -70,6 +71,7 @@ python chat.py --tag v4
 | Где цель — вход предиктора | [README_LAND_GOAL.md](README_LAND_GOAL.md) |
 | Где экспертные траектории проверены (посадка в центр) | [README_LAND_EXPERT.md](README_LAND_EXPERT.md) |
 | Где видно, что модель видит при обучении | [README_LAND_TRACKS.md](README_LAND_TRACKS.md) |
+| Где объяснено, почему мягких посадок мало | [README_LAND_HOVER.md](README_LAND_HOVER.md) |
 | Где план держится на пробуксовке, помехах, втором мяче и буграх | [README_WORLDS.md](README_WORLDS.md) |
 ## Состав репозитория
 

@@ -24,6 +24,7 @@ from numeric_land.pad import (
 )
 from numeric_land.train_pad import OUT, ckpt_path
 from numeric_land import tracks as _tracks
+from numeric_land.expert_hover import hover_action as _hover_action
 
 # --- загрузка моделей ----------------------------------------------------
 
@@ -143,6 +144,9 @@ def rollout(seed, g, pad, variant, mode, horizon=40, start_xy=None, desired_vy=0
             action = 1
         elif mode == "example":
             action = _choose_action(state, g, pad)
+        elif mode == "hover":
+            action = _hover_action((state["x"], state["y"], state["vx"],
+                                    state["vy"], state["fuel"]), g, pad, 0.0)
         else:
             raise ValueError(mode)
         state = apply_step(state, action, g)
@@ -346,6 +350,7 @@ PAGE = """<!DOCTYPE html>
       </div>
       <button class="go" id="plan" type="button">план сети</button>
       <button class="go" id="live" type="button">живой план (по шагам)</button>
+      <button class="go" id="hover" type="button">правило с наведением</button>
       <button class="go" id="example" type="button">правило в коде</button>
       <button class="go" id="fall" type="button">просто падать</button>
       <label>Ручной шаг, три на три</label>
@@ -529,7 +534,7 @@ function setReport(data) {
 }
 
 function setBusy(mode, busy) {
-  for (const id of ["plan","live","example","fall"]) document.getElementById(id).disabled = busy;
+  for (const id of ["plan","live","example","hover","fall"]) document.getElementById(id).disabled = busy;
   const plan = document.getElementById("plan");
   if (busy) { plan.dataset.label = plan.textContent; plan.textContent = "план сети — считаю…"; }
   else if (plan.dataset.label) { plan.textContent = plan.dataset.label; delete plan.dataset.label; }
@@ -596,6 +601,7 @@ async function manual(action) {
 document.getElementById("plan").onclick = () => run("plan");
 document.getElementById("live").onclick = () => runLive();
 document.getElementById("example").onclick = () => run("example");
+document.getElementById("hover").onclick = () => run("hover");
 document.getElementById("fall").onclick = () => run("fall");
 document.getElementById("clear-start").onclick = () => clearStart();
 document.getElementById("toggle").onclick = () => playing ? stop() : play();
@@ -817,8 +823,8 @@ class Handler(BaseHTTPRequestHandler):
                 raise ValueError("желаемая vy вне 0…120")
             if path == "/api/run":
                 mode = payload.get("mode", "example")
-                if mode not in ("example", "fall", "plan"):
-                    raise ValueError("mode: plan, example или fall")
+                if mode not in ("example", "fall", "plan", "hover"):
+                    raise ValueError("mode: plan, example, hover или fall")
                 g = float(payload.get("g", 8))
                 if not 0 < g <= 40:
                     raise ValueError("g вне 0…40")
