@@ -1,13 +1,15 @@
 """Треки: что именно видит модель при обучении.
 
-Кнопка «обучающие треки» на демо площадки. Три вида, все детерминированы сидом —
+Кнопка «обучающие треки» на демо площадки. Четыре вида, все детерминированы сидом —
 это ровно те числа, что уходят в обучение, а не приблизительная картинка.
 
 - ``window`` — окно обучения: TRANSITIONS+1 состояний и TRANSITIONS случайных
   действий. Именно окнами (а не траекториями) кормится предиктор.
 - ``flight`` — полный полёт-источник: те же 450 случайных действий, откуда окно
   вырезано. Нужен, чтобы видеть, какую долю падения составляет окно.
-- ``expert`` — полная траектория правила посадки (см. numeric_land.expert).
+- ``expert`` — полная траектория старого правила посадки (см. numeric_land.expert).
+- ``hover`` — траектория правила с наведением. Тяжесть и цель из сида те же,
+  что у головы режима: учебные сиды 98000…98511.
 
 Окно всегда начинается у земли: x ∈ [240, 272], y ∈ [464, 488] при GROUND = 512.
 Из одного старта окно покрывает доли единицы высоты — поэтому по нему не видно
@@ -16,7 +18,8 @@
 import numpy as np
 
 from numeric_land.data import DT, g_of_window
-from numeric_land.expert import expert_episode, rule_action
+from numeric_land.expert import expert_episode
+from numeric_land.expert_hover import NAV_TOL, hover_episode, hover_mode
 from numeric_land.field import (
     EPISODE_CAP, FUEL0, GROUND, TRANSITIONS, rollout_states, start_and_actions,
     step_field,
@@ -24,7 +27,7 @@ from numeric_land.field import (
 from numeric_land.goal import goal_of_window
 from numeric_land.pad import outcome_at, pad_of_window
 
-KINDS = ("window", "flight", "expert")
+KINDS = ("window", "flight", "expert", "hover")
 
 
 def _pt(x, y, vy, fuel, grounded, action=None):
@@ -127,10 +130,37 @@ def expert_final_window(seed, g=None, pad_x=None, desired_vy=None):
                   grounded)
 
 
+def hover_flight(seed, g=None, pad_x=None, desired_vy=None):
+    """Траектория правила с наведением. Цель и тяжесть — потоки окна, если не заданы.
+
+    Это тот же эпизод, из которого голова режима берёт метки: посадка при
+    ``|pad_x − x| ≤ NAV_TOL``. Кадр касания режима не имеет.
+    """
+    seed = int(seed)
+    gi = float(g_of_window(seed)) if g is None else float(g)
+    pad_i, vy_i = goal_of_window(seed)
+    if pad_x is not None:
+        pad_i = float(pad_x)
+    if desired_vy is not None:
+        vy_i = float(desired_vy)
+    states, actions, grounded = hover_episode(seed, gi, pad_i, vy_i)
+    track = _track("hover", seed, gi, pad_i, vy_i, states, actions, grounded)
+    first = None
+    for i, row in enumerate(states):
+        state = tuple(float(v) for v in row)
+        mode = hover_mode(state, gi, pad_i, vy_i)
+        track["points"][i]["mode"] = mode
+        if mode == "land" and first is None:
+            first = i
+    track["first_land_step"] = first
+    track["nav_tol"] = float(NAV_TOL)
+    return track
+
+
 def build(kind, seed, g=None, pad_x=None, desired_vy=None):
     """Ответ для /api/track: главный трек плюс фон, если он помогает читать."""
     if kind not in KINDS:
-        raise ValueError("вид: window, flight или expert")
+        raise ValueError("вид: window, flight, expert или hover")
     if kind == "window":
         win = random_window(seed, g)
         return {"kind": kind, "seed": int(seed), "track": win,
@@ -138,5 +168,8 @@ def build(kind, seed, g=None, pad_x=None, desired_vy=None):
     if kind == "flight":
         return {"kind": kind, "seed": int(seed),
                 "track": random_flight(seed, g), "context": None}
+    if kind == "hover":
+        return {"kind": kind, "seed": int(seed),
+                "track": hover_flight(seed, g, pad_x, desired_vy), "context": None}
     return {"kind": kind, "seed": int(seed),
             "track": expert_flight(seed, g, pad_x, desired_vy), "context": None}

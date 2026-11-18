@@ -41,51 +41,85 @@ HALF_ALT = 5.0
 HOVER_CAP = 900
 
 
-def hover_action(state, g, pad_x, v_target):
-    """Действие правила с фазой наведения."""
-    x, y, vx, vy, fuel = state
-    if y >= GROUND:
-        return 1
-    height = max(0.0, GROUND - y)
-    if fuel <= 0.0:
-        return 1
+def hover_mode(state, g, pad_x, v_target):
+    """approach, land или None. Тяжесть и v_target на выбор режима не влияют.
+
+    Пусто — земля или пустой бак: правило отдаёт действие 1 и режим не выбирает.
+    Равенство |pad_x − x| = NAV_TOL — это посадка: ветка написана как «строго дальше».
+    """
+    del g, v_target
+    x, y, _vx, _vy, fuel = state
+    if y >= GROUND or fuel <= 0.0:
+        return None
     dx = float(pad_x) - float(x)
     if abs(dx) > NAV_TOL:
-        # --- наведение: держим высоту, идём боком ---
-        # скорость «приехать и остановиться»: v = sqrt(2·a·d), чтобы успеть затормозить.
-        # Потолок задаёт физика шага: за шаг x меняется на ~vx/30, поэтому vx ≤ 40
-        # даёт ход ~1.35 единицы за шаг и не перескакивает цель.
-        v_want = min(NAV_V_MAX, float(np.sqrt(max(0.0, 2.0 * NAV_ACCEL * abs(dx)))))
-        want = float(np.sign(dx)) * v_want
-        if vx < want - NAV_V_BAND:
-            ix = 2
-        elif vx > want + NAV_V_BAND:
-            ix = 0
-        else:
-            ix = 1
-        if vy > 0.6:
-            iy = 2
-        elif vy > -0.2:
-            iy = 2 if height < 60.0 else 1
-        else:
-            iy = 0
+        return "approach"
+    return "land"
+
+
+def _approach_action(x, y, vx, vy, g, pad_x, v_target):
+    """Наведение: держим высоту, идём боком. Тяга и v_target здесь не участвуют."""
+    del g, v_target
+    height = max(0.0, GROUND - y)
+    dx = float(pad_x) - float(x)
+    # Скорость «приехать и остановиться»: v = sqrt(2·a·d), чтобы успеть затормозить.
+    # Потолок задаёт физика шага: за шаг x меняется на ~vx/30, поэтому vx ≤ 40
+    # даёт ход ~1.35 единицы за шаг и не перескакивает цель.
+    v_want = min(NAV_V_MAX, float(np.sqrt(max(0.0, 2.0 * NAV_ACCEL * abs(dx)))))
+    want = float(np.sign(dx)) * v_want
+    if vx < want - NAV_V_BAND:
+        ix = 2
+    elif vx > want + NAV_V_BAND:
+        ix = 0
     else:
-        # --- посадка: спуск с торможением к цели ---
-        want = max(-LAND_VX_CAP, min(LAND_VX_CAP, dx * LAND_VX_GAIN))
-        if vx < want - LAND_VX_BAND:
-            ix = 2
-        elif vx > want + LAND_VX_BAND:
-            ix = 0
-        else:
-            ix = 1
+        ix = 1
+    if vy > 0.6:
+        iy = 2
+    elif vy > -0.2:
+        iy = 2 if height < 60.0 else 1
+    else:
         iy = 0
-        a_full = float(g) - MAX_THRUST
-        pred = vy * vy + 2.0 * a_full * height
-        if pred > v_target * v_target:
-            iy = 2
-        elif pred > (V_TARGET_TAU * v_target) ** 2 and height < HALF_ALT:
-            iy = 1
     return iy * 3 + ix
+
+
+def _land_action(x, y, vx, vy, g, pad_x, v_target):
+    """Посадка: спуск с торможением к целевой скорости."""
+    height = max(0.0, GROUND - y)
+    dx = float(pad_x) - float(x)
+    want = max(-LAND_VX_CAP, min(LAND_VX_CAP, dx * LAND_VX_GAIN))
+    if vx < want - LAND_VX_BAND:
+        ix = 2
+    elif vx > want + LAND_VX_BAND:
+        ix = 0
+    else:
+        ix = 1
+    iy = 0
+    a_full = float(g) - MAX_THRUST
+    pred = vy * vy + 2.0 * a_full * height
+    if pred > v_target * v_target:
+        iy = 2
+    elif pred > (V_TARGET_TAU * v_target) ** 2 and height < HALF_ALT:
+        iy = 1
+    return iy * 3 + ix
+
+
+def hover_action(state, g, pad_x, v_target, mode=None):
+    """Действие правила с фазой наведения.
+
+    mode=None — режим выбирает само правило. Иначе вызывается названная ветка,
+    но только пока правило вообще выбирает режим. На земле и при пустом баке
+    по-прежнему действие 1.
+    """
+    natural = hover_mode(state, g, pad_x, v_target)
+    if natural is None:
+        return 1
+    chosen = natural if mode is None else mode
+    x, y, vx, vy, _fuel = state
+    if chosen == "approach":
+        return _approach_action(x, y, vx, vy, g, pad_x, v_target)
+    if chosen == "land":
+        return _land_action(x, y, vx, vy, g, pad_x, v_target)
+    raise ValueError(chosen)
 
 
 def hover_episode(seed, g, pad_x, v_target, cap=HOVER_CAP):

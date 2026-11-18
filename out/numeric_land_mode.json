@@ -1,0 +1,670 @@
+{
+  "tag": "numeric-land-mode",
+  "threshold": 0.5,
+  "nav_tol": 6.0,
+  "vy_soft": 8.0,
+  "v_target": 6.0,
+  "held_seed0": 98800,
+  "held_n": 128,
+  "loop_seed0": 99000,
+  "loop_n": 30,
+  "pass_g": [
+    2.0,
+    8.0,
+    15.0
+  ],
+  "pass_pads": [
+    256.0,
+    200.0
+  ],
+  "gap_limit": 0.15,
+  "rule_floor": 0.8,
+  "start_99000": {
+    "x": 243.91508751456374,
+    "y": 473.89944623363846
+  },
+  "heads": [
+    {
+      "file": "landm_latent_s0.pt",
+      "kind": "latent",
+      "seed": 0,
+      "seconds": 1.717,
+      "pos_weight": 0.7335072679836004,
+      "loss_last": 0.2729,
+      "land_frac": 0.5872059334801252,
+      "counts_toward_90": true,
+      "tp": 13400,
+      "tn": 9986,
+      "fp": 700,
+      "fn": 1801,
+      "n": 25887,
+      "accuracy": 0.9033878008266698,
+      "precision": 0.950354609929078,
+      "recall": 0.8815209525689099,
+      "f1": 0.914644551380499,
+      "timing": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -43.78125,
+          "median": -40.0,
+          "n": 128
+        },
+        "height": {
+          "mean": 0.07497547592951914,
+          "median": -0.2536224409606973,
+          "n": 128
+        },
+        "dx": {
+          "mean": 22.97036226554232,
+          "median": 10.063950114080484,
+          "n": 128
+        }
+      }
+    },
+    {
+      "file": "landm_latent_s1.pt",
+      "kind": "latent",
+      "seed": 1,
+      "seconds": 1.64,
+      "pos_weight": 0.7335072679836004,
+      "loss_last": 0.27783,
+      "land_frac": 0.5872059334801252,
+      "counts_toward_90": true,
+      "tp": 13344,
+      "tn": 10007,
+      "fp": 679,
+      "fn": 1857,
+      "n": 25887,
+      "accuracy": 0.9020357708502337,
+      "precision": 0.9515795478856165,
+      "recall": 0.8778369844089204,
+      "f1": 0.9132220093074185,
+      "timing": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -42.90625,
+          "median": -37.5,
+          "n": 128
+        },
+        "height": {
+          "mean": 0.06643119156240651,
+          "median": -0.2514908249834491,
+          "n": 128
+        },
+        "dx": {
+          "mean": 22.632668221007734,
+          "median": 8.458650328682054,
+          "n": 128
+        }
+      }
+    },
+    {
+      "file": "landm_latent_s2.pt",
+      "kind": "latent",
+      "seed": 2,
+      "seconds": 1.589,
+      "pos_weight": 0.7335072679836004,
+      "loss_last": 0.27962,
+      "land_frac": 0.5872059334801252,
+      "counts_toward_90": true,
+      "tp": 13335,
+      "tn": 10001,
+      "fp": 685,
+      "fn": 1866,
+      "n": 25887,
+      "accuracy": 0.9014563294317611,
+      "precision": 0.9511412268188303,
+      "recall": 0.8772449180974936,
+      "f1": 0.9126997707128435,
+      "timing": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -42.0625,
+          "median": -36.5,
+          "n": 128
+        },
+        "height": {
+          "mean": 0.06162507080775104,
+          "median": -0.25665401742497806,
+          "n": 128
+        },
+        "dx": {
+          "mean": 22.240541192852675,
+          "median": 7.581936571391992,
+          "n": 128
+        }
+      }
+    },
+    {
+      "file": "landm_state_s0.pt",
+      "kind": "state",
+      "seed": 0,
+      "seconds": 1.508,
+      "pos_weight": 0.7335072679836004,
+      "loss_last": 0.28204,
+      "land_frac": 0.5872059334801252,
+      "counts_toward_90": true,
+      "tp": 12826,
+      "tn": 10483,
+      "fp": 203,
+      "fn": 2375,
+      "n": 25887,
+      "accuracy": 0.9004133348785105,
+      "precision": 0.9844193721697752,
+      "recall": 0.8437602789290178,
+      "f1": 0.9086787105915692,
+      "timing": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -0.7421875,
+          "median": 10.0,
+          "n": 128
+        },
+        "height": {
+          "mean": -0.8058675711927119,
+          "median": -0.5705195899714113,
+          "n": 128
+        },
+        "dx": {
+          "mean": 5.779566684206301,
+          "median": -3.5540085156887358,
+          "n": 128
+        }
+      }
+    },
+    {
+      "file": "landm_state_s1.pt",
+      "kind": "state",
+      "seed": 1,
+      "seconds": 1.452,
+      "pos_weight": 0.7335072679836004,
+      "loss_last": 0.27446,
+      "land_frac": 0.5872059334801252,
+      "counts_toward_90": true,
+      "tp": 12880,
+      "tn": 10482,
+      "fp": 204,
+      "fn": 2321,
+      "n": 25887,
+      "accuracy": 0.9024606945571136,
+      "precision": 0.9844084377866096,
+      "recall": 0.8473126767975792,
+      "f1": 0.910730068941135,
+      "timing": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -3.5078125,
+          "median": 9.5,
+          "n": 128
+        },
+        "height": {
+          "mean": -0.6693833285714526,
+          "median": -0.5377617675847262,
+          "n": 128
+        },
+        "dx": {
+          "mean": 6.897968160203634,
+          "median": -3.438425388920294,
+          "n": 128
+        }
+      }
+    },
+    {
+      "file": "landm_state_s2.pt",
+      "kind": "state",
+      "seed": 2,
+      "seconds": 1.444,
+      "pos_weight": 0.7335072679836004,
+      "loss_last": 0.27189,
+      "land_frac": 0.5872059334801252,
+      "counts_toward_90": true,
+      "tp": 12836,
+      "tn": 10410,
+      "fp": 276,
+      "fn": 2365,
+      "n": 25887,
+      "accuracy": 0.8979796809209256,
+      "precision": 0.9789505796217206,
+      "recall": 0.8444181303861588,
+      "f1": 0.9067212941051813,
+      "timing": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -0.875,
+          "median": 9.0,
+          "n": 128
+        },
+        "height": {
+          "mean": -0.8338629412532002,
+          "median": -0.5295068420896598,
+          "n": 128
+        },
+        "dx": {
+          "mean": 6.075648664790311,
+          "median": -3.3626955217211503,
+          "n": 128
+        }
+      }
+    },
+    {
+      "file": "landm_zblind_s0.pt",
+      "kind": "zblind",
+      "seed": 0,
+      "seconds": 1.53,
+      "pos_weight": 0.7335072679836004,
+      "loss_last": 0.27984,
+      "land_frac": 0.5872059334801252,
+      "counts_toward_90": false,
+      "tp": 13310,
+      "tn": 10010,
+      "fp": 676,
+      "fn": 1891,
+      "n": 25887,
+      "accuracy": 0.9008382585853904,
+      "precision": 0.9516659516659517,
+      "recall": 0.8756002894546412,
+      "f1": 0.9120498852228732,
+      "timing": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -43.1875,
+          "median": -37.5,
+          "n": 128
+        },
+        "height": {
+          "mean": 0.04818006934184638,
+          "median": -0.2674447206098023,
+          "n": 128
+        },
+        "dx": {
+          "mean": 22.92388787800909,
+          "median": 8.458650328682054,
+          "n": 128
+        }
+      }
+    }
+  ],
+  "cells": [
+    {
+      "controller": "rule",
+      "g": 2.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 2.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 20,
+      "crash": 0,
+      "miss": 10,
+      "of": 30
+    },
+    {
+      "controller": "state",
+      "g": 2.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 6,
+      "crash": 0,
+      "miss": 24,
+      "of": 30
+    },
+    {
+      "controller": "rule",
+      "g": 2.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 2.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 2,
+      "crash": 19,
+      "miss": 9,
+      "of": 30
+    },
+    {
+      "controller": "state",
+      "g": 2.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 0,
+      "crash": 9,
+      "miss": 21,
+      "of": 30
+    },
+    {
+      "controller": "rule",
+      "g": 8.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 8.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 20,
+      "crash": 0,
+      "miss": 10,
+      "of": 30
+    },
+    {
+      "controller": "state",
+      "g": 8.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "rule",
+      "g": 8.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 8.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 0,
+      "crash": 21,
+      "miss": 9,
+      "of": 30
+    },
+    {
+      "controller": "state",
+      "g": 8.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 21,
+      "crash": 9,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "rule",
+      "g": 15.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 15.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 20,
+      "crash": 10,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "state",
+      "g": 15.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "rule",
+      "g": 15.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 15.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 0,
+      "crash": 30,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "state",
+      "g": 15.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 21,
+      "crash": 9,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "rule",
+      "g": 2.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 2.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 0,
+      "crash": 20,
+      "miss": 10,
+      "of": 30
+    },
+    {
+      "controller": "state",
+      "g": 2.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 0,
+      "crash": 6,
+      "miss": 24,
+      "of": 30
+    },
+    {
+      "controller": "rule",
+      "g": 8.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 8.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 0,
+      "crash": 20,
+      "miss": 10,
+      "of": 30
+    },
+    {
+      "controller": "state",
+      "g": 8.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 24,
+      "crash": 6,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "rule",
+      "g": 15.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 15.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 0,
+      "crash": 30,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "state",
+      "g": 15.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 18,
+      "crash": 12,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "rule",
+      "g": 20.0,
+      "pad_x": 256.0,
+      "in_pass": false,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 20.0,
+      "pad_x": 256.0,
+      "in_pass": false,
+      "soft": 20,
+      "crash": 10,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "state",
+      "g": 20.0,
+      "pad_x": 256.0,
+      "in_pass": false,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "rule",
+      "g": 20.0,
+      "pad_x": 200.0,
+      "in_pass": false,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 20.0,
+      "pad_x": 200.0,
+      "in_pass": false,
+      "soft": 7,
+      "crash": 23,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "state",
+      "g": 20.0,
+      "pad_x": 200.0,
+      "in_pass": false,
+      "soft": 16,
+      "crash": 14,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "rule",
+      "g": 20.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 24,
+      "crash": 6,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 20.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 0,
+      "crash": 30,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "state",
+      "g": 20.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 6,
+      "crash": 24,
+      "miss": 0,
+      "of": 30
+    }
+  ],
+  "rule_soft_pass": 180,
+  "latent_soft_pass": 62,
+  "state_soft_pass": 108,
+  "pass_n": 180,
+  "grid_ok": true,
+  "gap": 0.6555555555555556,
+  "gap_ok": false
+}

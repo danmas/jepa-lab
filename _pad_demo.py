@@ -123,6 +123,91 @@ def _public(state):
     }
 
 
+_HEADS = {}
+
+
+def _head_bundle(kind, seed):
+    """Голова режима и её замороженный кодировщик. Чужие файлы не открываются."""
+    key = (str(kind), int(seed))
+    if key not in _HEADS:
+        from numeric_land.rollout_mode import _load_head
+        _ck, encoder, _ema, head = _load_head(key[0], key[1])
+        _HEADS[key] = (encoder, head)
+    return _HEADS[key]
+
+
+def head_episode(episode_seed, kind, head_seed):
+    """Один эпизод головы на цели этого сида. CEM нет, порог 0.5 не двигается.
+
+    Тяжесть и цель — те же потоки, что у учебного трека. Голова выбирает ветку
+    правила. Пока правило само не выбирает режим (земля или пустой бак),
+    действие 1 и решение головы не применяется.
+    """
+    from numeric_land.data import g_of_window
+    from numeric_land.expert_hover import HOVER_CAP, hover_action, hover_mode
+    from numeric_land.goal import goal_of_window
+    from numeric_land.mode import THRESHOLD, encode_rows, features_of
+
+    kind = str(kind)
+    head_seed = int(head_seed)
+    episode_seed = int(episode_seed)
+    encoder, head = _head_bundle(kind, head_seed)
+    g = float(g_of_window(episode_seed))
+    pad_x, v_target = goal_of_window(episode_seed)
+    state = start_of(episode_seed)
+    frames = []
+    first_head = None
+    first_teacher = None
+    for _step in range(HOVER_CAP + 1):
+        tup = (state["x"], state["y"], state["vx"], state["vy"], state["fuel"])
+        teacher = hover_mode(tup, g, pad_x, v_target)
+        row = np.asarray([tup], np.float64)
+        if kind == "state":
+            z = np.zeros((1, 32), np.float32)
+        else:
+            z = encode_rows(encoder, row)
+        feat = features_of(kind, row, np.asarray([pad_x], np.float64), z)
+        with torch.no_grad():
+            logit = head(torch.from_numpy(np.asarray(feat, np.float32)))
+            prob = float(torch.sigmoid(logit).reshape(-1)[0].item())
+        if teacher is None:
+            chosen = None
+            action = 1
+        else:
+            chosen = "land" if prob >= THRESHOLD else "approach"
+            action = int(hover_action(tup, g, pad_x, v_target, mode=chosen))
+        if chosen == "land" and first_head is None:
+            first_head = len(frames)
+        if teacher == "land" and first_teacher is None:
+            first_teacher = len(frames)
+        frame = _public(state)
+        frame["action"] = int(action)
+        frame["head_mode"] = chosen
+        frame["teacher_mode"] = teacher
+        frame["head_p"] = round(prob, 4)
+        frames.append(frame)
+        if state["grounded"] or len(frames) > HOVER_CAP:
+            break
+        state = apply_step(state, action, g)
+    last = state
+    return {
+        "g": round(g, 4),
+        "seed": episode_seed,
+        "pad_x": round(float(pad_x), 2),
+        "desired_vy": round(float(v_target), 2),
+        "variant": f"landm-{kind}-s{head_seed}",
+        "mode": "head",
+        "head_kind": kind,
+        "head_seed": head_seed,
+        "threshold": float(THRESHOLD),
+        "result": outcome_at(last["x"], last["y"], last["vy"], last["grounded"], pad_x),
+        "steps": len(frames) - 1,
+        "first_head_land": first_head,
+        "first_teacher_land": first_teacher,
+        "frames": frames,
+    }
+
+
 def rollout(seed, g, pad, variant, mode, horizon=40, start_xy=None, desired_vy=0.0):
     enc, pred, probe, _nw = _load(variant)
     models = (enc, pred, probe)
@@ -269,39 +354,50 @@ PAGE = """<!DOCTYPE html>
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink);
     font: 16px/1.45 "Segoe UI", sans-serif; }
-  main { max-width: 1120px; margin: 0 auto; padding: 28px 20px 48px; }
-  h1 { font-size: 28px; font-weight: 650; margin: 0 0 8px; letter-spacing: -0.03em; }
-  .lead { color: var(--muted); max-width: 78ch; margin: 0 0 22px; }
-  .bench { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 22px; align-items: start; }
-  .stage { background: #111; border-radius: 12px; padding: 12px; min-width: 0; }
-  canvas { display: block; width: 100%; height: auto; aspect-ratio: 960 / 496;
-    background: #111; border-radius: 8px; cursor: crosshair; }
-  .play { display: flex; gap: 8px; align-items: center; margin-top: 10px;
-    color: #d9d3c5; font-size: 13px; }
+  main { max-width: 1240px; margin: 0 auto; padding: 22px 20px 48px; }
+  h1 { font-size: 26px; font-weight: 650; margin: 0 0 8px; letter-spacing: -0.03em; }
+  .lead { color: var(--muted); max-width: 78ch; margin: 0 0 16px; }
+  .tabs { display: flex; gap: 8px; margin: 0 0 18px; }
+  .tabs button { padding: 8px 14px; cursor: pointer; background: transparent; font-weight: 650; }
+  .tabs button.active { background: #1c1915; color: #f3efe6; border-color: #1c1915; }
+  .tab { display: none; }
+  .tab.active { display: block; }
+  .bench { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 18px; align-items: start; }
+  .stage { min-width: 0; }
+  .stage canvas { display: block; width: 100%; height: auto; aspect-ratio: 960 / 496;
+    background: #111; border-radius: 12px; cursor: crosshair; }
+  .readout { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 10px 12px 12px; margin-top: 10px; }
+  .play { display: flex; gap: 8px; align-items: center; margin-top: 8px; font-size: 13px; }
   .play input[type="range"] { flex: 1; }
   button, select, input[type="number"] {
     font: inherit; color: var(--ink); background: var(--card);
     border: 1px solid var(--line); border-radius: 8px; }
   .play button, .go, .actions button { padding: 8px 10px; cursor: pointer; }
   .panel { background: var(--card); border: 1px solid var(--line);
-    border-radius: 12px; padding: 16px; }
-  label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 6px; }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  input[type="number"], select { width: 100%; padding: 8px 10px; margin-bottom: 12px; }
-  .go { width: 100%; background: #1c1915; color: #f3efe6; font-weight: 650; margin-bottom: 8px; }
-  .actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 8px 0 12px; }
-  .report { white-space: pre-wrap; margin-top: 8px; }
+    border-radius: 12px; padding: 14px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 4px; }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
+  .fields .wide { grid-column: 1 / -1; }
+  input[type="number"], select { width: 100%; padding: 7px 10px; margin-bottom: 8px; }
+  .gos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 8px; }
+  .gos .wide { grid-column: 1 / -1; }
+  .go { width: 100%; background: #1c1915; color: #f3efe6; font-weight: 650; margin: 0; }
+  .actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 4px 0 8px; }
+  .report { white-space: pre-wrap; margin: 6px 0 0; font-size: 14px; }
   .report strong.ok { color: var(--ok); }
   .report strong.bad { color: var(--bad); }
-  .note { color: var(--muted); font-size: 13px; margin-top: 12px; }
-  .caption { color: #d9d3c5; font-size: 13px; line-height: 1.4; margin: 10px 2px 0; }
-  .tracks { margin-top: 30px; }
+  .hint, .note { color: var(--muted); font-size: 13px; margin: 8px 0 0; line-height: 1.4; }
+  .caption { color: var(--muted); font-size: 13px; line-height: 1.4; margin: 8px 0 0; }
+  #phase-line { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+  .tracks { margin-top: 0; }
   .tracks h2 { font-size: 21px; font-weight: 650; margin: 0 0 6px; letter-spacing: -0.02em; }
   .tr-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
     gap: 14px; margin-top: 14px; align-items: start; }
   .tr-box { background: #111; border-radius: 12px; padding: 10px; min-width: 0; }
   .tr-box h3 { color: #d9d3c5; font-size: 13px; font-weight: 600; margin: 2px 2px 8px; }
-  .tr-box canvas { background: #111; border-radius: 8px; cursor: default; }
+  .tr-box canvas { display: block; width: 100%; height: auto; background: #111;
+    border-radius: 8px; cursor: default; }
   .tr-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: end;
     background: var(--card); border: 1px solid var(--line); border-radius: 12px;
     padding: 12px 14px; }
@@ -319,62 +415,83 @@ PAGE = """<!DOCTYPE html>
 </head>
 <body>
 <main>
+  <nav class="tabs">
+    <button type="button" id="tab-pad" class="active">Площадка</button>
+    <button type="button" id="tab-tracks">Обучающие треки</button>
+  </nav>
+  <section id="pane-pad" class="tab active">
   <h1>Площадка как параметр окна</h1>
-  <p class="lead">Центр площадки — параметр окна, интегратор его не видит. Сеть площадки видит тройку мира <code>(g/9, 1, pad_x/512)</code>, её скрытый близнец — нет. Сеть цели <b>дополнительно</b> видит желаемую скорость посадки <code>desired_vy/120</code> — четвёрку <code>(g/9, 1, pad_x/512, desired_vy/120)</code>; её скрытый близнец тройку и цель не видит. Покрути «желаемую vy» и сравни <b>goal-vis</b> с <b>goal-hid</b>: видимая сеть реагирует на цель, скрытая — нет. «План сети» — CEM, горизонт 40, потолок 450. «Живой план» — один шаг за запрос. Клик по экрану — точка старта.</p>
+  <p class="lead">Центр площадки — параметр окна, интегратор его не видит. «План сети» — CEM, горизонт в поле справа, потолок 450. Клик по кадру ставит старт.</p>
   <div class="bench">
     <div class="stage">
       <canvas id="view" width="960" height="496"></canvas>
-      <p class="caption" id="caption">Кадр появится после кнопки.</p>
-      <div class="play">
-        <button id="toggle" type="button">пауза</button>
-        <input id="scrub" type="range" min="0" max="0" value="0">
-        <span id="frame-label">кадр 0</span>
+      <div class="readout">
+        <p class="caption" id="caption">Кадр появится после кнопки.</p>
+        <p id="phase-line">фаза: — &nbsp; синий = прицел | оранжевый = торможение (высота &lt; 40)</p>
+        <div class="report" id="report">Старт ещё не построен.</div>
+        <div class="play">
+          <button id="toggle" type="button">пауза</button>
+          <input id="scrub" type="range" min="0" max="0" value="0">
+          <span id="frame-label">кадр 0</span>
+        </div>
       </div>
     </div>
     <div class="panel">
-      <label for="pad">Центр площадки</label>
-      <input id="pad" type="number" min="106" max="406" step="1" value="256">
-      <label for="g">Тяжесть g, px/с²</label>
-      <input id="g" type="number" min="2" max="20" step="1" value="8">
-      <label for="seed">Сид старта</label>
-      <input id="seed" type="number" min="0" max="999999" step="1" value="94000">
-      <label for="horizon">Горизонт плана (шагов)</label>
-      <input id="horizon" type="number" min="1" max="450" step="1" value="40">
-      <label for="variant">Сеть</label>
-      <select id="variant">
-        <option value="pad-vis">площадка, видимая (тройка мира)</option>
-        <option value="pad-hid" selected>площадка, скрытая</option>
-        <option value="goal-vis">цель, видимая (тройка + желаемая vy)</option>
-        <option value="goal-hid">цель, скрытая (контроль)</option>
-        <option value="hover-vis">наведение, видимая (окна с наведением)</option>
-        <option value="hover-hid">наведение, скрытая (контроль)</option>
-      </select>
-      <label for="desired_vy">Желаемая vy при посадке (только для сети цели)</label>
-      <input id="desired_vy" type="number" min="0" max="120" step="1" value="0">
-      <label>Старт по клику на экране</label>
-      <div class="row">
-        <button class="go" id="clear-start" type="button">сбросить старт</button>
-        <span id="start-note" style="align-self:center;font-size:13px;color:var(--muted);">старт от сида (клик по канвасу — поставить точку)</span>
+      <div class="fields">
+        <div>
+          <label for="pad">Центр площадки</label>
+          <input id="pad" type="number" min="106" max="406" step="1" value="256">
+        </div>
+        <div>
+          <label for="g">Тяжесть g, px/с²</label>
+          <input id="g" type="number" min="2" max="20" step="1" value="8">
+        </div>
+        <div>
+          <label for="seed">Сид старта</label>
+          <input id="seed" type="number" min="0" max="999999" step="1" value="94000">
+        </div>
+        <div>
+          <label for="horizon">Горизонт плана</label>
+          <input id="horizon" type="number" min="1" max="450" step="1" value="40">
+        </div>
+        <div class="wide">
+          <label for="variant">Сеть</label>
+          <select id="variant">
+            <option value="pad-vis">площадка, видимая (тройка мира)</option>
+            <option value="pad-hid" selected>площадка, скрытая</option>
+            <option value="goal-vis">цель, видимая (тройка + желаемая vy)</option>
+            <option value="goal-hid">цель, скрытая (контроль)</option>
+            <option value="hover-vis">наведение, видимая (окна с наведением)</option>
+            <option value="hover-hid">наведение, скрытая (контроль)</option>
+          </select>
+        </div>
+        <div class="wide">
+          <label for="desired_vy">Желаемая vy (сеть цели и ветка посадки)</label>
+          <input id="desired_vy" type="number" min="0" max="120" step="1" value="0">
+        </div>
       </div>
-      <button class="go" id="plan" type="button">план сети</button>
-      <button class="go" id="live" type="button">живой план (по шагам)</button>
-      <button class="go" id="hover" type="button">правило с наведением</button>
-      <button class="go" id="example" type="button">правило в коде</button>
-      <button class="go" id="fall" type="button">просто падать</button>
+      <button class="go" id="clear-start" type="button" title="Убрать точку, поставленную кликом, и снова стартовать от сида.">сбросить старт</button>
+      <p class="hint" id="start-note">старт от сида (клик по канвасу — поставить точку)</p>
+      <div class="gos">
+        <button class="go" id="plan" type="button" title="Один план CEM выбранной сетью. Горизонт берётся из поля справа, потолок 450 шагов. Весь полёт считается сразу.">план сети</button>
+        <button class="go" id="live" type="button" title="Тот же CEM, но по одному шагу: картинка обновляется после каждого запроса.">живой план</button>
+        <button class="go" id="hover" type="button" title="Полёт правила с наведением, не сети. Сначала держит высоту и едет к центру, при |x − центр| ≤ 6 садится. Желаемая vy у этой кнопки всегда 0.">правило с наведением</button>
+        <button class="go" id="example" type="button" title="Старое правило посадки, не сеть. Боковая скорость обрезана до 8, до дальней площадки часто не доезжает.">правило в коде</button>
+        <button class="go wide" id="fall" type="button" title="Каждый шаг пустое действие: без тяги и без правила.">просто падать</button>
+      </div>
       <label>Ручной шаг, три на три</label>
       <div class="actions" id="actions"></div>
-      <div class="report" id="report">Старт ещё не построен.</div>
-      <p id="phase-line" style="margin:6px 0 0;font-size:13px;color:var(--muted);">
-        фаза: —&nbsp;&nbsp;синий = прицел&nbsp;|&nbsp;оранжевый = торможение (высота &lt; 40)</p>
-      <p class="note">Мягкая посадка: первое касание в [pad−8, pad+8] и vy&lt;8. Порог 8 — «удар». Сети площадки обучены на сидах 94000…, сети цели — на 97000…. Ноль мягких — допустимый итог, победителя нет: у сетей цели выигрыш виден в предсказании (реакция на цель), а не в числе посадок на g=20.</p>
+      <p class="note">Мягкая посадка: касание в [pad−8, pad+8] и vy&lt;8. Порог 8 — «удар». Сеть площадки видит <code>(g/9, 1, pad_x/512)</code>, скрытая — нет. Сеть цели ещё и <code>desired_vy/120</code>. Ноль мягких — допустимый итог, победителя нет.</p>
     </div>
   </div>
-  <section class="tracks">
-    <h2>Обучающие треки — что видит модель</h2>
+  </section>
+  <section id="pane-tracks" class="tab tracks">
+    <h1>Обучающие треки — что видит модель</h1>
     <p class="lead">Предиктор учится не на полётах, а на <b>окнах</b>: три случайных толчка подряд,
       старт всегда у самой земли. Здесь ровно те числа, что уходят в обучение, а не
-      приблизительная картинка. Сравни три вида на одном сиде: окно, полный полёт-источник
-      и траекторию правила посадки.</p>
+      приблизительная картинка. Сравни виды на одном сиде: окно, полный полёт-источник,
+      старое правило посадки и правило с наведением. У наведения учебные сиды головы
+      режима — 98000…98511: синий участок это подход, оранжевый — посадка при |x − центр| ≤ 6.</p>
     <div class="tr-bar">
       <div>
         <label for="tr-kind">Что показать</label>
@@ -382,6 +499,7 @@ PAGE = """<!DOCTYPE html>
           <option value="window">окно обучения — 3 шага</option>
           <option value="flight">полный полёт — случайные толчки</option>
           <option value="expert">траектория правила — посадка</option>
+          <option value="hover">правило с наведением — учебный эпизод</option>
         </select>
       </div>
       <div>
@@ -389,14 +507,28 @@ PAGE = """<!DOCTYPE html>
         <input id="tr-seed" type="number" min="0" max="999999999" step="1" value="100000">
       </div>
       <button id="tr-go" type="button">показать трек</button>
+      <div>
+        <label for="head-kind">Голова режима</label>
+        <select id="head-kind">
+          <option value="latent-0" selected>латент, сид 0</option>
+          <option value="latent-1">латент, сид 1</option>
+          <option value="latent-2">латент, сид 2</option>
+          <option value="state-0">состояние, сид 0</option>
+          <option value="state-1">состояние, сид 1</option>
+          <option value="state-2">состояние, сид 2</option>
+          <option value="zblind-0">без площадки, сид 0</option>
+        </select>
+      </div>
+      <button id="head-go" type="button">показать голову на этом сиде</button>
     </div>
+    <p class="hint" id="head-note">Кнопка ведёт ракету головой, которая училась на этих эпизодах, и открывает вкладку «Площадка». Тяжесть и цель берутся из сида слева, порог решения 0.5. Синий след — голова сказала «подход», оранжевый — «посадка». Трек учителя остаётся здесь. Один такой полёт не заменяет зачёт 180 эпизодов. CEM не вызывается.</p>
     <div class="tr-grid">
       <div class="tr-box">
         <h3>общая картина — поле 512</h3>
         <canvas id="tr-view" width="960" height="496"></canvas>
       </div>
       <div class="tr-box">
-        <h3>увеличение окна — видно, что в нём</h3>
+        <h3 id="tr-zoom-title">увеличение окна — видно, что в нём</h3>
         <canvas id="tr-zoom" width="520" height="496"></canvas>
       </div>
     </div>
@@ -416,6 +548,16 @@ const canvas = document.getElementById("view");
 const ctx = canvas.getContext("2d");
 let frames = [], cursor = 0, playing = false, timer = null;
 let clickStart = null;
+
+function showTab(name) {
+  const pad = name === "pad";
+  document.getElementById("pane-pad").classList.toggle("active", pad);
+  document.getElementById("pane-tracks").classList.toggle("active", !pad);
+  document.getElementById("tab-pad").classList.toggle("active", pad);
+  document.getElementById("tab-tracks").classList.toggle("active", !pad);
+}
+document.getElementById("tab-pad").onclick = () => showTab("pad");
+document.getElementById("tab-tracks").onclick = () => showTab("tracks");
 
 function padValue() { return Number(document.getElementById("pad").value); }
 function gValue() { return Number(document.getElementById("g").value); }
@@ -458,10 +600,13 @@ function draw(frame, trail) {
   for (let y = Y0; y <= GROUND; y += 16) { ctx.moveTo(0, wy(y)); ctx.lineTo(VW, wy(y)); }
   ctx.stroke();
   const groundY = wy(GROUND);
-  // тормозная зона: ниже этой высоты план должен гасить vy
-  const BRAKE_ALT = 40;
-  ctx.strokeStyle = "#e2b340"; ctx.lineWidth = 1; ctx.setLineDash([6, 4]);
-  ctx.beginPath(); ctx.moveTo(0, wy(GROUND - BRAKE_ALT)); ctx.lineTo(VW, wy(GROUND - BRAKE_ALT)); ctx.stroke(); ctx.setLineDash([]);
+  const headTrail = trail.length && trail[0].head_mode !== undefined;
+  // Пунктир высоты 40 — подсказка планировщику. У полёта головы порог другой.
+  if (!headTrail) {
+    ctx.strokeStyle = "#e2b340"; ctx.lineWidth = 1; ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(0, wy(GROUND - 40)); ctx.lineTo(VW, wy(GROUND - 40)); ctx.stroke();
+    ctx.setLineDash([]);
+  }
   ctx.strokeStyle = "#3c4a40"; ctx.lineWidth = 2; ctx.beginPath();
   ctx.moveTo(0, groundY); ctx.lineTo(VW, groundY); ctx.stroke();
   // площадка в текущем центре pad
@@ -473,14 +618,33 @@ function draw(frame, trail) {
   ctx.moveTo(wx(pad - 8), groundY - 10); ctx.lineTo(wx(pad - 8), groundY);
   ctx.moveTo(wx(pad + 8), groundY - 10); ctx.lineTo(wx(pad + 8), groundY);
   ctx.stroke(); ctx.setLineDash([]);
-  // след
-  ctx.strokeStyle = "#8fd0a8"; ctx.lineWidth = 2; ctx.beginPath();
-  trail.forEach((p, i) => { const c = i === 0 ? "moveTo" : "lineTo"; ctx[c](wx(p.x), wy(p.y)); });
-  ctx.stroke();
+  // след. У головы цвет — её решение, не высота.
+  if (headTrail) {
+    ctx.lineWidth = 2.5;
+    for (let i = 1; i < trail.length; i++) {
+      const mode = trail[i - 1].head_mode;
+      ctx.strokeStyle = mode === "land" ? "#ff9d3c" : (mode === "approach" ? "#4da3ff" : "#f2d48a");
+      ctx.beginPath();
+      ctx.moveTo(wx(trail[i - 1].x), wy(trail[i - 1].y));
+      ctx.lineTo(wx(trail[i].x), wy(trail[i].y));
+      ctx.stroke();
+    }
+  } else {
+    ctx.strokeStyle = "#8fd0a8"; ctx.lineWidth = 2; ctx.beginPath();
+    trail.forEach((p, i) => { const c = i === 0 ? "moveTo" : "lineTo"; ctx[c](wx(p.x), wy(p.y)); });
+    ctx.stroke();
+  }
   // корпус
   const h = GROUND - frame.y;
-  const phase = frame.grounded ? "касание" : (h > 40 ? "прицел" : "торможение");
-  const phaseColor = phase === "касание" ? "#f2d48a" : (phase === "прицел" ? "#4da3ff" : "#ff9d3c");
+  let phase, phaseColor;
+  if (frame.head_mode !== undefined && !frame.grounded) {
+    if (frame.head_mode === "land") { phase = "посадка"; phaseColor = "#ff9d3c"; }
+    else if (frame.head_mode === "approach") { phase = "подход"; phaseColor = "#4da3ff"; }
+    else { phase = "без режима"; phaseColor = "#f2d48a"; }
+  } else {
+    phase = frame.grounded ? "касание" : (h > 40 ? "прицел" : "торможение");
+    phaseColor = phase === "касание" ? "#f2d48a" : (phase === "прицел" ? "#4da3ff" : "#ff9d3c");
+  }
   const a = frame.action | 0, iy = Math.floor(a/3), ix = a % 3;
     const x = wx(frame.x), y = wy(frame.y);
   ctx.fillStyle = phaseColor;
@@ -509,6 +673,22 @@ function show(index) {
   document.getElementById("frame-label").textContent = "кадр " + cursor;
   draw(frames[cursor], frames.slice(0, cursor + 1));
   const f = frames[cursor];
+  if (f.head_mode !== undefined) {
+    const headName = f.grounded ? "касание" : (f.head_mode === "land" ? "посадка" : (f.head_mode === "approach" ? "подход" : "без режима"));
+    const teacherName = f.teacher_mode === "land" ? "посадка" : (f.teacher_mode === "approach" ? "подход" : "нет");
+    document.getElementById("caption").textContent =
+      "x " + f.x.toFixed(2) + "  y " + f.y.toFixed(2) +
+      "  vx " + f.vx.toFixed(2) + "  vy " + f.vy.toFixed(2) +
+      "  топливо " + f.fuel.toFixed(2) + "  действие " + NAMES[f.action] +
+      "  голова: " + headName + "  p " + Number(f.head_p).toFixed(2) +
+      "  учитель на этой точке: " + teacherName;
+    const phColor = f.head_mode === "land" ? "#ff9d3c" : (f.head_mode === "approach" ? "#4da3ff" : "#1d6b45");
+    document.getElementById("phase-line").innerHTML =
+      'голова: <b style="color:' + phColor + '">' + headName + '</b>'
+      + '  · учитель здесь: <b>' + teacherName + '</b>'
+      + '  · синий = подход, оранжевый = посадка, порог p 0.5';
+    return;
+  }
   document.getElementById("caption").textContent =
     "x " + f.x.toFixed(2) + "  y " + f.y.toFixed(2) +
     "  vx " + f.vx.toFixed(2) + "  vy " + f.vy.toFixed(2) +
@@ -534,15 +714,25 @@ function setReport(data) {
   box.dataset.result = data.result;
   const goalNote = (data.variant || "").indexOf("goal") === 0
     ? ", желаемая vy " + (data.desired_vy == null ? 0 : data.desired_vy) : "";
+  let headNote = "";
+  if (data.mode === "head") {
+    const hs = data.first_head_land == null ? "не сказала" : ("с шага " + data.first_head_land);
+    const ts = data.first_teacher_land == null ? "не наступила" : ("с шага " + data.first_teacher_land);
+    headNote = "\\nголова " + data.head_kind + " s" + data.head_seed
+      + ": посадка " + hs + ", учитель на этом полёте " + ts;
+  }
   box.innerHTML = "<strong class='" + cls + "'>" + data.result + "</strong>\\n"
     + "шагов " + (data.frames.length - 1) + ", g " + data.g +
-    ", центр " + data.pad_x + ", сеть " + data.variant + goalNote + "\\n"
+    ", центр " + data.pad_x + ", сеть " + data.variant + goalNote + headNote + "\\n"
     + "финиш x " + last.x.toFixed(2) + ", vy " + last.vy.toFixed(2) +
     ", топливо " + last.fuel.toFixed(2);
 }
 
 function setBusy(mode, busy) {
-  for (const id of ["plan","live","example","hover","fall"]) document.getElementById(id).disabled = busy;
+  for (const id of ["plan","live","example","hover","fall","head-go"]) {
+    const el = document.getElementById(id);
+    if (el) el.disabled = busy;
+  }
   const plan = document.getElementById("plan");
   if (busy) { plan.dataset.label = plan.textContent; plan.textContent = "план сети — считаю…"; }
   else if (plan.dataset.label) { plan.textContent = plan.dataset.label; delete plan.dataset.label; }
@@ -621,13 +811,15 @@ NAMES.forEach((name, i) => { const b = document.createElement("button");
 // ===== обучающие треки =====
 const TR_VW = (352 - X0) * S, TR_VH = (GROUND - Y0) * S + GROUND_PAD;
 const TR_ZW = 520, TR_ZH = 496;
-const TR_COL = { window: "#4da3ff", flight: "#8a7bd8", expert: "#2f9e62" };
+const TR_COL = { window: "#4da3ff", flight: "#8a7bd8", expert: "#2f9e62", hover: "#d9d3c5" };
 const TR_TITLE = { window: "окно обучения", flight: "полный полёт (случайные толчки)",
-  expert: "траектория правила — посадка" };
+  expert: "траектория правила — посадка",
+  hover: "правило с наведением — учебный эпизод" };
 const TR_WHY = {
   window: "Это ровно то, что уходит в обучение: четыре состояния и три случайных действия. Старт — у самой земли, до касания окно не доходит, поэтому на общей картинке оно выглядит точкой.",
   flight: "Полёт-источник: те же случайные толчки, но все 450. Обучение берёт из него только первые три шага. Обрати внимание, куда он уходит.",
-  expert: "Траектория правила посадки: оно садится, и обычно мягко. Такие окна мы добавили в обучение — и мягких посадок всё равно нет."
+  expert: "Старое правило посадки. Боковая скорость обрезана, до дальней площадки оно часто не доезжает. Это не учитель головы режима.",
+  hover: "Правило с наведением: тяжесть и цель берутся из сида так же, как у головы режима. Учебные сиды 98000–98511. Синий — подход, оранжевый — посадка, порог |x − центр| ≤ 6. Цвет ракеты на верхнем полотне (высота 40) к этому порогу отношения не имеет."
 };
 const trView = document.getElementById("tr-view");
 const trZoom = document.getElementById("tr-zoom");
@@ -666,9 +858,51 @@ function trExit(c, p, mx, my, w, h, label) {
   c.font = "12px Segoe UI"; c.fillText(label, Math.min(cx + 8, w - 210), cy + 4);
 }
 
+function trModeColor(mode) {
+  if (mode === "land") return "#ff9d3c";
+  if (mode === "approach") return "#4da3ff";
+  return "#f2d48a";
+}
+
+function trHasMode(points) {
+  return points.length > 0 && points[0].mode !== undefined;
+}
+
+function trStroke(c, points, mx, my, fallback) {
+  if (!trHasMode(points)) {
+    c.strokeStyle = fallback; c.lineWidth = 2.5; c.beginPath();
+    points.forEach((p, i) => { const f = i === 0 ? "moveTo" : "lineTo"; c[f](mx(p.x), my(p.y)); });
+    c.stroke();
+    return;
+  }
+  c.lineWidth = 2.5;
+  for (let i = 1; i < points.length; i++) {
+    c.strokeStyle = trModeColor(points[i - 1].mode);
+    c.beginPath();
+    c.moveTo(mx(points[i - 1].x), my(points[i - 1].y));
+    c.lineTo(mx(points[i].x), my(points[i].y));
+    c.stroke();
+  }
+}
+
+function trMark(c, x, y, color, label) {
+  c.fillStyle = color;
+  c.beginPath(); c.arc(x, y, 5, 0, Math.PI * 2); c.fill();
+  c.strokeStyle = "#f4efe4"; c.lineWidth = 1.5; c.stroke();
+  if (!label) return;
+  c.fillStyle = "#f2d48a"; c.font = "12px Segoe UI";
+  c.fillText(label, x + 8, y - 8);
+}
+
 function drawTracks(data) {
   const tr = data.track, ctx = data.context;
   const col = TR_COL[tr.kind] || "#4da3ff";
+  const zoomTitle = document.getElementById("tr-zoom-title");
+  if (zoomTitle) {
+    zoomTitle.textContent = tr.kind === "window"
+      ? "увеличение окна — видно, что в нём"
+      : "увеличение трека";
+  }
 
   // ---------- общая картина: та же рамка, что у симулятора ----------
   trBg(trCtx, TR_VW, TR_VH);
@@ -688,22 +922,33 @@ function drawTracks(data) {
     trExit(trCtx, ctx.points[ctx.points.length - 1], wx, wy, TR_VW, TR_VH,
       "полёт уходит вверх за кадр");
   }
-  trCtx.strokeStyle = col; trCtx.lineWidth = 2.5; trCtx.beginPath();
-  tr.points.forEach((p, i) => { const f = i === 0 ? "moveTo" : "lineTo"; trCtx[f](wx(p.x), wy(p.y)); });
-  trCtx.stroke();
-  const r = tr.n_actions <= 6 ? 4.5 : 2;
-  tr.points.forEach((p) => {
-    trCtx.fillStyle = col;
-    trCtx.beginPath(); trCtx.arc(wx(p.x), wy(p.y), r, 0, Math.PI * 2); trCtx.fill();
-    trArrow(trCtx, wx(p.x), wy(p.y), p.action, 16);
-  });
+  trStroke(trCtx, tr.points, wx, wy, col);
   const p0 = tr.points[0];
-  trCtx.fillStyle = "#f2d48a"; trCtx.font = "12px Segoe UI";
-  trCtx.fillText("старт", wx(p0.x) + 9, wy(p0.y) - 7);
+  if (tr.kind === "hover") {
+    trMark(trCtx, wx(p0.x), wy(p0.y), trModeColor(p0.mode), "старт");
+    if (tr.first_land_step != null) {
+      const q = tr.points[tr.first_land_step];
+      trMark(trCtx, wx(q.x), wy(q.y), "#ff9d3c", "посадка");
+    }
+    const pe = tr.points[tr.points.length - 1];
+    trMark(trCtx, wx(pe.x), wy(pe.y), "#f2d48a", "");
+  } else {
+    const r = tr.n_actions <= 6 ? 4.5 : 2;
+    tr.points.forEach((p) => {
+      trCtx.fillStyle = col;
+      trCtx.beginPath(); trCtx.arc(wx(p.x), wy(p.y), r, 0, Math.PI * 2); trCtx.fill();
+      trArrow(trCtx, wx(p.x), wy(p.y), p.action, 16);
+    });
+    trCtx.fillStyle = "#f2d48a"; trCtx.font = "12px Segoe UI";
+    trCtx.fillText("старт", wx(p0.x) + 9, wy(p0.y) - 7);
+  }
   trCtx.fillStyle = col; trCtx.font = "600 14px Segoe UI";
   trCtx.fillText(TR_TITLE[tr.kind] || tr.kind, 12, 22);
   trCtx.fillStyle = "#8a8478"; trCtx.font = "12px Segoe UI";
   trCtx.fillText("поле 512 · земля внизу · зелёное = площадка", 12, 40);
+  if (tr.kind === "hover") {
+    trCtx.fillText("синий = подход · оранжевый = посадка (|x − центр| ≤ 6)", 12, 58);
+  }
 
   // ---------- увеличение: подгоняем под сам трек ----------
   trBg(trCtxZ, TR_ZW, TR_ZH);
@@ -722,19 +967,38 @@ function drawTracks(data) {
     trCtxZ.beginPath(); trCtxZ.moveTo(0, zy(GROUND)); trCtxZ.lineTo(TR_ZW, zy(GROUND)); trCtxZ.stroke();
   }
   trPad(trCtxZ, tr.pad_x, zx, zy, zy(GROUND));
-  trCtxZ.strokeStyle = col; trCtxZ.lineWidth = 2.5; trCtxZ.beginPath();
-  tr.points.forEach((p, i) => { const f = i === 0 ? "moveTo" : "lineTo"; trCtxZ[f](zx(p.x), zy(p.y)); });
-  trCtxZ.stroke();
-  tr.points.forEach((p, i) => {
-    trCtxZ.fillStyle = col;
-    trCtxZ.beginPath(); trCtxZ.arc(zx(p.x), zy(p.y), 5, 0, Math.PI * 2); trCtxZ.fill();
-    trArrow(trCtxZ, zx(p.x), zy(p.y), p.action, Math.min(40, kz * 1.4));
-    trCtxZ.fillStyle = "#d9d3c5"; trCtxZ.font = "11px Segoe UI";
-    trCtxZ.fillText("ш" + i, zx(p.x) + 8, zy(p.y) - 8);
-  });
+  trStroke(trCtxZ, tr.points, zx, zy, col);
+  if (tr.kind === "hover") {
+    trMark(trCtxZ, zx(p0.x), zy(p0.y), trModeColor(p0.mode), "старт");
+    if (tr.first_land_step != null) {
+      const q = tr.points[tr.first_land_step];
+      trMark(trCtxZ, zx(q.x), zy(q.y), "#ff9d3c", "посадка, ш" + tr.first_land_step);
+    }
+    const pe = tr.points[tr.points.length - 1];
+    trMark(trCtxZ, zx(pe.x), zy(pe.y), "#f2d48a", "касание");
+    const stepMark = Math.max(20, Math.floor(tr.points.length / 8));
+    for (let i = stepMark; i < tr.points.length - 1; i += stepMark) {
+      if (tr.first_land_step != null && Math.abs(i - tr.first_land_step) < stepMark / 2) continue;
+      const p = tr.points[i];
+      trCtxZ.fillStyle = trModeColor(p.mode);
+      trCtxZ.beginPath(); trCtxZ.arc(zx(p.x), zy(p.y), 3, 0, Math.PI * 2); trCtxZ.fill();
+      trArrow(trCtxZ, zx(p.x), zy(p.y), p.action, Math.min(28, kz * 0.8));
+    }
+  } else {
+    tr.points.forEach((p, i) => {
+      trCtxZ.fillStyle = col;
+      trCtxZ.beginPath(); trCtxZ.arc(zx(p.x), zy(p.y), 5, 0, Math.PI * 2); trCtxZ.fill();
+      trArrow(trCtxZ, zx(p.x), zy(p.y), p.action, Math.min(40, kz * 1.4));
+      trCtxZ.fillStyle = "#d9d3c5"; trCtxZ.font = "11px Segoe UI";
+      trCtxZ.fillText("ш" + i, zx(p.x) + 8, zy(p.y) - 8);
+    });
+  }
   trCtxZ.fillStyle = "#8a8478"; trCtxZ.font = "12px Segoe UI";
+  const zoomNote = tr.kind === "hover"
+    ? " · синий = подход · оранжевый = посадка"
+    : "";
   trCtxZ.fillText("участок " + (maxx - minx).toFixed(2) + " × " + (maxy - miny).toFixed(2) +
-    " единиц · зелёное = площадка", 12, 20);
+    " единиц · зелёное = площадка" + zoomNote, 12, 20);
 }
 
 function trFacts(tr, ctx) {
@@ -751,6 +1015,12 @@ function trFacts(tr, ctx) {
     "касание: <b>" + (tr.touched ? "да" : "нет") + "</b>",
     "результат: <b>" + tr.result + "</b>"
   ];
+  if (tr.desired_vy != null) cells.splice(4, 0, "желаемая vy <b>" + tr.desired_vy + "</b>");
+  if (tr.kind === "hover") {
+    cells.push(tr.first_land_step == null
+      ? "посадка: <b>не наступала</b>"
+      : "посадка с шага <b>" + tr.first_land_step + "</b> (|x − центр| ≤ " + tr.nav_tol + ")");
+  }
   if (ctx) cells.push("полёт-источник: <b>" + ctx.n_actions + "</b> шагов, высота <b>" +
     ctx.height_from + " → " + ctx.height_to + "</b>");
   document.getElementById("tr-facts").innerHTML = cells.join(" &nbsp;·&nbsp; ");
@@ -771,8 +1041,49 @@ async function trLoad() {
     drawTracks(data); trFacts(data.track, data.context);
   } catch (e) { box.textContent = "ошибка: " + e; }
 }
+async function headLoad() {
+  const seed = Number(document.getElementById("tr-seed").value) || 0;
+  const parts = document.getElementById("head-kind").value.split("-");
+  const kind = parts[0];
+  const headSeed = Number(parts[1]);
+  stop();
+  const reportBox = document.getElementById("report");
+  reportBox.textContent = "Считаю полёт головы…";
+  document.getElementById("head-go").disabled = true;
+  try {
+    const res = await fetch("/api/head", {method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({seed, kind, head_seed: headSeed})});
+    const data = await res.json();
+    if (!res.ok) { reportBox.textContent = data.error || "ошибка"; return; }
+    document.getElementById("pad").value = data.pad_x;
+    document.getElementById("g").value = data.g;
+    document.getElementById("desired_vy").value = data.desired_vy;
+    document.getElementById("seed").value = data.seed;
+    clickStart = null;
+    document.getElementById("start-note").textContent =
+      "старт от сида (клик по канвасу — поставить точку)";
+    frames = data.frames;
+    runResult = data;
+    setReport(data);
+    showTab("pad");
+    show(0);
+    play();
+    document.getElementById("view").scrollIntoView({behavior: "smooth", block: "center"});
+  } catch (e) {
+    reportBox.textContent = "ошибка: " + e;
+  } finally {
+    document.getElementById("head-go").disabled = false;
+  }
+}
+document.getElementById("head-go").onclick = headLoad;
 document.getElementById("tr-go").onclick = trLoad;
-document.getElementById("tr-kind").onchange = trLoad;
+document.getElementById("tr-kind").onchange = () => {
+  const kind = document.getElementById("tr-kind").value;
+  const seedEl = document.getElementById("tr-seed");
+  if (kind === "hover" && Number(seedEl.value) === 100000) seedEl.value = "98000";
+  trLoad();
+};
 document.getElementById("tr-seed").onchange = trLoad;
 trLoad();
 
@@ -812,6 +1123,18 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError("сид вне 0…999999999")
                 body = json.dumps(_tracks.build(kind, seed),
                                   ensure_ascii=False).encode("utf-8")
+                self._send(200, body, "application/json; charset=utf-8")
+                return
+            if path == "/api/head":
+                seed = int(payload.get("seed", 98000))
+                if not 0 <= seed <= 999_999_999:
+                    raise ValueError("сид вне 0…999999999")
+                try:
+                    data = head_episode(seed, payload.get("kind", "latent"),
+                                        int(payload.get("head_seed", 0)))
+                except SystemExit as exc:
+                    raise ValueError(str(exc) or "голова не загрузилась") from None
+                body = json.dumps(data, ensure_ascii=False).encode("utf-8")
                 self._send(200, body, "application/json; charset=utf-8")
                 return
             start_xy = None

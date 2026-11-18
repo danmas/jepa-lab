@@ -6,9 +6,12 @@ import sys
 
 import numpy as np
 
+from numeric_land.data import g_of_window
+from numeric_land.expert_hover import NAV_TOL, hover_episode, hover_mode
 from numeric_land.field import GROUND, TRANSITIONS
+from numeric_land.goal import goal_of_window
 from numeric_land.tracks import (
-    KINDS, build, expert_flight, random_flight, random_window,
+    KINDS, build, expert_flight, hover_flight, random_flight, random_window,
 )
 
 
@@ -56,6 +59,42 @@ def main():
             soft += 1
     if soft < 3:
         raise SystemExit(f"эксперт почти не садится мягко: {soft}/12")
+
+    # 3b. наведение: тот же эпизод, что у головы режима, порог |dx| = 6
+    if "hover" not in KINDS:
+        raise SystemExit("вид hover не в KINDS")
+    for seed in (98000, 98001, 98002):
+        h = hover_flight(seed)
+        g = float(g_of_window(seed))
+        pad, vt = goal_of_window(seed)
+        states, actions, _grounded = hover_episode(seed, g, pad, vt)
+        if h["n_actions"] != int(actions.shape[0]) or h["n_states"] != int(states.shape[0]):
+            raise SystemExit(f"hover длина не совпала, сид {seed}")
+        if abs(h["g"] - round(g, 4)) > 1e-9 or abs(h["pad_x"] - round(float(pad), 2)) > 1e-9:
+            raise SystemExit(f"hover цель не из сида, сид {seed}")
+        if h["desired_vy"] != round(float(vt), 2):
+            raise SystemExit(f"hover desired_vy, сид {seed}")
+        if h["nav_tol"] != float(NAV_TOL):
+            raise SystemExit("допуск наведения сдвинут")
+        first = None
+        for i, row in enumerate(states):
+            mode = hover_mode(tuple(float(v) for v in row), g, pad, vt)
+            if h["points"][i]["mode"] != mode:
+                raise SystemExit(f"метка режима разъехалась, сид {seed}, шаг {i}")
+            if mode == "land" and first is None:
+                first = i
+        if h["first_land_step"] != first:
+            raise SystemExit(f"первый шаг посадки, сид {seed}")
+        if first is None or first == 0:
+            raise SystemExit(f"на этих сидах посадка должна наступить, сид {seed}")
+        dx_prev = abs(float(pad) - float(states[first - 1][0]))
+        dx = abs(float(pad) - float(states[first][0]))
+        if not (dx_prev > NAV_TOL >= dx):
+            raise SystemExit(f"порог 6 не на границе, сид {seed}: {dx_prev} → {dx}")
+        if h["points"][-1]["mode"] is not None:
+            raise SystemExit("кадр касания не должен иметь режим")
+    if build("hover", 98000)["context"] is not None:
+        raise SystemExit("build(hover) с лишним контекстом")
 
     # 4. build отдаёт контекст только для окна; всё сериализуется
     b = build("window", 100000)
