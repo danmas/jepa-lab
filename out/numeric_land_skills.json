@@ -1,0 +1,27 @@
+{
+  "tag": "numeric-land-decision",
+  "threshold": 0.5,
+  "w_probe": 0.1,
+  "horizon_40": false,
+  "cem": false,
+  "landh_opened": false,
+  "source": "landr_scratch_s0.pt",
+  "approach": {
+    "n_windows": 10323,
+    "shared_l1": 0.000953500177218657,
+    "s0": 0.0009391709756541712,
+    "s1": 0.0007802646253144314,
+    "s2": 0.0011721522663956775,
+    "ratio_s0": 0.9849719990548048,
+    "flag": false
+  },
+  "land": {
+    "n_windows": 14817,
+    "shared_l1": 0.0008850713514594597,
+    "s0": 0.0007304551992901039,
+    "s1": 0.0008195958925482634,
+    "s2": 0.000879746462689436,
+    "ratio_s0": 0.8253065677536644,
+    "flag": true
+  }
+}

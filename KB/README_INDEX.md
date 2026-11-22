@@ -74,6 +74,7 @@ python chat.py --tag v4
 | Где объяснено, почему мягких посадок мало | [README_LAND_HOVER.md](README_LAND_HOVER.md) |
 | Где показано, что точность раскатки не спасает план | [README_LAND_HOVER.md](README_LAND_HOVER.md) → «Дообучение на новом учителе» |
 | Где голова режима учится у правила | [README_LAND_MODE.md](README_LAND_MODE.md) |
+| Где относительный латент и модель решения | [модель решения](README_LAND_DECISION.md) |
 | Где план держится на пробуксовке, помехах, втором мяче и буграх | [README_WORLDS.md](README_WORLDS.md) |
 ## Состав репозитория
 

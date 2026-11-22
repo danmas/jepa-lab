@@ -1,0 +1,620 @@
+{
+  "tag": "numeric-land-decision",
+  "threshold": 0.5,
+  "nav_tol": 6.0,
+  "vy_soft": 8.0,
+  "v_target": 6.0,
+  "package": "Отличие боевого кодировщика от landf — два добавленных канала и probe вместе: старый кодировщик площадку при обучении не видел. Вес 0.1 не единственная причина разрыва.",
+  "w_probe": 0.1,
+  "cem": false,
+  "probe_in_loop": false,
+  "skills_choose_action": false,
+  "rule_soft_pass": 180,
+  "mode_soft_pass": 62,
+  "published_landm_latent_s0_timing": {
+    "n_teacher": 128,
+    "n_miss": 0,
+    "n_switched": 128,
+    "step": {
+      "mean": -43.78125,
+      "median": -40.0,
+      "n": 128
+    },
+    "height": {
+      "mean": 0.07497547592951914,
+      "median": -0.2536224409606973,
+      "n": 128
+    },
+    "dx": {
+      "mean": 22.97036226554232,
+      "median": 10.063950114080484,
+      "n": 128
+    }
+  },
+  "published_timing_recomputed": false,
+  "heads": [
+    {
+      "file": "landd_latent_s0.pt",
+      "kind": "latent",
+      "seed": 0,
+      "seconds": 1.307,
+      "pos_weight": 0.7335072679836004,
+      "n_in": 33,
+      "counts_toward_90": true,
+      "land_frac": 0.5872059334801252,
+      "tp": 13447,
+      "tn": 10292,
+      "fp": 394,
+      "fn": 1754,
+      "n": 25887,
+      "accuracy": 0.9170239888747248,
+      "precision": 0.9715338487103533,
+      "recall": 0.8846128544174725,
+      "f1": 0.9260381516424488
+    },
+    {
+      "file": "landd_latent_s1.pt",
+      "kind": "latent",
+      "seed": 1,
+      "seconds": 1.4,
+      "pos_weight": 0.7335072679836004,
+      "n_in": 33,
+      "counts_toward_90": true,
+      "land_frac": 0.5872059334801252,
+      "tp": 13466,
+      "tn": 10287,
+      "fp": 399,
+      "fn": 1735,
+      "n": 25887,
+      "accuracy": 0.9175648008652992,
+      "precision": 0.971222502704652,
+      "recall": 0.8858627721860404,
+      "f1": 0.9265808848826808
+    },
+    {
+      "file": "landd_latent_s2.pt",
+      "kind": "latent",
+      "seed": 2,
+      "seconds": 1.433,
+      "pos_weight": 0.7335072679836004,
+      "n_in": 33,
+      "counts_toward_90": true,
+      "land_frac": 0.5872059334801252,
+      "tp": 13465,
+      "tn": 10286,
+      "fp": 400,
+      "fn": 1736,
+      "n": 25887,
+      "accuracy": 0.9174875420095029,
+      "precision": 0.9711503786512802,
+      "recall": 0.8857969870403263,
+      "f1": 0.926512075965045
+    },
+    {
+      "file": "landd_zblind_s0.pt",
+      "kind": "zblind",
+      "seed": 0,
+      "seconds": 1.493,
+      "pos_weight": 0.7335072679836004,
+      "n_in": 32,
+      "counts_toward_90": false,
+      "land_frac": 0.5872059334801252,
+      "tp": 13463,
+      "tn": 10282,
+      "fp": 404,
+      "fn": 1738,
+      "n": 25887,
+      "accuracy": 0.9172557654421138,
+      "precision": 0.970866084949881,
+      "recall": 0.8856654167488981,
+      "f1": 0.9263107196917573
+    },
+    {
+      "file": "landd_g_s0.pt",
+      "kind": "g",
+      "seed": 0,
+      "seconds": 1.31,
+      "pos_weight": 0.7335072679836004,
+      "n_in": 34,
+      "counts_toward_90": false,
+      "land_frac": 0.5872059334801252,
+      "tp": 13883,
+      "tn": 10525,
+      "fp": 161,
+      "fn": 1318,
+      "n": 25887,
+      "accuracy": 0.9428670761386024,
+      "precision": 0.9885360296211906,
+      "recall": 0.9132951779488192,
+      "f1": 0.9494272525217987
+    },
+    {
+      "file": "landd_oldz_s0.pt",
+      "kind": "oldz",
+      "seed": 0,
+      "seconds": 1.308,
+      "pos_weight": 0.7335072679836004,
+      "n_in": 33,
+      "counts_toward_90": false,
+      "land_frac": 0.5872059334801252,
+      "tp": 13381,
+      "tn": 9993,
+      "fp": 693,
+      "fn": 1820,
+      "n": 25887,
+      "accuracy": 0.9029242476918917,
+      "precision": 0.9507602671593008,
+      "recall": 0.8802710348003421,
+      "f1": 0.9141588385994875
+    }
+  ],
+  "line_90": true,
+  "switch": {
+    "flag_step": true,
+    "flag_dx": true,
+    "step_mean_new": -15.9296875,
+    "step_mean_oldz": -42.1171875,
+    "step_ratio": 0.3782229641995919,
+    "dx_mean_new": 11.127702547433113,
+    "dx_mean_oldz": 22.249039836482268,
+    "dx_ratio": 0.5001430456871564,
+    "n_miss_new": 0,
+    "n_miss_oldz": 0,
+    "n_switched_new": 128,
+    "n_switched_oldz": 128,
+    "n_teacher": 128,
+    "all": {
+      "latent": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -15.9296875,
+          "median": 6.0,
+          "n": 128
+        },
+        "dx": {
+          "mean": 11.127702547433113,
+          "median": -2.332799474407281,
+          "n": 128
+        },
+        "height": {
+          "mean": -0.15847303211978714,
+          "median": -0.2608938660527542,
+          "n": 128
+        }
+      },
+      "oldz": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -42.1171875,
+          "median": -36.5,
+          "n": 128
+        },
+        "dx": {
+          "mean": 22.249039836482268,
+          "median": 7.581936571391992,
+          "n": 128
+        },
+        "height": {
+          "mean": 0.06701191447376065,
+          "median": -0.2575982457045427,
+          "n": 128
+        }
+      }
+    },
+    "successful_only_not_a_flag": {
+      "latent": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -15.9296875,
+          "median": 6.0,
+          "n": 128
+        },
+        "dx": {
+          "mean": 11.127702547433113,
+          "median": -2.332799474407281,
+          "n": 128
+        },
+        "height": {
+          "mean": -0.15847303211978714,
+          "median": -0.2608938660527542,
+          "n": 128
+        }
+      },
+      "oldz": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -42.1171875,
+          "median": -36.5,
+          "n": 128
+        },
+        "dx": {
+          "mean": 22.249039836482268,
+          "median": 7.581936571391992,
+          "n": 128
+        },
+        "height": {
+          "mean": 0.06701191447376065,
+          "median": -0.2575982457045427,
+          "n": 128
+        }
+      }
+    }
+  },
+  "probe": {
+    "flag_distance": true,
+    "flag_height": true,
+    "distance_l1": 0.007424884217633259,
+    "height_l1": 0.00037377841798566687,
+    "landf_distance_l1": 0.023070213844938355,
+    "landf_height_l1": 0.001061149483610149,
+    "distance_ratio": 0.32183855197607075,
+    "height_ratio": 0.3522391743659253
+  },
+  "cells": [
+    {
+      "controller": "latent",
+      "g": 2.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 14,
+      "crash": 0,
+      "miss": 16,
+      "of": 30
+    },
+    {
+      "controller": "oldz",
+      "g": 2.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 20,
+      "crash": 0,
+      "miss": 10,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 2.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 0,
+      "crash": 13,
+      "miss": 17,
+      "of": 30
+    },
+    {
+      "controller": "oldz",
+      "g": 2.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 2,
+      "crash": 18,
+      "miss": 10,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 8.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "oldz",
+      "g": 8.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 20,
+      "crash": 0,
+      "miss": 10,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 8.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 17,
+      "crash": 13,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "oldz",
+      "g": 8.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 0,
+      "crash": 20,
+      "miss": 10,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 15.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "oldz",
+      "g": 15.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "soft": 20,
+      "crash": 10,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 15.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 17,
+      "crash": 13,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "oldz",
+      "g": 15.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "soft": 0,
+      "crash": 30,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 2.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 0,
+      "crash": 6,
+      "miss": 24,
+      "of": 30
+    },
+    {
+      "controller": "oldz",
+      "g": 2.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 0,
+      "crash": 20,
+      "miss": 10,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 8.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 24,
+      "crash": 6,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "oldz",
+      "g": 8.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 0,
+      "crash": 20,
+      "miss": 10,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 15.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 24,
+      "crash": 6,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "oldz",
+      "g": 15.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 0,
+      "crash": 30,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 20.0,
+      "pad_x": 256.0,
+      "in_pass": false,
+      "soft": 30,
+      "crash": 0,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "oldz",
+      "g": 20.0,
+      "pad_x": 256.0,
+      "in_pass": false,
+      "soft": 20,
+      "crash": 10,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 20.0,
+      "pad_x": 200.0,
+      "in_pass": false,
+      "soft": 16,
+      "crash": 14,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "oldz",
+      "g": 20.0,
+      "pad_x": 200.0,
+      "in_pass": false,
+      "soft": 6,
+      "crash": 24,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "latent",
+      "g": 20.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 10,
+      "crash": 20,
+      "miss": 0,
+      "of": 30
+    },
+    {
+      "controller": "oldz",
+      "g": 20.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "soft": 0,
+      "crash": 30,
+      "miss": 0,
+      "of": 30
+    }
+  ],
+  "cell_pairs": [
+    {
+      "g": 2.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "latent_soft": 14,
+      "oldz_soft": 20,
+      "delta_soft": -6,
+      "counts_as_cell_result": true
+    },
+    {
+      "g": 2.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "latent_soft": 0,
+      "oldz_soft": 2,
+      "delta_soft": -2,
+      "counts_as_cell_result": false
+    },
+    {
+      "g": 8.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "latent_soft": 30,
+      "oldz_soft": 20,
+      "delta_soft": 10,
+      "counts_as_cell_result": true
+    },
+    {
+      "g": 8.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "latent_soft": 17,
+      "oldz_soft": 0,
+      "delta_soft": 17,
+      "counts_as_cell_result": true
+    },
+    {
+      "g": 15.0,
+      "pad_x": 256.0,
+      "in_pass": true,
+      "latent_soft": 30,
+      "oldz_soft": 20,
+      "delta_soft": 10,
+      "counts_as_cell_result": true
+    },
+    {
+      "g": 15.0,
+      "pad_x": 200.0,
+      "in_pass": true,
+      "latent_soft": 17,
+      "oldz_soft": 0,
+      "delta_soft": 17,
+      "counts_as_cell_result": true
+    },
+    {
+      "g": 2.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "latent_soft": 0,
+      "oldz_soft": 0,
+      "delta_soft": 0,
+      "counts_as_cell_result": false
+    },
+    {
+      "g": 8.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "latent_soft": 24,
+      "oldz_soft": 0,
+      "delta_soft": 24,
+      "counts_as_cell_result": true
+    },
+    {
+      "g": 15.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "latent_soft": 24,
+      "oldz_soft": 0,
+      "delta_soft": 24,
+      "counts_as_cell_result": true
+    },
+    {
+      "g": 20.0,
+      "pad_x": 256.0,
+      "in_pass": false,
+      "latent_soft": 30,
+      "oldz_soft": 20,
+      "delta_soft": 10,
+      "counts_as_cell_result": true
+    },
+    {
+      "g": 20.0,
+      "pad_x": 200.0,
+      "in_pass": false,
+      "latent_soft": 16,
+      "oldz_soft": 6,
+      "delta_soft": 10,
+      "counts_as_cell_result": true
+    },
+    {
+      "g": 20.0,
+      "pad_x": 406.0,
+      "in_pass": false,
+      "latent_soft": 10,
+      "oldz_soft": 0,
+      "delta_soft": 10,
+      "counts_as_cell_result": true
+    }
+  ],
+  "new_soft": 108,
+  "oldz_soft": 62,
+  "pass_n": 180,
+  "gap_ok": false,
+  "better_ok": true,
+  "latent_helped": true,
+  "pilot_pass": false
+}
