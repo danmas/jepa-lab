@@ -1,0 +1,212 @@
+{
+  "tag": "numeric-land-decision-early",
+  "head": "landd_early_s0.pt",
+  "also_seed_1": "landd_early_s1.pt",
+  "encoder": "landr_scratch_s0.pt",
+  "init": "fresh",
+  "trained_steps": 1000,
+  "batch": 256,
+  "threshold": 0.5,
+  "margin": 20.0,
+  "lambda": 0.3,
+  "early_step": 20,
+  "early_loss": "mean over approach frames of p_land * relu(|x-pad_x| - margin)",
+  "distance_unit": "pixel",
+  "cem": false,
+  "distance_margin_in_loop": false,
+  "skills_choose_action": false,
+  "soft_base": 108,
+  "soft_threshold_best": 112,
+  "soft_gain_min": 15,
+  "step_base_mean": -15.9296875,
+  "threshold_best_mean": -0.890625,
+  "early_ratio": 0.5,
+  "baseline_n_early_20": 40,
+  "v_target": 6.0,
+  "rows": [
+    {
+      "seed": 0,
+      "file": "landd_early_s0.pt",
+      "in_loop": true,
+      "timing": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": 47.796875,
+          "median": 34.0,
+          "min": 2.0,
+          "p25": 23.5,
+          "n": 128,
+          "n_early": 0,
+          "n_late": 128,
+          "n_tie": 0
+        },
+        "dx": {
+          "mean": -4.514577232964669,
+          "median": -4.7938674789209585,
+          "min": -5.886855021623774,
+          "p25": -5.272872820438508,
+          "n": 128,
+          "n_early": 126,
+          "n_late": 2,
+          "n_tie": 0
+        },
+        "n_early_20": 0
+      },
+      "n_early_20": 0,
+      "n_early_20_baseline": 40,
+      "soft": 120,
+      "of": 180,
+      "cells": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "soft": 0,
+          "crash": 0,
+          "miss": 30,
+          "of": 30
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "soft": 0,
+          "crash": 0,
+          "miss": 30,
+          "of": 30
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "of": 30
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "of": 30
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "of": 30
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "of": 30
+        }
+      ],
+      "cell_vs_108": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "soft": 0,
+          "crash": 0,
+          "miss": 30,
+          "baseline_soft": 14,
+          "delta_soft": -14,
+          "counts_as_cell_result": true
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "soft": 0,
+          "crash": 0,
+          "miss": 30,
+          "baseline_soft": 0,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "baseline_soft": 30,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "baseline_soft": 17,
+          "delta_soft": 13,
+          "counts_as_cell_result": true
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "baseline_soft": 30,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "baseline_soft": 17,
+          "delta_soft": 13,
+          "counts_as_cell_result": true
+        }
+      ],
+      "soft_minus_108": 12,
+      "soft_minus_112": 8,
+      "reading": "штраф в таком виде недостаточен"
+    },
+    {
+      "seed": 1,
+      "file": "landd_early_s1.pt",
+      "in_loop": false,
+      "timing": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": 52.0,
+          "median": 38.0,
+          "min": 3.0,
+          "p25": 25.75,
+          "n": 128,
+          "n_early": 0,
+          "n_late": 128,
+          "n_tie": 0
+        },
+        "dx": {
+          "mean": -4.524856525405738,
+          "median": -4.714361449622828,
+          "min": -5.935023011739361,
+          "p25": -5.308388406424527,
+          "n": 128,
+          "n_early": 126,
+          "n_late": 2,
+          "n_tie": 0
+        },
+        "n_early_20": 0
+      },
+      "n_early_20": 0,
+      "n_early_20_baseline": 40
+    }
+  ],
+  "reading": "штраф в таком виде недостаточен"
+}

@@ -1,0 +1,439 @@
+{
+  "tag": "numeric-land-decision-threshold",
+  "head": "landd_latent_s0.pt",
+  "encoder": "landr_scratch_s0.pt",
+  "checkpoint_threshold": 0.5,
+  "trained": false,
+  "cem": false,
+  "distance_margin": false,
+  "probe_in_loop": false,
+  "skills_choose_action": false,
+  "thresholds": [
+    0.5,
+    0.65,
+    0.7
+  ],
+  "soft_gain_min": 15,
+  "early_tail": "сдвиг шага < 0 на траектории учителя; пропуск в n_early не входит",
+  "v_target": 6.0,
+  "seeds": [
+    99000,
+    99029
+  ],
+  "g": [
+    2.0,
+    8.0,
+    15.0
+  ],
+  "pads": [
+    256.0,
+    200.0
+  ],
+  "timing_seeds": [
+    98800,
+    98927
+  ],
+  "published_soft_0_5": 108,
+  "rows": [
+    {
+      "threshold": 0.5,
+      "soft": 108,
+      "of": 180,
+      "timing": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -15.9296875,
+          "median": 6.0,
+          "min": -157.0,
+          "p25": -43.0,
+          "n": 128,
+          "n_early": 43,
+          "n_late": 82,
+          "n_tie": 3
+        },
+        "dx": {
+          "mean": 11.127702547433113,
+          "median": -2.332799474407281,
+          "min": -5.623322656338189,
+          "p25": -3.8698825031215804,
+          "n": 128,
+          "n_early": 82,
+          "n_late": 43,
+          "n_tie": 3
+        }
+      },
+      "cells": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "soft": 14,
+          "crash": 0,
+          "miss": 16,
+          "of": 30
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "soft": 0,
+          "crash": 13,
+          "miss": 17,
+          "of": 30
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "of": 30
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "soft": 17,
+          "crash": 13,
+          "miss": 0,
+          "of": 30
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "of": 30
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "soft": 17,
+          "crash": 13,
+          "miss": 0,
+          "of": 30
+        }
+      ],
+      "matches_published": {
+        "timing": true,
+        "cells": true
+      },
+      "soft_minus_0_5": 0,
+      "reading": "база этого прогона",
+      "cell_vs_0_5": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "soft": 14,
+          "soft_0_5": 14,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "soft": 0,
+          "soft_0_5": 0,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "soft_0_5": 30,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "soft": 17,
+          "soft_0_5": 17,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "soft_0_5": 30,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "soft": 17,
+          "soft_0_5": 17,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        }
+      ]
+    },
+    {
+      "threshold": 0.65,
+      "soft": 109,
+      "of": 180,
+      "timing": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -3.2421875,
+          "median": 10.0,
+          "min": -157.0,
+          "p25": 3.0,
+          "n": 128,
+          "n_early": 27,
+          "n_late": 99,
+          "n_tie": 2
+        },
+        "dx": {
+          "mean": 6.5769475351357265,
+          "median": -3.5206547263337313,
+          "min": -5.7183483441928615,
+          "p25": -4.565477609477469,
+          "n": 128,
+          "n_early": 98,
+          "n_late": 28,
+          "n_tie": 2
+        }
+      },
+      "cells": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "soft": 11,
+          "crash": 0,
+          "miss": 19,
+          "of": 30
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "soft": 0,
+          "crash": 11,
+          "miss": 19,
+          "of": 30
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "of": 30
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "soft": 19,
+          "crash": 11,
+          "miss": 0,
+          "of": 30
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "of": 30
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "soft": 19,
+          "crash": 11,
+          "miss": 0,
+          "of": 30
+        }
+      ],
+      "soft_minus_0_5": 1,
+      "reading": "простое поднятие порога недостаточно",
+      "cell_vs_0_5": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "soft": 11,
+          "soft_0_5": 14,
+          "delta_soft": -3,
+          "counts_as_cell_result": true
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "soft": 0,
+          "soft_0_5": 0,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "soft_0_5": 30,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "soft": 19,
+          "soft_0_5": 17,
+          "delta_soft": 2,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "soft_0_5": 30,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "soft": 19,
+          "soft_0_5": 17,
+          "delta_soft": 2,
+          "counts_as_cell_result": false
+        }
+      ]
+    },
+    {
+      "threshold": 0.7,
+      "soft": 112,
+      "of": 180,
+      "timing": {
+        "n_teacher": 128,
+        "n_miss": 0,
+        "n_switched": 128,
+        "step": {
+          "mean": -0.890625,
+          "median": 11.0,
+          "min": -157.0,
+          "p25": 4.0,
+          "n": 128,
+          "n_early": 26,
+          "n_late": 101,
+          "n_tie": 1
+        },
+        "dx": {
+          "mean": 5.897822603608734,
+          "median": -3.776111381040735,
+          "min": -5.706964850486088,
+          "p25": -4.624075163620958,
+          "n": 128,
+          "n_early": 100,
+          "n_late": 27,
+          "n_tie": 1
+        }
+      },
+      "cells": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "soft": 10,
+          "crash": 0,
+          "miss": 20,
+          "of": 30
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "soft": 0,
+          "crash": 9,
+          "miss": 21,
+          "of": 30
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "of": 30
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "soft": 21,
+          "crash": 9,
+          "miss": 0,
+          "of": 30
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "of": 30
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "soft": 21,
+          "crash": 9,
+          "miss": 0,
+          "of": 30
+        }
+      ],
+      "soft_minus_0_5": 4,
+      "reading": "простое поднятие порога недостаточно",
+      "cell_vs_0_5": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "soft": 10,
+          "soft_0_5": 14,
+          "delta_soft": -4,
+          "counts_as_cell_result": true
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "soft": 0,
+          "soft_0_5": 0,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "soft_0_5": 30,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "soft": 21,
+          "soft_0_5": 17,
+          "delta_soft": 4,
+          "counts_as_cell_result": true
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "soft_0_5": 30,
+          "delta_soft": 0,
+          "counts_as_cell_result": false
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "soft": 21,
+          "soft_0_5": 17,
+          "delta_soft": 4,
+          "counts_as_cell_result": true
+        }
+      ]
+    }
+  ]
+}

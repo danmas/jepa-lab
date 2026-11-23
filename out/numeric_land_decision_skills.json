@@ -1,0 +1,879 @@
+{
+  "tag": "numeric-land-decision-skills",
+  "threshold": 0.5,
+  "horizon": 3,
+  "n_sequences": 729,
+  "cem": false,
+  "horizon_40": false,
+  "trained": false,
+  "goal_height0": 0.0,
+  "goal_vy": 6.0,
+  "goal_fuel": "current",
+  "goal_x": "pad_x",
+  "goal_vx": 0.0,
+  "cost": "weighted mean L1 of predicted latent to ema(scale_rel(target_state))",
+  "step_weights": [
+    1.0,
+    0.5,
+    0.25
+  ],
+  "tie_break": "lowest sequence index",
+  "step_origin": 0,
+  "switch_is_teacher_shift": false,
+  "teacher_timing_recomputed": false,
+  "head_retrained": false,
+  "encoder": "landr_scratch_s0.pt",
+  "skills": {
+    "approach": "landk_approach_s0.pt",
+    "land": "landk_land_s0.pt"
+  },
+  "v_target": 6.0,
+  "seeds": [
+    99000,
+    99029
+  ],
+  "action_gap": {
+    "approach": 0.0004880450724158436,
+    "land": 0.0004715706454589963
+  },
+  "published_soft": {
+    "latent": 108,
+    "early": 120
+  },
+  "soft_line": 15,
+  "cell_line": 3,
+  "readings": {
+    "useful": "навыки полезны при неидеальном переключении",
+    "partial": "навыки полезны на части клеток",
+    "mixed": "навыки двигают клетки в разные стороны",
+    "weak": "прирост слабый: дело в моменте переключения"
+  },
+  "rows": [
+    {
+      "head": "latent",
+      "file": "landd_latent_s0.pt",
+      "published_soft": 108,
+      "matches_published": true,
+      "rule": {
+        "soft": 108,
+        "crash": 39,
+        "miss": 33,
+        "of": 180,
+        "fallback": 0,
+        "cells": [
+          {
+            "g": 2.0,
+            "pad_x": 256.0,
+            "soft": 14,
+            "crash": 0,
+            "miss": 16,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 0.0,
+              "median": 0.0,
+              "min": 0.0,
+              "n_switched": 14,
+              "n_never": 16,
+              "n": 30
+            },
+            "seconds": 3.878
+          },
+          {
+            "g": 2.0,
+            "pad_x": 200.0,
+            "soft": 0,
+            "crash": 13,
+            "miss": 17,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 0.0,
+              "median": 0.0,
+              "min": 0.0,
+              "n_switched": 13,
+              "n_never": 17,
+              "n": 30
+            },
+            "seconds": 3.835
+          },
+          {
+            "g": 8.0,
+            "pad_x": 256.0,
+            "soft": 30,
+            "crash": 0,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 134.66666666666666,
+              "median": 208.5,
+              "min": 0.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 1.517
+          },
+          {
+            "g": 8.0,
+            "pad_x": 200.0,
+            "soft": 17,
+            "crash": 13,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 124.73333333333333,
+              "median": 193.0,
+              "min": 0.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 1.494
+          },
+          {
+            "g": 15.0,
+            "pad_x": 256.0,
+            "soft": 30,
+            "crash": 0,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 65.9,
+              "median": 103.5,
+              "min": 0.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 1.133
+          },
+          {
+            "g": 15.0,
+            "pad_x": 200.0,
+            "soft": 17,
+            "crash": 13,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 65.2,
+              "median": 104.5,
+              "min": 0.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 1.114
+          }
+        ]
+      },
+      "skill": {
+        "soft": 6,
+        "crash": 174,
+        "miss": 0,
+        "of": 180,
+        "fallback": 0,
+        "cells": [
+          {
+            "g": 2.0,
+            "pad_x": 256.0,
+            "soft": 2,
+            "crash": 28,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 37.333333333333336,
+              "median": 6.0,
+              "min": 0.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 11.913
+          },
+          {
+            "g": 2.0,
+            "pad_x": 200.0,
+            "soft": 0,
+            "crash": 30,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 28.133333333333333,
+              "median": 3.0,
+              "min": 0.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 8.511
+          },
+          {
+            "g": 8.0,
+            "pad_x": 256.0,
+            "soft": 2,
+            "crash": 28,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 16.266666666666666,
+              "median": 2.0,
+              "min": 0.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 11.784
+          },
+          {
+            "g": 8.0,
+            "pad_x": 200.0,
+            "soft": 0,
+            "crash": 30,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 7.833333333333333,
+              "median": 1.0,
+              "min": 0.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 7.333
+          },
+          {
+            "g": 15.0,
+            "pad_x": 256.0,
+            "soft": 2,
+            "crash": 28,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 8.9,
+              "median": 1.5,
+              "min": 0.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 12.511
+          },
+          {
+            "g": 15.0,
+            "pad_x": 200.0,
+            "soft": 0,
+            "crash": 30,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 4.666666666666667,
+              "median": 1.0,
+              "min": 0.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 8.203
+          }
+        ]
+      },
+      "cell_delta": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "rule_soft": 14,
+          "skill_soft": 2,
+          "delta_soft": -12,
+          "rule_crash": 0,
+          "skill_crash": 28,
+          "rule_miss": 16,
+          "skill_miss": 0,
+          "counts_as_cell_result": true,
+          "rule_switch": {
+            "mean": 0.0,
+            "median": 0.0,
+            "min": 0.0,
+            "n_switched": 14,
+            "n_never": 16,
+            "n": 30
+          },
+          "skill_switch": {
+            "mean": 37.333333333333336,
+            "median": 6.0,
+            "min": 0.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          }
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "rule_soft": 0,
+          "skill_soft": 0,
+          "delta_soft": 0,
+          "rule_crash": 13,
+          "skill_crash": 30,
+          "rule_miss": 17,
+          "skill_miss": 0,
+          "counts_as_cell_result": false,
+          "rule_switch": {
+            "mean": 0.0,
+            "median": 0.0,
+            "min": 0.0,
+            "n_switched": 13,
+            "n_never": 17,
+            "n": 30
+          },
+          "skill_switch": {
+            "mean": 28.133333333333333,
+            "median": 3.0,
+            "min": 0.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          }
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "rule_soft": 30,
+          "skill_soft": 2,
+          "delta_soft": -28,
+          "rule_crash": 0,
+          "skill_crash": 28,
+          "rule_miss": 0,
+          "skill_miss": 0,
+          "counts_as_cell_result": true,
+          "rule_switch": {
+            "mean": 134.66666666666666,
+            "median": 208.5,
+            "min": 0.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          },
+          "skill_switch": {
+            "mean": 16.266666666666666,
+            "median": 2.0,
+            "min": 0.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          }
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "rule_soft": 17,
+          "skill_soft": 0,
+          "delta_soft": -17,
+          "rule_crash": 13,
+          "skill_crash": 30,
+          "rule_miss": 0,
+          "skill_miss": 0,
+          "counts_as_cell_result": true,
+          "rule_switch": {
+            "mean": 124.73333333333333,
+            "median": 193.0,
+            "min": 0.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          },
+          "skill_switch": {
+            "mean": 7.833333333333333,
+            "median": 1.0,
+            "min": 0.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          }
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "rule_soft": 30,
+          "skill_soft": 2,
+          "delta_soft": -28,
+          "rule_crash": 0,
+          "skill_crash": 28,
+          "rule_miss": 0,
+          "skill_miss": 0,
+          "counts_as_cell_result": true,
+          "rule_switch": {
+            "mean": 65.9,
+            "median": 103.5,
+            "min": 0.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          },
+          "skill_switch": {
+            "mean": 8.9,
+            "median": 1.5,
+            "min": 0.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          }
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "rule_soft": 17,
+          "skill_soft": 0,
+          "delta_soft": -17,
+          "rule_crash": 13,
+          "skill_crash": 30,
+          "rule_miss": 0,
+          "skill_miss": 0,
+          "counts_as_cell_result": true,
+          "rule_switch": {
+            "mean": 65.2,
+            "median": 104.5,
+            "min": 0.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          },
+          "skill_switch": {
+            "mean": 4.666666666666667,
+            "median": 1.0,
+            "min": 0.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          }
+        }
+      ],
+      "soft_minus_rule": -102,
+      "soft_minus_published": -102,
+      "reading": "прирост слабый: дело в моменте переключения"
+    },
+    {
+      "head": "early",
+      "file": "landd_early_s0.pt",
+      "published_soft": 120,
+      "matches_published": true,
+      "rule": {
+        "soft": 120,
+        "crash": 0,
+        "miss": 60,
+        "of": 180,
+        "fallback": 0,
+        "cells": [
+          {
+            "g": 2.0,
+            "pad_x": 256.0,
+            "soft": 0,
+            "crash": 0,
+            "miss": 30,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": null,
+              "median": null,
+              "min": null,
+              "n_switched": 0,
+              "n_never": 30,
+              "n": 30
+            },
+            "seconds": 6.57
+          },
+          {
+            "g": 2.0,
+            "pad_x": 200.0,
+            "soft": 0,
+            "crash": 0,
+            "miss": 30,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": null,
+              "median": null,
+              "min": null,
+              "n_switched": 0,
+              "n_never": 30,
+              "n": 30
+            },
+            "seconds": 6.17
+          },
+          {
+            "g": 8.0,
+            "pad_x": 256.0,
+            "soft": 30,
+            "crash": 0,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 363.6666666666667,
+              "median": 362.5,
+              "min": 312.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 3.277
+          },
+          {
+            "g": 8.0,
+            "pad_x": 200.0,
+            "soft": 30,
+            "crash": 0,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 339.6666666666667,
+              "median": 337.5,
+              "min": 292.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 3.083
+          },
+          {
+            "g": 15.0,
+            "pad_x": 256.0,
+            "soft": 30,
+            "crash": 0,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 184.63333333333333,
+              "median": 181.5,
+              "min": 156.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 2.115
+          },
+          {
+            "g": 15.0,
+            "pad_x": 200.0,
+            "soft": 30,
+            "crash": 0,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 171.96666666666667,
+              "median": 169.0,
+              "min": 144.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 1.823
+          }
+        ]
+      },
+      "skill": {
+        "soft": 6,
+        "crash": 174,
+        "miss": 0,
+        "of": 180,
+        "fallback": 0,
+        "cells": [
+          {
+            "g": 2.0,
+            "pad_x": 256.0,
+            "soft": 2,
+            "crash": 28,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 296.3333333333333,
+              "median": 292.0,
+              "min": 278.0,
+              "n_switched": 3,
+              "n_never": 27,
+              "n": 30
+            },
+            "seconds": 12.197
+          },
+          {
+            "g": 2.0,
+            "pad_x": 200.0,
+            "soft": 0,
+            "crash": 30,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 160.05,
+              "median": 140.5,
+              "min": 87.0,
+              "n_switched": 20,
+              "n_never": 10,
+              "n": 30
+            },
+            "seconds": 8.503
+          },
+          {
+            "g": 8.0,
+            "pad_x": 256.0,
+            "soft": 2,
+            "crash": 28,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 160.7,
+              "median": 149.5,
+              "min": 104.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 13.247
+          },
+          {
+            "g": 8.0,
+            "pad_x": 200.0,
+            "soft": 0,
+            "crash": 30,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 85.93333333333334,
+              "median": 75.0,
+              "min": 44.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 7.413
+          },
+          {
+            "g": 15.0,
+            "pad_x": 256.0,
+            "soft": 2,
+            "crash": 28,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 110.93333333333334,
+              "median": 104.0,
+              "min": 74.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 12.321
+          },
+          {
+            "g": 15.0,
+            "pad_x": 200.0,
+            "soft": 0,
+            "crash": 30,
+            "miss": 0,
+            "of": 30,
+            "fallback": 0,
+            "switch": {
+              "mean": 65.26666666666667,
+              "median": 57.5,
+              "min": 33.0,
+              "n_switched": 30,
+              "n_never": 0,
+              "n": 30
+            },
+            "seconds": 7.868
+          }
+        ]
+      },
+      "cell_delta": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "rule_soft": 0,
+          "skill_soft": 2,
+          "delta_soft": 2,
+          "rule_crash": 0,
+          "skill_crash": 28,
+          "rule_miss": 30,
+          "skill_miss": 0,
+          "counts_as_cell_result": false,
+          "rule_switch": {
+            "mean": null,
+            "median": null,
+            "min": null,
+            "n_switched": 0,
+            "n_never": 30,
+            "n": 30
+          },
+          "skill_switch": {
+            "mean": 296.3333333333333,
+            "median": 292.0,
+            "min": 278.0,
+            "n_switched": 3,
+            "n_never": 27,
+            "n": 30
+          }
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "rule_soft": 0,
+          "skill_soft": 0,
+          "delta_soft": 0,
+          "rule_crash": 0,
+          "skill_crash": 30,
+          "rule_miss": 30,
+          "skill_miss": 0,
+          "counts_as_cell_result": false,
+          "rule_switch": {
+            "mean": null,
+            "median": null,
+            "min": null,
+            "n_switched": 0,
+            "n_never": 30,
+            "n": 30
+          },
+          "skill_switch": {
+            "mean": 160.05,
+            "median": 140.5,
+            "min": 87.0,
+            "n_switched": 20,
+            "n_never": 10,
+            "n": 30
+          }
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "rule_soft": 30,
+          "skill_soft": 2,
+          "delta_soft": -28,
+          "rule_crash": 0,
+          "skill_crash": 28,
+          "rule_miss": 0,
+          "skill_miss": 0,
+          "counts_as_cell_result": true,
+          "rule_switch": {
+            "mean": 363.6666666666667,
+            "median": 362.5,
+            "min": 312.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          },
+          "skill_switch": {
+            "mean": 160.7,
+            "median": 149.5,
+            "min": 104.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          }
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "rule_soft": 30,
+          "skill_soft": 0,
+          "delta_soft": -30,
+          "rule_crash": 0,
+          "skill_crash": 30,
+          "rule_miss": 0,
+          "skill_miss": 0,
+          "counts_as_cell_result": true,
+          "rule_switch": {
+            "mean": 339.6666666666667,
+            "median": 337.5,
+            "min": 292.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          },
+          "skill_switch": {
+            "mean": 85.93333333333334,
+            "median": 75.0,
+            "min": 44.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          }
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "rule_soft": 30,
+          "skill_soft": 2,
+          "delta_soft": -28,
+          "rule_crash": 0,
+          "skill_crash": 28,
+          "rule_miss": 0,
+          "skill_miss": 0,
+          "counts_as_cell_result": true,
+          "rule_switch": {
+            "mean": 184.63333333333333,
+            "median": 181.5,
+            "min": 156.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          },
+          "skill_switch": {
+            "mean": 110.93333333333334,
+            "median": 104.0,
+            "min": 74.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          }
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "rule_soft": 30,
+          "skill_soft": 0,
+          "delta_soft": -30,
+          "rule_crash": 0,
+          "skill_crash": 30,
+          "rule_miss": 0,
+          "skill_miss": 0,
+          "counts_as_cell_result": true,
+          "rule_switch": {
+            "mean": 171.96666666666667,
+            "median": 169.0,
+            "min": 144.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          },
+          "skill_switch": {
+            "mean": 65.26666666666667,
+            "median": 57.5,
+            "min": 33.0,
+            "n_switched": 30,
+            "n_never": 0,
+            "n": 30
+          }
+        }
+      ],
+      "soft_minus_rule": -114,
+      "soft_minus_published": -114,
+      "reading": "прирост слабый: дело в моменте переключения"
+    }
+  ]
+}
