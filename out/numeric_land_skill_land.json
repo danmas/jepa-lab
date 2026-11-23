@@ -1,0 +1,415 @@
+{
+  "tag": "numeric-land-skill-land",
+  "horizon": 3,
+  "n_sequences": 729,
+  "cem": false,
+  "horizon_40": false,
+  "goal_vy": 6.0,
+  "goal_height0": 0.0,
+  "goal_fuel_train": 10.0,
+  "goal_fuel_loop": "current",
+  "expert_frac": 1.0,
+  "grid_n": 162,
+  "line": 114,
+  "decision_loaded": false,
+  "approach_loaded": false,
+  "hover_action": false,
+  "uses_start_and_actions": false,
+  "encoder": "landr_scratch_s0.pt",
+  "pool_windows": 20000,
+  "pool_cap": 20000,
+  "soft_episodes": 512,
+  "train_seeds": [
+    98000,
+    98511
+  ],
+  "seed1_trained": true,
+  "seed1_flown": false,
+  "seed1_final_loss": 0.00669,
+  "passed": false,
+  "rows": [
+    {
+      "name": "landk_pad_s0",
+      "scored": true,
+      "soft": 4,
+      "crash": 158,
+      "miss": 0,
+      "of": 162,
+      "cells": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "height": 32.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 202.444
+        },
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "height": 64.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 430.333
+        },
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "height": 128.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 774.0
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "height": 32.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 203.444
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "height": 64.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 437.222
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "height": 128.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 791.333
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "height": 32.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 197.333
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "height": 64.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 418.556
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "height": 128.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 693.333
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "height": 32.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 198.889
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "height": 64.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 423.667
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "height": 128.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 689.889
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "height": 32.0,
+          "n": 9,
+          "soft": 2,
+          "crash": 7,
+          "miss": 0,
+          "steps_mean": 187.444
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "height": 64.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 397.111
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "height": 128.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 687.556
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "height": 32.0,
+          "n": 9,
+          "soft": 2,
+          "crash": 7,
+          "miss": 0,
+          "steps_mean": 189.111
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "height": 64.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 399.111
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "height": 128.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 662.556
+        }
+      ],
+      "line_ok": false,
+      "final_loss": 0.00676
+    },
+    {
+      "name": "landk_land_s0",
+      "scored": false,
+      "soft": 7,
+      "crash": 155,
+      "miss": 0,
+      "of": 162,
+      "cells": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "height": 32.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 203.111
+        },
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "height": 64.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 444.667
+        },
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "height": 128.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 795.222
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "height": 32.0,
+          "n": 9,
+          "soft": 1,
+          "crash": 8,
+          "miss": 0,
+          "steps_mean": 201.556
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "height": 64.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 441.111
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "height": 128.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 802.778
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "height": 32.0,
+          "n": 9,
+          "soft": 1,
+          "crash": 8,
+          "miss": 0,
+          "steps_mean": 196.444
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "height": 64.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 434.444
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "height": 128.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 721.111
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "height": 32.0,
+          "n": 9,
+          "soft": 1,
+          "crash": 8,
+          "miss": 0,
+          "steps_mean": 196.444
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "height": 64.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 421.667
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "height": 128.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 709.778
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "height": 32.0,
+          "n": 9,
+          "soft": 2,
+          "crash": 7,
+          "miss": 0,
+          "steps_mean": 185.444
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "height": 64.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 402.444
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "height": 128.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 697.111
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "height": 32.0,
+          "n": 9,
+          "soft": 2,
+          "crash": 7,
+          "miss": 0,
+          "steps_mean": 186.222
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "height": 64.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 393.0
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "height": 128.0,
+          "n": 9,
+          "soft": 0,
+          "crash": 9,
+          "miss": 0,
+          "steps_mean": 665.333
+        }
+      ]
+    }
+  ],
+  "stamps_unchanged": true
+}
