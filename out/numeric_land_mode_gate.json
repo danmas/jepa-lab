@@ -1,0 +1,159 @@
+{
+  "tag": "numeric-land-mode-gate",
+  "source_json": "numeric_land_mode.json",
+  "checkpoint": "landm_latent_s0.pt",
+  "head_seed": 0,
+  "kind": "latent",
+  "threshold": 0.7,
+  "margin": 12.0,
+  "recorded_threshold": 0.5,
+  "nav_tol": 6.0,
+  "vy_soft": 8.0,
+  "v_target": 6.0,
+  "loop_seed0": 99000,
+  "loop_n": 30,
+  "pass_g": [
+    2.0,
+    8.0,
+    15.0
+  ],
+  "pass_pads": [
+    256.0,
+    200.0
+  ],
+  "help_at": 80,
+  "rule_soft_pass": 180,
+  "latent_soft_pass": 62,
+  "gate_soft_pass": 36,
+  "pass_n": 180,
+  "helped": false,
+  "gap_episodes": 144,
+  "old_gap_episodes": 118,
+  "planner": false,
+  "start_99000": {
+    "x": 243.91508751456374,
+    "y": 473.89944623363846
+  },
+  "cells": [
+    {
+      "g": 2.0,
+      "pad_x": 256.0,
+      "of": 30,
+      "rule": {
+        "soft": 30,
+        "crash": 0,
+        "miss": 0
+      },
+      "latent": {
+        "soft": 20,
+        "crash": 0,
+        "miss": 10
+      },
+      "gate": {
+        "soft": 11,
+        "crash": 0,
+        "miss": 19
+      }
+    },
+    {
+      "g": 2.0,
+      "pad_x": 200.0,
+      "of": 30,
+      "rule": {
+        "soft": 30,
+        "crash": 0,
+        "miss": 0
+      },
+      "latent": {
+        "soft": 2,
+        "crash": 19,
+        "miss": 9
+      },
+      "gate": {
+        "soft": 0,
+        "crash": 0,
+        "miss": 30
+      }
+    },
+    {
+      "g": 8.0,
+      "pad_x": 256.0,
+      "of": 30,
+      "rule": {
+        "soft": 30,
+        "crash": 0,
+        "miss": 0
+      },
+      "latent": {
+        "soft": 20,
+        "crash": 0,
+        "miss": 10
+      },
+      "gate": {
+        "soft": 12,
+        "crash": 0,
+        "miss": 18
+      }
+    },
+    {
+      "g": 8.0,
+      "pad_x": 200.0,
+      "of": 30,
+      "rule": {
+        "soft": 30,
+        "crash": 0,
+        "miss": 0
+      },
+      "latent": {
+        "soft": 0,
+        "crash": 21,
+        "miss": 9
+      },
+      "gate": {
+        "soft": 0,
+        "crash": 0,
+        "miss": 30
+      }
+    },
+    {
+      "g": 15.0,
+      "pad_x": 256.0,
+      "of": 30,
+      "rule": {
+        "soft": 30,
+        "crash": 0,
+        "miss": 0
+      },
+      "latent": {
+        "soft": 20,
+        "crash": 10,
+        "miss": 0
+      },
+      "gate": {
+        "soft": 13,
+        "crash": 17,
+        "miss": 0
+      }
+    },
+    {
+      "g": 15.0,
+      "pad_x": 200.0,
+      "of": 30,
+      "rule": {
+        "soft": 30,
+        "crash": 0,
+        "miss": 0
+      },
+      "latent": {
+        "soft": 0,
+        "crash": 30,
+        "miss": 0
+      },
+      "gate": {
+        "soft": 0,
+        "crash": 30,
+        "miss": 0
+      }
+    }
+  ]
+}
