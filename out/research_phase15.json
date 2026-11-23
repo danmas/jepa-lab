@@ -1,0 +1,126 @@
+{
+  "cells": [
+    [
+      "15/406 провал",
+      15.0,
+      406.0
+    ],
+    [
+      "15/256 норма",
+      15.0,
+      256.0
+    ],
+    [
+      "8/406 норма",
+      8.0,
+      406.0
+    ]
+  ],
+  "seeds": [
+    210000,
+    210029
+  ],
+  "report": [
+    {
+      "cell": "15/406 провал",
+      "g": 15.0,
+      "pad_x": 406.0,
+      "n": 30,
+      "tube_soft": 4,
+      "rule_soft": 30,
+      "tube_dry": 24,
+      "tube_steps_median": 608.0,
+      "rule_steps_median": 329.5,
+      "reach_median_step": 175.0,
+      "share_reached_corridor": 1.0,
+      "drift_after_reach_median_px": 626.8,
+      "drift_after_reach_max_px": 769.5,
+      "vx_mean_approach_tube": 40.762,
+      "vx_mean_approach_rule": 20.095,
+      "share_burn_steps": 0.8743,
+      "share_target_above_soft_in_land": 0.1732,
+      "dvy_land_mean": -0.5093,
+      "cost_gap_norm_mean": 0.34,
+      "first_vy_over_soft": [
+        {
+          "step": 193,
+          "h": 38.926,
+          "vy": 8.239,
+          "dx": 1.077,
+          "a": 1,
+          "tgt_vy": 8.739
+        }
+      ],
+      "hover_fuel_per_step": 0.015,
+      "hover_step_budget": 667
+    },
+    {
+      "cell": "15/256 норма",
+      "g": 15.0,
+      "pad_x": 256.0,
+      "n": 30,
+      "tube_soft": 30,
+      "rule_soft": 30,
+      "tube_dry": 0,
+      "tube_steps_median": 118.0,
+      "rule_steps_median": 287.0,
+      "reach_median_step": 22.5,
+      "share_reached_corridor": 1.0,
+      "drift_after_reach_median_px": 5.8,
+      "drift_after_reach_max_px": 6.0,
+      "vx_mean_approach_tube": 6.414,
+      "vx_mean_approach_rule": 2.1,
+      "share_burn_steps": 0.7071,
+      "share_target_above_soft_in_land": 0.8838,
+      "dvy_land_mean": 0.0,
+      "cost_gap_norm_mean": 0.1124,
+      "first_vy_over_soft": [
+        {
+          "step": 41,
+          "h": 39.869,
+          "vy": 8.239,
+          "dx": 1.911,
+          "a": 2,
+          "tgt_vy": 8.739
+        }
+      ],
+      "hover_fuel_per_step": 0.015,
+      "hover_step_budget": 667
+    },
+    {
+      "cell": "8/406 норма",
+      "g": 8.0,
+      "pad_x": 406.0,
+      "n": 30,
+      "tube_soft": 30,
+      "rule_soft": 30,
+      "tube_dry": 0,
+      "tube_steps_median": 283.0,
+      "rule_steps_median": 562.0,
+      "reach_median_step": 175.0,
+      "share_reached_corridor": 1.0,
+      "drift_after_reach_median_px": 5.7,
+      "drift_after_reach_max_px": 5.9,
+      "vx_mean_approach_tube": 21.418,
+      "vx_mean_approach_rule": 10.508,
+      "share_burn_steps": 0.3823,
+      "share_target_above_soft_in_land": 0.941,
+      "dvy_land_mean": 0.0,
+      "cost_gap_norm_mean": 0.0758,
+      "first_vy_over_soft": [
+        {
+          "step": 209,
+          "h": 41.86,
+          "vy": 8.139,
+          "dx": 2.971,
+          "a": 0,
+          "tgt_vy": 8.406
+        }
+      ],
+      "hover_fuel_per_step": 0.008,
+      "hover_step_budget": 1250
+    }
+  ],
+  "heads_trained": false,
+  "stamps_unchanged": true
+}
