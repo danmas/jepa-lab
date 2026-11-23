@@ -1,0 +1,5347 @@
+{
+  "tag": "numeric-land-skill-decision",
+  "grid_n": 180,
+  "line": 100,
+  "ratio_min": 0.85,
+  "ratio_need": 102,
+  "threshold": 0.5,
+  "horizon": 3,
+  "n_sequences": 729,
+  "cem": false,
+  "rule_action_in_scored": false,
+  "heads_trained": false,
+  "tube_gain": 174,
+  "tube_gain_ok": true,
+  "control_ok": true,
+  "stamps_unchanged": true,
+  "pilot_pass": true,
+  "line_ok": true,
+  "tube_clipped": 360,
+  "gain_min": 18,
+  "control_early": 120,
+  "control_latent": 108,
+  "v_target": 6.0,
+  "seeds": [
+    99000,
+    99029
+  ],
+  "step_origin": 0,
+  "step_weights": [
+    1.0,
+    0.5,
+    0.25
+  ],
+  "tube_targets": 3,
+  "height_gt_128_is_gate": false,
+  "encoder": "landr_scratch_s0.pt",
+  "heads": {
+    "early": "landd_early_s0.pt",
+    "latent": "landd_latent_s0.pt"
+  },
+  "skills": {
+    "land": "landk_pad_s0.pt",
+    "approach": "landk_approach_s0.pt"
+  },
+  "early_s1_flown": false,
+  "pad_s1_flown": false,
+  "approach_s1_flown": false,
+  "approach_s2_flown": false,
+  "prior_closed_loop_soft": {
+    "early_rule": 120,
+    "latent_rule": 108,
+    "skill_terminal_landk_land_s0": 6
+  },
+  "switches": {
+    "n": 180,
+    "n_switch": 180,
+    "n_no_switch": 0,
+    "n_opened_in_land": 0,
+    "median_step": 112.0,
+    "median_height": 24.993214163684968,
+    "median_abs_dx": 0.7171725290404254,
+    "share_no_switch": 0.0,
+    "n_height_gt_128": 0,
+    "share_height_gt_128": 0.0,
+    "height_gt_128_is_gate": false
+  },
+  "columns": [
+    {
+      "name": "rule_early",
+      "kind": "rule",
+      "scored": false,
+      "soft": 120,
+      "crash": 0,
+      "miss": 60,
+      "fuel_out": 0,
+      "of": 180,
+      "tube_clipped": 0,
+      "cells": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "soft": 0,
+          "crash": 0,
+          "miss": 30,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 900.0
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "soft": 0,
+          "crash": 0,
+          "miss": 30,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 900.0
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 468.267
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 444.133
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 278.667
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 266.1
+        }
+      ],
+      "by_g": [
+        {
+          "soft": 0,
+          "crash": 0,
+          "miss": 60,
+          "fuel_out": 0,
+          "of": 60,
+          "g": 2.0
+        },
+        {
+          "soft": 60,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 60,
+          "g": 8.0
+        },
+        {
+          "soft": 60,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 60,
+          "g": 15.0
+        }
+      ],
+      "by_pad": [
+        {
+          "soft": 60,
+          "crash": 0,
+          "miss": 30,
+          "fuel_out": 0,
+          "of": 90,
+          "pad_x": 256.0
+        },
+        {
+          "soft": 60,
+          "crash": 0,
+          "miss": 30,
+          "fuel_out": 0,
+          "of": 90,
+          "pad_x": 200.0
+        }
+      ],
+      "failures": [
+        {
+          "seed": 99000,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99001,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99002,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99003,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99004,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99005,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99006,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99007,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99008,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99009,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99010,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99011,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99012,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99013,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99014,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99015,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99016,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99017,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99018,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99019,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99020,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99021,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99022,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99023,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99024,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99025,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99026,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99027,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99028,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99029,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99000,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99001,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99002,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99003,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99004,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99005,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99006,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99007,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99008,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99009,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99010,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99011,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99012,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99013,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99014,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99015,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99016,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99017,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99018,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99019,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99020,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99021,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99022,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99023,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99024,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99025,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99026,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99027,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99028,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99029,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        }
+      ]
+    },
+    {
+      "name": "rule_latent",
+      "kind": "rule",
+      "scored": false,
+      "soft": 108,
+      "crash": 39,
+      "miss": 33,
+      "fuel_out": 0,
+      "of": 180,
+      "tube_clipped": 0,
+      "cells": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "soft": 14,
+          "crash": 0,
+          "miss": 16,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 533.333
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "soft": 0,
+          "crash": 13,
+          "miss": 17,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 558.967
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 229.3
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "soft": 17,
+          "crash": 13,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 219.6
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 158.933
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "soft": 17,
+          "crash": 13,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 158.5
+        }
+      ],
+      "by_g": [
+        {
+          "soft": 14,
+          "crash": 13,
+          "miss": 33,
+          "fuel_out": 0,
+          "of": 60,
+          "g": 2.0
+        },
+        {
+          "soft": 47,
+          "crash": 13,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 60,
+          "g": 8.0
+        },
+        {
+          "soft": 47,
+          "crash": 13,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 60,
+          "g": 15.0
+        }
+      ],
+      "by_pad": [
+        {
+          "soft": 74,
+          "crash": 0,
+          "miss": 16,
+          "fuel_out": 0,
+          "of": 90,
+          "pad_x": 256.0
+        },
+        {
+          "soft": 34,
+          "crash": 39,
+          "miss": 17,
+          "fuel_out": 0,
+          "of": 90,
+          "pad_x": 200.0
+        }
+      ],
+      "failures": [
+        {
+          "seed": 99000,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99001,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99003,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99004,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99007,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99010,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99011,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99012,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99014,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99015,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99019,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99022,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99023,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99024,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99026,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99028,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99000,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99001,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99002,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99003,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99004,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99005,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 112,
+          "fuel_out": false
+        },
+        {
+          "seed": 99006,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 101,
+          "fuel_out": false
+        },
+        {
+          "seed": 99007,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99008,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 96,
+          "fuel_out": false
+        },
+        {
+          "seed": 99009,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 127,
+          "fuel_out": false
+        },
+        {
+          "seed": 99010,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99011,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99012,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99013,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 110,
+          "fuel_out": false
+        },
+        {
+          "seed": 99014,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99015,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99016,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 126,
+          "fuel_out": false
+        },
+        {
+          "seed": 99017,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 101,
+          "fuel_out": false
+        },
+        {
+          "seed": 99018,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 111,
+          "fuel_out": false
+        },
+        {
+          "seed": 99019,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99020,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 88,
+          "fuel_out": false
+        },
+        {
+          "seed": 99021,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 155,
+          "fuel_out": false
+        },
+        {
+          "seed": 99022,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99023,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99024,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99025,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 105,
+          "fuel_out": false
+        },
+        {
+          "seed": 99026,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99027,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 113,
+          "fuel_out": false
+        },
+        {
+          "seed": 99028,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "не сел",
+          "steps": 900,
+          "fuel_out": false
+        },
+        {
+          "seed": 99029,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 124,
+          "fuel_out": false
+        },
+        {
+          "seed": 99005,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 83,
+          "fuel_out": false
+        },
+        {
+          "seed": 99006,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 72,
+          "fuel_out": false
+        },
+        {
+          "seed": 99008,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 67,
+          "fuel_out": false
+        },
+        {
+          "seed": 99009,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 84,
+          "fuel_out": false
+        },
+        {
+          "seed": 99013,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 84,
+          "fuel_out": false
+        },
+        {
+          "seed": 99016,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 88,
+          "fuel_out": false
+        },
+        {
+          "seed": 99017,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 71,
+          "fuel_out": false
+        },
+        {
+          "seed": 99018,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 83,
+          "fuel_out": false
+        },
+        {
+          "seed": 99020,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 69,
+          "fuel_out": false
+        },
+        {
+          "seed": 99021,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 103,
+          "fuel_out": false
+        },
+        {
+          "seed": 99025,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 80,
+          "fuel_out": false
+        },
+        {
+          "seed": 99027,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 82,
+          "fuel_out": false
+        },
+        {
+          "seed": 99029,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 91,
+          "fuel_out": false
+        },
+        {
+          "seed": 99005,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 87,
+          "fuel_out": false
+        },
+        {
+          "seed": 99006,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 75,
+          "fuel_out": false
+        },
+        {
+          "seed": 99008,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 69,
+          "fuel_out": false
+        },
+        {
+          "seed": 99009,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 87,
+          "fuel_out": false
+        },
+        {
+          "seed": 99013,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 91,
+          "fuel_out": false
+        },
+        {
+          "seed": 99016,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 90,
+          "fuel_out": false
+        },
+        {
+          "seed": 99017,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 77,
+          "fuel_out": false
+        },
+        {
+          "seed": 99018,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 94,
+          "fuel_out": false
+        },
+        {
+          "seed": 99020,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 74,
+          "fuel_out": false
+        },
+        {
+          "seed": 99021,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 108,
+          "fuel_out": false
+        },
+        {
+          "seed": 99025,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 88,
+          "fuel_out": false
+        },
+        {
+          "seed": 99027,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 88,
+          "fuel_out": false
+        },
+        {
+          "seed": 99029,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 98,
+          "fuel_out": false
+        }
+      ]
+    },
+    {
+      "name": "skill_tube",
+      "kind": "tube",
+      "scored": true,
+      "soft": 180,
+      "crash": 0,
+      "miss": 0,
+      "fuel_out": 0,
+      "of": 180,
+      "tube_clipped": 360,
+      "cells": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 194.667
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 287.5
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 116.5
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 199.767
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 112.267
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "soft": 30,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 192.467
+        }
+      ],
+      "by_g": [
+        {
+          "soft": 60,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 60,
+          "g": 2.0
+        },
+        {
+          "soft": 60,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 60,
+          "g": 8.0
+        },
+        {
+          "soft": 60,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 60,
+          "g": 15.0
+        }
+      ],
+      "by_pad": [
+        {
+          "soft": 90,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 90,
+          "pad_x": 256.0
+        },
+        {
+          "soft": 90,
+          "crash": 0,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 90,
+          "pad_x": 200.0
+        }
+      ],
+      "failures": [],
+      "episodes": [
+        {
+          "seed": 99000,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 241,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 203,
+          "switch_height": 12.9018201431914,
+          "switch_abs_dx": 0.8052249409854539
+        },
+        {
+          "seed": 99001,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 206,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 181,
+          "switch_height": 8.032806530414803,
+          "switch_abs_dx": 0.547327553276574
+        },
+        {
+          "seed": 99002,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 224,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 193,
+          "switch_height": 9.892787290374315,
+          "switch_abs_dx": 0.6805240644248158
+        },
+        {
+          "seed": 99003,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 246,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 204,
+          "switch_height": 15.620699446302353,
+          "switch_abs_dx": 0.4283797221887653
+        },
+        {
+          "seed": 99004,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 224,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 196,
+          "switch_height": 8.74687927060296,
+          "switch_abs_dx": 0.7520478048784298
+        },
+        {
+          "seed": 99005,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 226,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 189,
+          "switch_height": 12.35809962032016,
+          "switch_abs_dx": 0.24046301555895866
+        },
+        {
+          "seed": 99006,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 174,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 157,
+          "switch_height": 4.846389602582462,
+          "switch_abs_dx": 0.6334107068306025
+        },
+        {
+          "seed": 99007,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 173,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 155,
+          "switch_height": 5.530144400608037,
+          "switch_abs_dx": 0.6367876551320819
+        },
+        {
+          "seed": 99008,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 179,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 163,
+          "switch_height": 4.464203936714341,
+          "switch_abs_dx": 0.17474793378218578
+        },
+        {
+          "seed": 99009,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 149,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 125,
+          "switch_height": 7.704143928536894,
+          "switch_abs_dx": 0.6764451728255096
+        },
+        {
+          "seed": 99010,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 229,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 193,
+          "switch_height": 12.91643057522117,
+          "switch_abs_dx": 0.35819684686345
+        },
+        {
+          "seed": 99011,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 183,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 171,
+          "switch_height": 3.09790702271755,
+          "switch_abs_dx": 0.6670291772837516
+        },
+        {
+          "seed": 99012,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 261,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 223,
+          "switch_height": 14.22099943762214,
+          "switch_abs_dx": 0.7264810668562518
+        },
+        {
+          "seed": 99013,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 216,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 177,
+          "switch_height": 13.189507562645076,
+          "switch_abs_dx": 0.5458916994709568
+        },
+        {
+          "seed": 99014,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 242,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 206,
+          "switch_height": 12.08991119301902,
+          "switch_abs_dx": 0.38212238582823943
+        },
+        {
+          "seed": 99015,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 214,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 181,
+          "switch_height": 11.625904849434505,
+          "switch_abs_dx": 0.7705955061026657
+        },
+        {
+          "seed": 99016,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 126,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 91,
+          "switch_height": 12.37339235331757,
+          "switch_abs_dx": 0.6409405535027304
+        },
+        {
+          "seed": 99017,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 183,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 163,
+          "switch_height": 5.724047722105979,
+          "switch_abs_dx": 0.5990204129168433
+        },
+        {
+          "seed": 99018,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 111,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 67,
+          "switch_height": 17.168157484098742,
+          "switch_abs_dx": 0.3508372841627079
+        },
+        {
+          "seed": 99019,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 156,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 112,
+          "switch_height": 17.20531602342419,
+          "switch_abs_dx": 0.7330613353744582
+        },
+        {
+          "seed": 99020,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 88,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 58,
+          "switch_height": 10.401694472409758,
+          "switch_abs_dx": 0.18734966469688175
+        },
+        {
+          "seed": 99021,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 235,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 189,
+          "switch_height": 17.096465429918737,
+          "switch_abs_dx": 0.6658450540496119
+        },
+        {
+          "seed": 99022,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 204,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 191,
+          "switch_height": 3.640412655339844,
+          "switch_abs_dx": 0.39416791143509045
+        },
+        {
+          "seed": 99023,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 229,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 203,
+          "switch_height": 8.2907097626898,
+          "switch_abs_dx": 0.35068913243486577
+        },
+        {
+          "seed": 99024,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 219,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 192,
+          "switch_height": 8.896772197797588,
+          "switch_abs_dx": 0.24150504796494943
+        },
+        {
+          "seed": 99025,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 105,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 68,
+          "switch_height": 13.643613808720147,
+          "switch_abs_dx": 0.6425733483922613
+        },
+        {
+          "seed": 99026,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 249,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 209,
+          "switch_height": 13.771239451395104,
+          "switch_abs_dx": 0.372433784270811
+        },
+        {
+          "seed": 99027,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 113,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 82,
+          "switch_height": 10.923273716156189,
+          "switch_abs_dx": 0.574964354047097
+        },
+        {
+          "seed": 99028,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 219,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 190,
+          "switch_height": 9.951345960626043,
+          "switch_abs_dx": 0.40998342855141345
+        },
+        {
+          "seed": 99029,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 216,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 172,
+          "switch_height": 15.502854975977243,
+          "switch_abs_dx": 0.7273176998392614
+        },
+        {
+          "seed": 99000,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 272,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 224,
+          "switch_height": 16.312066090219787,
+          "switch_abs_dx": 0.6927104218813156
+        },
+        {
+          "seed": 99001,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 290,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 248,
+          "switch_height": 13.36927701864505,
+          "switch_abs_dx": 0.7010735302272337
+        },
+        {
+          "seed": 99002,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 307,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 260,
+          "switch_height": 15.14512514409887,
+          "switch_abs_dx": 0.6807932364136491
+        },
+        {
+          "seed": 99003,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 308,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 254,
+          "switch_height": 20.25970486591524,
+          "switch_abs_dx": 0.6688719526720774
+        },
+        {
+          "seed": 99004,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 307,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 263,
+          "switch_height": 13.988023318288128,
+          "switch_abs_dx": 0.6854338767047352
+        },
+        {
+          "seed": 99005,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 299,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 247,
+          "switch_height": 17.074437488066167,
+          "switch_abs_dx": 0.694883772639372
+        },
+        {
+          "seed": 99006,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 268,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 233,
+          "switch_height": 10.225675925896155,
+          "switch_abs_dx": 0.7042749504248604
+        },
+        {
+          "seed": 99007,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 278,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 241,
+          "switch_height": 11.629575272682871,
+          "switch_abs_dx": 0.7498032416652052
+        },
+        {
+          "seed": 99008,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 263,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 230,
+          "switch_height": 9.289534884695115,
+          "switch_abs_dx": 0.647933405516568
+        },
+        {
+          "seed": 99009,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 280,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 237,
+          "switch_height": 13.79836115188482,
+          "switch_abs_dx": 0.6724706923234578
+        },
+        {
+          "seed": 99010,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 301,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 252,
+          "switch_height": 17.992636851433645,
+          "switch_abs_dx": 0.8177555142705444
+        },
+        {
+          "seed": 99011,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 267,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 238,
+          "switch_height": 8.243688170859457,
+          "switch_abs_dx": 0.6735226497034432
+        },
+        {
+          "seed": 99012,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 303,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 253,
+          "switch_height": 18.479181250529734,
+          "switch_abs_dx": 0.6912988143276664
+        },
+        {
+          "seed": 99013,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 300,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 244,
+          "switch_height": 18.481688035821776,
+          "switch_abs_dx": 0.6953202917086116
+        },
+        {
+          "seed": 99014,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 315,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 265,
+          "switch_height": 16.60787189054065,
+          "switch_abs_dx": 0.7000145410084997
+        },
+        {
+          "seed": 99015,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 297,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 249,
+          "switch_height": 17.007487538610235,
+          "switch_abs_dx": 0.6736692857857918
+        },
+        {
+          "seed": 99016,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 293,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 242,
+          "switch_height": 16.978905849209866,
+          "switch_abs_dx": 0.6951523906566877
+        },
+        {
+          "seed": 99017,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 266,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 229,
+          "switch_height": 10.96558191689212,
+          "switch_abs_dx": 0.49893262831139396
+        },
+        {
+          "seed": 99018,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 292,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 237,
+          "switch_height": 18.328488871749585,
+          "switch_abs_dx": 0.716514134302372
+        },
+        {
+          "seed": 99019,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 319,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 257,
+          "switch_height": 22.909576762173117,
+          "switch_abs_dx": 0.662677959236305
+        },
+        {
+          "seed": 99020,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 267,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 228,
+          "switch_height": 11.544704899810824,
+          "switch_abs_dx": 0.6587339682701554
+        },
+        {
+          "seed": 99021,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 308,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 248,
+          "switch_height": 21.915799250409407,
+          "switch_abs_dx": 0.6778947926863736
+        },
+        {
+          "seed": 99022,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 256,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 231,
+          "switch_height": 7.510486053775082,
+          "switch_abs_dx": 0.7508979011758754
+        },
+        {
+          "seed": 99023,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 260,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 224,
+          "switch_height": 11.72178049496631,
+          "switch_abs_dx": 0.7241243592205251
+        },
+        {
+          "seed": 99024,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 271,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 231,
+          "switch_height": 13.327940785769613,
+          "switch_abs_dx": 0.6976219578347695
+        },
+        {
+          "seed": 99025,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 290,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 240,
+          "switch_height": 15.784060746306523,
+          "switch_abs_dx": 0.6544837479984267
+        },
+        {
+          "seed": 99026,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 269,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 220,
+          "switch_height": 17.027008976627428,
+          "switch_abs_dx": 0.6977640058742338
+        },
+        {
+          "seed": 99027,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 278,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 232,
+          "switch_height": 14.436384395035134,
+          "switch_abs_dx": 0.6839774110001997
+        },
+        {
+          "seed": 99028,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 292,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 249,
+          "switch_height": 14.7682905450676,
+          "switch_abs_dx": 0.7151929099689482
+        },
+        {
+          "seed": 99029,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 309,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 249,
+          "switch_height": 21.068875650814903,
+          "switch_abs_dx": 0.7178309237784788
+        },
+        {
+          "seed": 99000,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 150,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 85,
+          "switch_height": 30.046787361476333,
+          "switch_abs_dx": 0.39998906421578795
+        },
+        {
+          "seed": 99001,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 123,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 69,
+          "switch_height": 23.348524188563715,
+          "switch_abs_dx": 0.13932536186274547
+        },
+        {
+          "seed": 99002,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 142,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 84,
+          "switch_height": 25.73619784675259,
+          "switch_abs_dx": 0.11430892698413686
+        },
+        {
+          "seed": 99003,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 143,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 74,
+          "switch_height": 35.64150757753089,
+          "switch_abs_dx": 0.037766589603052125
+        },
+        {
+          "seed": 99004,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 143,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 87,
+          "switch_height": 24.488168970803713,
+          "switch_abs_dx": 0.6611846699424575
+        },
+        {
+          "seed": 99005,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 139,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 79,
+          "switch_height": 27.073857304097203,
+          "switch_abs_dx": 0.8511781885809171
+        },
+        {
+          "seed": 99006,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 95,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 50,
+          "switch_height": 17.833213097683313,
+          "switch_abs_dx": 0.5102183378779159
+        },
+        {
+          "seed": 99007,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 96,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 47,
+          "switch_height": 21.209928886839634,
+          "switch_abs_dx": 0.21322997834505486
+        },
+        {
+          "seed": 99008,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 106,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 63,
+          "switch_height": 17.20065857488555,
+          "switch_abs_dx": 0.8320832660661779
+        },
+        {
+          "seed": 99009,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 90,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 40,
+          "switch_height": 22.77172708740494,
+          "switch_abs_dx": 0.7848240366598702
+        },
+        {
+          "seed": 99010,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 119,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 58,
+          "switch_height": 30.913359717220715,
+          "switch_abs_dx": 0.2430595940931255
+        },
+        {
+          "seed": 99011,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 111,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 68,
+          "switch_height": 17.24590184141124,
+          "switch_abs_dx": 0.03195711031304427
+        },
+        {
+          "seed": 99012,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 127,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 65,
+          "switch_height": 31.565686334086877,
+          "switch_abs_dx": 0.1024479587036069
+        },
+        {
+          "seed": 99013,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 127,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 67,
+          "switch_height": 28.040388709502622,
+          "switch_abs_dx": 0.8543491974299684
+        },
+        {
+          "seed": 99014,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 149,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 88,
+          "switch_height": 28.429545353531466,
+          "switch_abs_dx": 0.49306290617053605
+        },
+        {
+          "seed": 99015,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 115,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 55,
+          "switch_height": 29.1215996704712,
+          "switch_abs_dx": 0.4898704636229638
+        },
+        {
+          "seed": 99016,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 88,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 30,
+          "switch_height": 27.46254105880331,
+          "switch_abs_dx": 1.075352528615582
+        },
+        {
+          "seed": 99017,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 102,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 56,
+          "switch_height": 19.059708615070576,
+          "switch_abs_dx": 0.3746756534539486
+        },
+        {
+          "seed": 99018,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 83,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 23,
+          "switch_height": 30.166137072654408,
+          "switch_abs_dx": 2.011259469206948
+        },
+        {
+          "seed": 99019,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 106,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 38,
+          "switch_height": 34.96498065790155,
+          "switch_abs_dx": 0.14046941542238756
+        },
+        {
+          "seed": 99020,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 69,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 21,
+          "switch_height": 20.54723534017154,
+          "switch_abs_dx": 1.7243458583238862
+        },
+        {
+          "seed": 99021,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 144,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 74,
+          "switch_height": 35.34766975344405,
+          "switch_abs_dx": 0.87183716558161
+        },
+        {
+          "seed": 99022,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 97,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 55,
+          "switch_height": 17.08660754510464,
+          "switch_abs_dx": 0.018058340981639276
+        },
+        {
+          "seed": 99023,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 145,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 88,
+          "switch_height": 25.26468749863568,
+          "switch_abs_dx": 0.6345755889357747
+        },
+        {
+          "seed": 99024,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 136,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 78,
+          "switch_height": 26.417287949194986,
+          "switch_abs_dx": 0.8328416530388267
+        },
+        {
+          "seed": 99025,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 80,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 24,
+          "switch_height": 25.79342195646916,
+          "switch_abs_dx": 0.3948921026697576
+        },
+        {
+          "seed": 99026,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 159,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 93,
+          "switch_height": 31.207568902480773,
+          "switch_abs_dx": 0.85578345904662
+        },
+        {
+          "seed": 99027,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 82,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 28,
+          "switch_height": 24.303887205093133,
+          "switch_abs_dx": 1.5131499438693368
+        },
+        {
+          "seed": 99028,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 113,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 56,
+          "switch_height": 26.76178820387156,
+          "switch_abs_dx": 0.08922517132441499
+        },
+        {
+          "seed": 99029,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 116,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 51,
+          "switch_height": 31.63910820123209,
+          "switch_abs_dx": 0.5187268901571827
+        },
+        {
+          "seed": 99000,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 180,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 109,
+          "switch_height": 32.38611606284212,
+          "switch_abs_dx": 2.134313243333736
+        },
+        {
+          "seed": 99001,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 205,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 139,
+          "switch_height": 28.327589541109944,
+          "switch_abs_dx": 2.371499376765854
+        },
+        {
+          "seed": 99002,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 223,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 152,
+          "switch_height": 30.15641470658585,
+          "switch_abs_dx": 1.753170969913981
+        },
+        {
+          "seed": 99003,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 206,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 127,
+          "switch_height": 40.208408877876195,
+          "switch_abs_dx": 2.0427783127525174
+        },
+        {
+          "seed": 99004,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 219,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 151,
+          "switch_height": 28.573772571909842,
+          "switch_abs_dx": 2.3678688347979744
+        },
+        {
+          "seed": 99005,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 214,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 142,
+          "switch_height": 31.462408206419582,
+          "switch_abs_dx": 2.2480716197901245
+        },
+        {
+          "seed": 99006,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 187,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 129,
+          "switch_height": 22.505599904518988,
+          "switch_abs_dx": 1.9639252425633629
+        },
+        {
+          "seed": 99007,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 200,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 135,
+          "switch_height": 27.337511898057755,
+          "switch_abs_dx": 2.426537476094296
+        },
+        {
+          "seed": 99008,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 185,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 128,
+          "switch_height": 21.468185282296076,
+          "switch_abs_dx": 1.836148633414382
+        },
+        {
+          "seed": 99009,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 194,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 127,
+          "switch_height": 28.329873998000892,
+          "switch_abs_dx": 2.2356907228522402
+        },
+        {
+          "seed": 99010,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 212,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 134,
+          "switch_height": 37.249113187897365,
+          "switch_abs_dx": 2.3741492079989825
+        },
+        {
+          "seed": 99011,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 193,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 135,
+          "switch_height": 21.856127433997017,
+          "switch_abs_dx": 2.371405283326254
+        },
+        {
+          "seed": 99012,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 201,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 126,
+          "switch_height": 36.99398935366577,
+          "switch_abs_dx": 1.6122074277378147
+        },
+        {
+          "seed": 99013,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 206,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 133,
+          "switch_height": 32.38452668805439,
+          "switch_abs_dx": 2.2292746986551606
+        },
+        {
+          "seed": 99014,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 232,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 156,
+          "switch_height": 32.94033998043028,
+          "switch_abs_dx": 2.0591875780638134
+        },
+        {
+          "seed": 99015,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 200,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 127,
+          "switch_height": 34.85739310606948,
+          "switch_abs_dx": 1.7512371545641088
+        },
+        {
+          "seed": 99016,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 204,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 133,
+          "switch_height": 32.014160639885745,
+          "switch_abs_dx": 1.7898084719246867
+        },
+        {
+          "seed": 99017,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 187,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 126,
+          "switch_height": 23.576150606173314,
+          "switch_abs_dx": 1.456182899752946
+        },
+        {
+          "seed": 99018,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 205,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 131,
+          "switch_height": 32.62119727448277,
+          "switch_abs_dx": 2.1224765291179892
+        },
+        {
+          "seed": 99019,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 215,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 133,
+          "switch_height": 40.87351930282938,
+          "switch_abs_dx": 2.532666908798575
+        },
+        {
+          "seed": 99020,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 193,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 132,
+          "switch_height": 23.428390514663192,
+          "switch_abs_dx": 1.5974073774054318
+        },
+        {
+          "seed": 99021,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 211,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 129,
+          "switch_height": 39.55458169533301,
+          "switch_abs_dx": 1.5557499829390906
+        },
+        {
+          "seed": 99022,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 177,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 123,
+          "switch_height": 21.705732322444476,
+          "switch_abs_dx": 2.226113126208645
+        },
+        {
+          "seed": 99023,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 174,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 111,
+          "switch_height": 28.039669729224272,
+          "switch_abs_dx": 1.6142017023643405
+        },
+        {
+          "seed": 99024,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 185,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 120,
+          "switch_height": 29.778033608036424,
+          "switch_abs_dx": 1.6296369561017912
+        },
+        {
+          "seed": 99025,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 206,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 136,
+          "switch_height": 29.16239515613779,
+          "switch_abs_dx": 1.505586106026982
+        },
+        {
+          "seed": 99026,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 175,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 106,
+          "switch_height": 32.906811674725134,
+          "switch_abs_dx": 2.081861576842499
+        },
+        {
+          "seed": 99027,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 193,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 125,
+          "switch_height": 28.334143221879742,
+          "switch_abs_dx": 1.741178825844969
+        },
+        {
+          "seed": 99028,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 199,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 129,
+          "switch_height": 31.939665024922533,
+          "switch_abs_dx": 2.232351797996756
+        },
+        {
+          "seed": 99029,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 212,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 132,
+          "switch_height": 36.77280094575781,
+          "switch_abs_dx": 1.735286572334985
+        },
+        {
+          "seed": 99000,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 147,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 64,
+          "switch_height": 33.58320808111472,
+          "switch_abs_dx": 0.394163083345461
+        },
+        {
+          "seed": 99001,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 118,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 47,
+          "switch_height": 26.98430999839843,
+          "switch_abs_dx": 1.5692036130507745
+        },
+        {
+          "seed": 99002,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 137,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 62,
+          "switch_height": 28.412859712362092,
+          "switch_abs_dx": 1.0629699692575514
+        },
+        {
+          "seed": 99003,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 137,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 50,
+          "switch_height": 40.73278497611665,
+          "switch_abs_dx": 1.2872696810283344
+        },
+        {
+          "seed": 99004,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 136,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 65,
+          "switch_height": 27.412353844034214,
+          "switch_abs_dx": 0.39715467839323537
+        },
+        {
+          "seed": 99005,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 130,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 59,
+          "switch_height": 28.516116276904995,
+          "switch_abs_dx": 0.07778268905155983
+        },
+        {
+          "seed": 99006,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 85,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 28,
+          "switch_height": 20.38084658888789,
+          "switch_abs_dx": 2.436696583830468
+        },
+        {
+          "seed": 99007,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 91,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 27,
+          "switch_height": 24.721740828734255,
+          "switch_abs_dx": 1.143480157383749
+        },
+        {
+          "seed": 99008,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 97,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 42,
+          "switch_height": 19.18149182667935,
+          "switch_abs_dx": 0.34707631415398055
+        },
+        {
+          "seed": 99009,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 89,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 23,
+          "switch_height": 26.4319103858453,
+          "switch_abs_dx": 2.4184112118901453
+        },
+        {
+          "seed": 99010,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 116,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 33,
+          "switch_height": 35.21735894104779,
+          "switch_abs_dx": 0.7935707613583531
+        },
+        {
+          "seed": 99011,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 103,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 46,
+          "switch_height": 20.705678512502402,
+          "switch_abs_dx": 1.147961195253231
+        },
+        {
+          "seed": 99012,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 119,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 36,
+          "switch_height": 36.0283328038318,
+          "switch_abs_dx": 2.1733273368129176
+        },
+        {
+          "seed": 99013,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 111,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 40,
+          "switch_height": 29.814352465751597,
+          "switch_abs_dx": 0.669938507616564
+        },
+        {
+          "seed": 99014,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 144,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 67,
+          "switch_height": 31.51663655535532,
+          "switch_abs_dx": 0.40176971309068676
+        },
+        {
+          "seed": 99015,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 112,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 31,
+          "switch_height": 33.511890747494135,
+          "switch_abs_dx": 0.05058510002419325
+        },
+        {
+          "seed": 99016,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 90,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 17,
+          "switch_height": 31.160028123542588,
+          "switch_abs_dx": 2.409644496935755
+        },
+        {
+          "seed": 99017,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 91,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 32,
+          "switch_height": 21.339150726057426,
+          "switch_abs_dx": 2.3794922166275114
+        },
+        {
+          "seed": 99018,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 94,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 13,
+          "switch_height": 33.4639607165181,
+          "switch_abs_dx": 3.460220852548531
+        },
+        {
+          "seed": 99019,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 111,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 22,
+          "switch_height": 39.55857181010077,
+          "switch_abs_dx": 1.0176292173962906
+        },
+        {
+          "seed": 99020,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 74,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 12,
+          "switch_height": 23.342997533230744,
+          "switch_abs_dx": 2.319082607166706
+        },
+        {
+          "seed": 99021,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 138,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 51,
+          "switch_height": 39.00235506259344,
+          "switch_abs_dx": 0.7100402761744249
+        },
+        {
+          "seed": 99022,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 86,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 31,
+          "switch_height": 20.106785728265606,
+          "switch_abs_dx": 1.3322355047849328
+        },
+        {
+          "seed": 99023,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 140,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 64,
+          "switch_height": 29.342193963335433,
+          "switch_abs_dx": 0.17887419405602145
+        },
+        {
+          "seed": 99024,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 133,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 55,
+          "switch_height": 30.444604479935208,
+          "switch_abs_dx": 0.3162624786797892
+        },
+        {
+          "seed": 99025,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 88,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 14,
+          "switch_height": 28.892620777927334,
+          "switch_abs_dx": 1.006437280941384
+        },
+        {
+          "seed": 99026,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 153,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 70,
+          "switch_height": 34.56095989517672,
+          "switch_abs_dx": 0.059309291773388395
+        },
+        {
+          "seed": 99027,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 88,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 16,
+          "switch_height": 27.74106057300503,
+          "switch_abs_dx": 2.996434602665488
+        },
+        {
+          "seed": 99028,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 102,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 31,
+          "switch_height": 30.942028257545076,
+          "switch_abs_dx": 1.2315133095017359
+        },
+        {
+          "seed": 99029,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "мягкая",
+          "steps": 108,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 28,
+          "switch_height": 35.68221602274508,
+          "switch_abs_dx": 2.591391013324852
+        },
+        {
+          "seed": 99000,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 175,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 89,
+          "switch_height": 35.3755643672597,
+          "switch_abs_dx": 0.09982756851286467
+        },
+        {
+          "seed": 99001,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 200,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 119,
+          "switch_height": 30.539920075302803,
+          "switch_abs_dx": 1.4011172152232803
+        },
+        {
+          "seed": 99002,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 217,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 130,
+          "switch_height": 31.181965461084303,
+          "switch_abs_dx": 3.0907745929946486
+        },
+        {
+          "seed": 99003,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 206,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 104,
+          "switch_height": 44.1871330515209,
+          "switch_abs_dx": 0.3592714054409214
+        },
+        {
+          "seed": 99004,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 211,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 131,
+          "switch_height": 30.3197992243405,
+          "switch_abs_dx": 2.3154699667193483
+        },
+        {
+          "seed": 99005,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 207,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 122,
+          "switch_height": 31.27022273478235,
+          "switch_abs_dx": 2.5742225911757544
+        },
+        {
+          "seed": 99006,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 176,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 110,
+          "switch_height": 23.123000545913385,
+          "switch_abs_dx": 2.1183586965382233
+        },
+        {
+          "seed": 99007,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 190,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 113,
+          "switch_height": 29.862282811919727,
+          "switch_abs_dx": 1.3834043875153839
+        },
+        {
+          "seed": 99008,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 174,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 109,
+          "switch_height": 22.049044996882742,
+          "switch_abs_dx": 2.5964243201181887
+        },
+        {
+          "seed": 99009,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 189,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 108,
+          "switch_height": 30.008771671422494,
+          "switch_abs_dx": 1.050475335738554
+        },
+        {
+          "seed": 99010,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 205,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 111,
+          "switch_height": 40.88528136270679,
+          "switch_abs_dx": 0.04658261431703181
+        },
+        {
+          "seed": 99011,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 186,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 116,
+          "switch_height": 23.68012647822269,
+          "switch_abs_dx": 1.9294332532993224
+        },
+        {
+          "seed": 99012,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 196,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 102,
+          "switch_height": 40.59744390333941,
+          "switch_abs_dx": 0.30672829238000077
+        },
+        {
+          "seed": 99013,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 195,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 111,
+          "switch_height": 32.047591806315324,
+          "switch_abs_dx": 1.669033801753244
+        },
+        {
+          "seed": 99014,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 223,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 135,
+          "switch_height": 34.416320071143275,
+          "switch_abs_dx": 2.035645041197398
+        },
+        {
+          "seed": 99015,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 200,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 106,
+          "switch_height": 38.48667557624162,
+          "switch_abs_dx": 0.2733281302937485
+        },
+        {
+          "seed": 99016,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 194,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 111,
+          "switch_height": 33.08973704004296,
+          "switch_abs_dx": 1.5367743509180514
+        },
+        {
+          "seed": 99017,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 177,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 106,
+          "switch_height": 23.927167180144806,
+          "switch_abs_dx": 2.25091440871347
+        },
+        {
+          "seed": 99018,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 195,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 111,
+          "switch_height": 32.15240011776558,
+          "switch_abs_dx": 1.6462673708655302
+        },
+        {
+          "seed": 99019,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 209,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 111,
+          "switch_height": 43.60651269265867,
+          "switch_abs_dx": 0.616761152249012
+        },
+        {
+          "seed": 99020,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 179,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 112,
+          "switch_height": 22.616010202944096,
+          "switch_abs_dx": 2.7908965089121125
+        },
+        {
+          "seed": 99021,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 206,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 107,
+          "switch_height": 42.207372474132455,
+          "switch_abs_dx": 0.6686182098023039
+        },
+        {
+          "seed": 99022,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 174,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 104,
+          "switch_height": 24.32411412485385,
+          "switch_abs_dx": 0.9539806128009047
+        },
+        {
+          "seed": 99023,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 169,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 90,
+          "switch_height": 30.9585989969475,
+          "switch_abs_dx": 0.1723630708514179
+        },
+        {
+          "seed": 99024,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 181,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 99,
+          "switch_height": 32.55766077861614,
+          "switch_abs_dx": 0.5282690151353506
+        },
+        {
+          "seed": 99025,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 197,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 117,
+          "switch_height": 28.890317361352913,
+          "switch_abs_dx": 2.2724780552568404
+        },
+        {
+          "seed": 99026,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 170,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 85,
+          "switch_height": 35.72589813665519,
+          "switch_abs_dx": 0.10048809651678425
+        },
+        {
+          "seed": 99027,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 181,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 104,
+          "switch_height": 29.178085504614444,
+          "switch_abs_dx": 1.9279026603817613
+        },
+        {
+          "seed": 99028,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 191,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 107,
+          "switch_height": 35.21978738326561,
+          "switch_abs_dx": 0.365931672209598
+        },
+        {
+          "seed": 99029,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "мягкая",
+          "steps": 201,
+          "fuel_out": false,
+          "tube_clipped": 2,
+          "bucket": "switch",
+          "switch_step": 111,
+          "switch_height": 37.24085591322694,
+          "switch_abs_dx": 1.5218461847728122
+        }
+      ],
+      "switches": {
+        "n": 180,
+        "n_switch": 180,
+        "n_no_switch": 0,
+        "n_opened_in_land": 0,
+        "median_step": 112.0,
+        "median_height": 24.993214163684968,
+        "median_abs_dx": 0.7171725290404254,
+        "share_no_switch": 0.0,
+        "n_height_gt_128": 0,
+        "share_height_gt_128": 0.0,
+        "height_gt_128_is_gate": false
+      }
+    },
+    {
+      "name": "skill_terminal",
+      "kind": "terminal",
+      "scored": false,
+      "soft": 6,
+      "crash": 174,
+      "miss": 0,
+      "fuel_out": 0,
+      "of": 180,
+      "tube_clipped": 0,
+      "cells": [
+        {
+          "g": 2.0,
+          "pad_x": 256.0,
+          "soft": 2,
+          "crash": 28,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 239.233
+        },
+        {
+          "g": 2.0,
+          "pad_x": 200.0,
+          "soft": 0,
+          "crash": 30,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 165.2
+        },
+        {
+          "g": 8.0,
+          "pad_x": 256.0,
+          "soft": 2,
+          "crash": 28,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 229.433
+        },
+        {
+          "g": 8.0,
+          "pad_x": 200.0,
+          "soft": 0,
+          "crash": 30,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 139.733
+        },
+        {
+          "g": 15.0,
+          "pad_x": 256.0,
+          "soft": 2,
+          "crash": 28,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 221.733
+        },
+        {
+          "g": 15.0,
+          "pad_x": 200.0,
+          "soft": 0,
+          "crash": 30,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 30,
+          "steps_mean": 135.167
+        }
+      ],
+      "by_g": [
+        {
+          "soft": 2,
+          "crash": 58,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 60,
+          "g": 2.0
+        },
+        {
+          "soft": 2,
+          "crash": 58,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 60,
+          "g": 8.0
+        },
+        {
+          "soft": 2,
+          "crash": 58,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 60,
+          "g": 15.0
+        }
+      ],
+      "by_pad": [
+        {
+          "soft": 6,
+          "crash": 84,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 90,
+          "pad_x": 256.0
+        },
+        {
+          "soft": 0,
+          "crash": 90,
+          "miss": 0,
+          "fuel_out": 0,
+          "of": 90,
+          "pad_x": 200.0
+        }
+      ],
+      "failures": [
+        {
+          "seed": 99000,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 287,
+          "fuel_out": false
+        },
+        {
+          "seed": 99001,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 189,
+          "fuel_out": false
+        },
+        {
+          "seed": 99002,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 186,
+          "fuel_out": false
+        },
+        {
+          "seed": 99003,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 352,
+          "fuel_out": false
+        },
+        {
+          "seed": 99004,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 176,
+          "fuel_out": false
+        },
+        {
+          "seed": 99005,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 197,
+          "fuel_out": false
+        },
+        {
+          "seed": 99007,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 212,
+          "fuel_out": false
+        },
+        {
+          "seed": 99008,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 132,
+          "fuel_out": false
+        },
+        {
+          "seed": 99009,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 196,
+          "fuel_out": false
+        },
+        {
+          "seed": 99010,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 304,
+          "fuel_out": false
+        },
+        {
+          "seed": 99011,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 156,
+          "fuel_out": false
+        },
+        {
+          "seed": 99012,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 352,
+          "fuel_out": false
+        },
+        {
+          "seed": 99013,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 215,
+          "fuel_out": false
+        },
+        {
+          "seed": 99014,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 207,
+          "fuel_out": false
+        },
+        {
+          "seed": 99015,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 287,
+          "fuel_out": false
+        },
+        {
+          "seed": 99016,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 244,
+          "fuel_out": false
+        },
+        {
+          "seed": 99018,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 255,
+          "fuel_out": false
+        },
+        {
+          "seed": 99019,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 303,
+          "fuel_out": false
+        },
+        {
+          "seed": 99020,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 162,
+          "fuel_out": false
+        },
+        {
+          "seed": 99021,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 338,
+          "fuel_out": false
+        },
+        {
+          "seed": 99022,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 228,
+          "fuel_out": false
+        },
+        {
+          "seed": 99023,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 284,
+          "fuel_out": false
+        },
+        {
+          "seed": 99024,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 270,
+          "fuel_out": false
+        },
+        {
+          "seed": 99025,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 217,
+          "fuel_out": false
+        },
+        {
+          "seed": 99026,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 296,
+          "fuel_out": false
+        },
+        {
+          "seed": 99027,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 200,
+          "fuel_out": false
+        },
+        {
+          "seed": 99028,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 285,
+          "fuel_out": false
+        },
+        {
+          "seed": 99029,
+          "g": 2.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 298,
+          "fuel_out": false
+        },
+        {
+          "seed": 99000,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 172,
+          "fuel_out": false
+        },
+        {
+          "seed": 99001,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 148,
+          "fuel_out": false
+        },
+        {
+          "seed": 99002,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 133,
+          "fuel_out": false
+        },
+        {
+          "seed": 99003,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 253,
+          "fuel_out": false
+        },
+        {
+          "seed": 99004,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 137,
+          "fuel_out": false
+        },
+        {
+          "seed": 99005,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 118,
+          "fuel_out": false
+        },
+        {
+          "seed": 99006,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 106,
+          "fuel_out": false
+        },
+        {
+          "seed": 99007,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 175,
+          "fuel_out": false
+        },
+        {
+          "seed": 99008,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 96,
+          "fuel_out": false
+        },
+        {
+          "seed": 99009,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 130,
+          "fuel_out": false
+        },
+        {
+          "seed": 99010,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 234,
+          "fuel_out": false
+        },
+        {
+          "seed": 99011,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 140,
+          "fuel_out": false
+        },
+        {
+          "seed": 99012,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 273,
+          "fuel_out": false
+        },
+        {
+          "seed": 99013,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 127,
+          "fuel_out": false
+        },
+        {
+          "seed": 99014,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 148,
+          "fuel_out": false
+        },
+        {
+          "seed": 99015,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 219,
+          "fuel_out": false
+        },
+        {
+          "seed": 99016,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 142,
+          "fuel_out": false
+        },
+        {
+          "seed": 99017,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 108,
+          "fuel_out": false
+        },
+        {
+          "seed": 99018,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 149,
+          "fuel_out": false
+        },
+        {
+          "seed": 99019,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 183,
+          "fuel_out": false
+        },
+        {
+          "seed": 99020,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 96,
+          "fuel_out": false
+        },
+        {
+          "seed": 99021,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 220,
+          "fuel_out": false
+        },
+        {
+          "seed": 99022,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 204,
+          "fuel_out": false
+        },
+        {
+          "seed": 99023,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 214,
+          "fuel_out": false
+        },
+        {
+          "seed": 99024,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 195,
+          "fuel_out": false
+        },
+        {
+          "seed": 99025,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 129,
+          "fuel_out": false
+        },
+        {
+          "seed": 99026,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 181,
+          "fuel_out": false
+        },
+        {
+          "seed": 99027,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 119,
+          "fuel_out": false
+        },
+        {
+          "seed": 99028,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 225,
+          "fuel_out": false
+        },
+        {
+          "seed": 99029,
+          "g": 2.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 182,
+          "fuel_out": false
+        },
+        {
+          "seed": 99000,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 277,
+          "fuel_out": false
+        },
+        {
+          "seed": 99001,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 182,
+          "fuel_out": false
+        },
+        {
+          "seed": 99002,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 186,
+          "fuel_out": false
+        },
+        {
+          "seed": 99003,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 339,
+          "fuel_out": false
+        },
+        {
+          "seed": 99004,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 174,
+          "fuel_out": false
+        },
+        {
+          "seed": 99005,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 197,
+          "fuel_out": false
+        },
+        {
+          "seed": 99007,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 195,
+          "fuel_out": false
+        },
+        {
+          "seed": 99008,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 131,
+          "fuel_out": false
+        },
+        {
+          "seed": 99009,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 193,
+          "fuel_out": false
+        },
+        {
+          "seed": 99010,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 275,
+          "fuel_out": false
+        },
+        {
+          "seed": 99011,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 139,
+          "fuel_out": false
+        },
+        {
+          "seed": 99012,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 313,
+          "fuel_out": false
+        },
+        {
+          "seed": 99013,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 216,
+          "fuel_out": false
+        },
+        {
+          "seed": 99014,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 205,
+          "fuel_out": false
+        },
+        {
+          "seed": 99015,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 268,
+          "fuel_out": false
+        },
+        {
+          "seed": 99016,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 245,
+          "fuel_out": false
+        },
+        {
+          "seed": 99018,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 256,
+          "fuel_out": false
+        },
+        {
+          "seed": 99019,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 293,
+          "fuel_out": false
+        },
+        {
+          "seed": 99020,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 162,
+          "fuel_out": false
+        },
+        {
+          "seed": 99021,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 334,
+          "fuel_out": false
+        },
+        {
+          "seed": 99022,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 167,
+          "fuel_out": false
+        },
+        {
+          "seed": 99023,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 254,
+          "fuel_out": false
+        },
+        {
+          "seed": 99024,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 259,
+          "fuel_out": false
+        },
+        {
+          "seed": 99025,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 218,
+          "fuel_out": false
+        },
+        {
+          "seed": 99026,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 296,
+          "fuel_out": false
+        },
+        {
+          "seed": 99027,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 198,
+          "fuel_out": false
+        },
+        {
+          "seed": 99028,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 260,
+          "fuel_out": false
+        },
+        {
+          "seed": 99029,
+          "g": 8.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 299,
+          "fuel_out": false
+        },
+        {
+          "seed": 99000,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 165,
+          "fuel_out": false
+        },
+        {
+          "seed": 99001,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 111,
+          "fuel_out": false
+        },
+        {
+          "seed": 99002,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 111,
+          "fuel_out": false
+        },
+        {
+          "seed": 99003,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 221,
+          "fuel_out": false
+        },
+        {
+          "seed": 99004,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 105,
+          "fuel_out": false
+        },
+        {
+          "seed": 99005,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 117,
+          "fuel_out": false
+        },
+        {
+          "seed": 99006,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 97,
+          "fuel_out": false
+        },
+        {
+          "seed": 99007,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 121,
+          "fuel_out": false
+        },
+        {
+          "seed": 99008,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 80,
+          "fuel_out": false
+        },
+        {
+          "seed": 99009,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 115,
+          "fuel_out": false
+        },
+        {
+          "seed": 99010,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 176,
+          "fuel_out": false
+        },
+        {
+          "seed": 99011,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 91,
+          "fuel_out": false
+        },
+        {
+          "seed": 99012,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 199,
+          "fuel_out": false
+        },
+        {
+          "seed": 99013,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 128,
+          "fuel_out": false
+        },
+        {
+          "seed": 99014,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 125,
+          "fuel_out": false
+        },
+        {
+          "seed": 99015,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 167,
+          "fuel_out": false
+        },
+        {
+          "seed": 99016,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 141,
+          "fuel_out": false
+        },
+        {
+          "seed": 99017,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 103,
+          "fuel_out": false
+        },
+        {
+          "seed": 99018,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 149,
+          "fuel_out": false
+        },
+        {
+          "seed": 99019,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 184,
+          "fuel_out": false
+        },
+        {
+          "seed": 99020,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 93,
+          "fuel_out": false
+        },
+        {
+          "seed": 99021,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 216,
+          "fuel_out": false
+        },
+        {
+          "seed": 99022,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 111,
+          "fuel_out": false
+        },
+        {
+          "seed": 99023,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 153,
+          "fuel_out": false
+        },
+        {
+          "seed": 99024,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 155,
+          "fuel_out": false
+        },
+        {
+          "seed": 99025,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 126,
+          "fuel_out": false
+        },
+        {
+          "seed": 99026,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 177,
+          "fuel_out": false
+        },
+        {
+          "seed": 99027,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 115,
+          "fuel_out": false
+        },
+        {
+          "seed": 99028,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 160,
+          "fuel_out": false
+        },
+        {
+          "seed": 99029,
+          "g": 8.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 180,
+          "fuel_out": false
+        },
+        {
+          "seed": 99000,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 277,
+          "fuel_out": false
+        },
+        {
+          "seed": 99001,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 177,
+          "fuel_out": false
+        },
+        {
+          "seed": 99002,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 182,
+          "fuel_out": false
+        },
+        {
+          "seed": 99003,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 322,
+          "fuel_out": false
+        },
+        {
+          "seed": 99004,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 169,
+          "fuel_out": false
+        },
+        {
+          "seed": 99005,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 190,
+          "fuel_out": false
+        },
+        {
+          "seed": 99007,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 189,
+          "fuel_out": false
+        },
+        {
+          "seed": 99008,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 129,
+          "fuel_out": false
+        },
+        {
+          "seed": 99009,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 190,
+          "fuel_out": false
+        },
+        {
+          "seed": 99010,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 257,
+          "fuel_out": false
+        },
+        {
+          "seed": 99011,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 135,
+          "fuel_out": false
+        },
+        {
+          "seed": 99012,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 291,
+          "fuel_out": false
+        },
+        {
+          "seed": 99013,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 206,
+          "fuel_out": false
+        },
+        {
+          "seed": 99014,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 199,
+          "fuel_out": false
+        },
+        {
+          "seed": 99015,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 249,
+          "fuel_out": false
+        },
+        {
+          "seed": 99016,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 239,
+          "fuel_out": false
+        },
+        {
+          "seed": 99018,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 247,
+          "fuel_out": false
+        },
+        {
+          "seed": 99019,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 276,
+          "fuel_out": false
+        },
+        {
+          "seed": 99020,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 157,
+          "fuel_out": false
+        },
+        {
+          "seed": 99021,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 326,
+          "fuel_out": false
+        },
+        {
+          "seed": 99022,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 157,
+          "fuel_out": false
+        },
+        {
+          "seed": 99023,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 247,
+          "fuel_out": false
+        },
+        {
+          "seed": 99024,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 257,
+          "fuel_out": false
+        },
+        {
+          "seed": 99025,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 211,
+          "fuel_out": false
+        },
+        {
+          "seed": 99026,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 294,
+          "fuel_out": false
+        },
+        {
+          "seed": 99027,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 192,
+          "fuel_out": false
+        },
+        {
+          "seed": 99028,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 248,
+          "fuel_out": false
+        },
+        {
+          "seed": 99029,
+          "g": 15.0,
+          "pad_x": 256.0,
+          "result": "удар",
+          "steps": 288,
+          "fuel_out": false
+        },
+        {
+          "seed": 99000,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 162,
+          "fuel_out": false
+        },
+        {
+          "seed": 99001,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 108,
+          "fuel_out": false
+        },
+        {
+          "seed": 99002,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 109,
+          "fuel_out": false
+        },
+        {
+          "seed": 99003,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 213,
+          "fuel_out": false
+        },
+        {
+          "seed": 99004,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 101,
+          "fuel_out": false
+        },
+        {
+          "seed": 99005,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 116,
+          "fuel_out": false
+        },
+        {
+          "seed": 99006,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 96,
+          "fuel_out": false
+        },
+        {
+          "seed": 99007,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 114,
+          "fuel_out": false
+        },
+        {
+          "seed": 99008,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 77,
+          "fuel_out": false
+        },
+        {
+          "seed": 99009,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 113,
+          "fuel_out": false
+        },
+        {
+          "seed": 99010,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 166,
+          "fuel_out": false
+        },
+        {
+          "seed": 99011,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 83,
+          "fuel_out": false
+        },
+        {
+          "seed": 99012,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 187,
+          "fuel_out": false
+        },
+        {
+          "seed": 99013,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 127,
+          "fuel_out": false
+        },
+        {
+          "seed": 99014,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 122,
+          "fuel_out": false
+        },
+        {
+          "seed": 99015,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 159,
+          "fuel_out": false
+        },
+        {
+          "seed": 99016,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 140,
+          "fuel_out": false
+        },
+        {
+          "seed": 99017,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 102,
+          "fuel_out": false
+        },
+        {
+          "seed": 99018,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 147,
+          "fuel_out": false
+        },
+        {
+          "seed": 99019,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 182,
+          "fuel_out": false
+        },
+        {
+          "seed": 99020,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 92,
+          "fuel_out": false
+        },
+        {
+          "seed": 99021,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 211,
+          "fuel_out": false
+        },
+        {
+          "seed": 99022,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 96,
+          "fuel_out": false
+        },
+        {
+          "seed": 99023,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 146,
+          "fuel_out": false
+        },
+        {
+          "seed": 99024,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 150,
+          "fuel_out": false
+        },
+        {
+          "seed": 99025,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 124,
+          "fuel_out": false
+        },
+        {
+          "seed": 99026,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 173,
+          "fuel_out": false
+        },
+        {
+          "seed": 99027,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 113,
+          "fuel_out": false
+        },
+        {
+          "seed": 99028,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 151,
+          "fuel_out": false
+        },
+        {
+          "seed": 99029,
+          "g": 15.0,
+          "pad_x": 200.0,
+          "result": "удар",
+          "steps": 175,
+          "fuel_out": false
+        }
+      ]
+    }
+  ]
+}
