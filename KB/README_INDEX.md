@@ -36,6 +36,7 @@ python chat.py --tag v4
 | [README_report_2.md](README_report_2.md) | **Отчёт 2 для руководства** — четыре усложнения полигона, без техники |
 | [README_report_3.md](README_report_3.md) | **Отчёт 3 для руководства** — на странице виден шаг времени, без техники |
 | [README_report_4.md](README_report_4.md) | **Отчёт 4 для руководства** — посадка в центр площадки: правило в обучении не помогло |
+| [README_report_5.md](README_report_5.md) | **Отчёт 5 для руководства** — система сама выбирает навык, `180` из `180`, без техники |
 | [README_DT_DEMO.md](README_DT_DEMO.md) | Техническая заметка показа: одна сеть с явным `dt`, не замер |
 | [README_WALLS.md](README_WALLS.md) | Стенки как параметр мира: 24 сети, раскатка, без победителя |
 | [README_WORLDS.md](README_WORLDS.md) | Четыре мира v5: пробуксовка, помехи, два мяча, бугры. Ярлыки на 90 эпизодах |
@@ -59,7 +60,7 @@ python chat.py --tag v4
 | Как устроены спеки изменений | [README_DEV.md](README_DEV.md) → «Спеки (OpenSpec)» |
 | Какой командой сняты 90 эпизодов | [README_DEV.md](README_DEV.md) → «Запуск» |
 | Как поменять физику мяча | [README_DEV.md](README_DEV.md) → «Эксперименты» |
-| Что показать начальству | [README_report.md](README_report.md) — первый отчёт; [README_report_2.md](README_report_2.md) — четыре усложнения; [README_report_3.md](README_report_3.md) — шаг времени на странице; [README_report_4.md](README_report_4.md) — посадка в центр площадки |
+| Что показать начальству | [README_report.md](README_report.md) — первый отчёт; [README_report_2.md](README_report_2.md) — четыре усложнения; [README_report_3.md](README_report_3.md) — шаг времени на странице; [README_report_4.md](README_report_4.md) — посадка в центр площадки; [README_report_5.md](README_report_5.md) — система сама выбирает навык, `180` из `180` |
 | Где описан показ сети с явным dt | [README_DT_DEMO.md](README_DT_DEMO.md) |
 | Где стенки вынесены в параметр мира | [README_WALLS.md](README_WALLS.md) |
 | Где доля поля сравнивается с абсолютным масштабом | [README_SCALE.md](README_SCALE.md) |
