@@ -1,15 +1,19 @@
-"""Демо площадки: сети площадки (numeric-land-pad) и сети цели (numeric-land-goal).
+"""Демо площадки: сети площадки, сети цели и контур навыка.
 
     python _pad_demo.py
     открыть http://127.0.0.1:8767
 
-Кодировщик заморожен из out/landf_range_vis_s0.pt. План смотрит в текущий центр.
-Сеть площадки (pad) видит тройку (g/9, 1, pad_x/512); сеть цели (goal) — ещё и желаемую vy.
+Кодировщик старых сетей заморожен из out/landf_range_vis_s0.pt. План CEM смотрит
+в текущий центр. Сеть площадки видит (g/9, 1, pad_x/512); сеть цели — ещё и желаемую vy.
+
+Кнопка «показать контур» летает один эпизод готового контура: голова landd_early_s0
+называет режим, действие берёт навык. Обучения нет, отчёт сетки не пишется.
 """
 import argparse
 import itertools
 import json
 import os
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import numpy as np
@@ -249,6 +253,136 @@ def rollout(seed, g, pad, variant, mode, horizon=40, start_xy=None, desired_vy=0
             "steps": len(frames) - 1, "frames": frames}
 
 
+# Контур навыка. Имена совпадают с прогоном, порог и κ здесь не подбираются.
+_CONTOURS = {
+    "tube": "навык на трубе",
+    "brake": "торможение в цели",
+    "split": "разделение по тяжести",
+    "rule": "правило головы early",
+}
+_SKILL = {}
+_SKILL_LOCK = threading.Lock()
+
+
+def _ensure_skill_locked():
+    """Чтение чекпоинтов один раз. Замок держит вызывающий."""
+    if _SKILL.get("bundle") is not None:
+        return _SKILL
+    torch.set_num_threads(8)
+    from numeric_land.skill_assemble import load_bundle
+    from numeric_land.skill_land import pair_table
+    from numeric_land.skill_split import controller_of
+    from numeric_land.target_brake import BRAKE_GAIN
+
+    if float(BRAKE_GAIN) != 0.6:
+        raise RuntimeError(BRAKE_GAIN)
+    if controller_of(15.0) != "rule" or controller_of(8.0) != "tube":
+        raise RuntimeError("разделение по тяжести съехало")
+    bundle = load_bundle()
+    actions, step_pairs = pair_table()
+    _SKILL["bundle"] = bundle
+    _SKILL["actions"] = actions
+    _SKILL["step_pairs"] = step_pairs
+    _SKILL["predictors"] = {"land": bundle["pad"], "approach": bundle["approach"]}
+    return _SKILL
+
+
+def _fly_skill(pack, seed, g, pad_x, kind, start_xy):
+    """Один эпизод. Физика и выбор действия — те же функции, что у зачёта."""
+    from numeric_land.expert_hover import HOVER_CAP, hover_mode
+    from numeric_land.mode import V_TARGET_LOOP
+    from numeric_land.skill_assemble import classify, predictor_of, rule_action, tube_action
+    from numeric_land.skill_land import world_batch
+    from numeric_land.skill_split import controller_of
+    from numeric_land.target_brake import BRAKE_GAIN, brake_target_action
+
+    if kind == "split":
+        flight = controller_of(g)
+    elif kind == "rule":
+        flight = "rule"
+    else:
+        flight = kind
+    if flight not in ("rule", "tube", "brake"):
+        raise RuntimeError(flight)
+    state = start_of(seed, start_xy=start_xy)
+    bundle = pack["bundle"]
+    head = bundle["early"]
+    encoder = bundle["encoder"]
+    ema = bundle["ema"]
+    predictors = pack["predictors"]
+    actions = pack["actions"]
+    step_pairs = pack["step_pairs"]
+    world_b = world_batch(g, pad_x)
+    frames = []
+    clipped_n = 0
+    fuel_out = False
+    names = {"rule": "правило", "tube": "труба", "brake": "торможение"}
+    for _step in range(int(HOVER_CAP) + 1):
+        tup = (state["x"], state["y"], state["vx"], state["vy"], state["fuel"])
+        mode, prob = classify(head, encoder, tup, g, pad_x)
+        teacher = hover_mode(tup, g, pad_x, float(V_TARGET_LOOP))
+        clipped = False
+        if mode is None:
+            action = 1
+            step_ctrl = "coast"
+        elif flight == "rule":
+            action = int(rule_action(tup, g, pad_x, mode))
+            step_ctrl = "rule"
+        elif flight == "tube":
+            action, clipped = tube_action(
+                predictor_of(mode, predictors), encoder, ema, actions, step_pairs, world_b,
+                tup, g, pad_x)
+            step_ctrl = "tube"
+        else:
+            action, clipped = brake_target_action(
+                predictor_of(mode, predictors), encoder, ema, actions, step_pairs, world_b,
+                tup, g, pad_x, float(BRAKE_GAIN))
+            step_ctrl = "brake"
+        if clipped:
+            clipped_n += 1
+        frame = _public(state)
+        frame["action"] = int(action)
+        frame["head_mode"] = mode
+        frame["teacher_mode"] = teacher
+        frame["head_p"] = None if prob is None else round(float(prob), 4)
+        frame["controller"] = step_ctrl
+        frames.append(frame)
+        if state["grounded"] or len(frames) > int(HOVER_CAP):
+            break
+        state = apply_step(state, int(action), g)
+        if float(state["fuel"]) <= 0.0 and not state["grounded"]:
+            fuel_out = True
+    last = state
+    return {
+        "g": float(g),
+        "seed": int(seed),
+        "pad_x": float(pad_x),
+        "variant": _CONTOURS[kind],
+        "mode": "skill-" + kind,
+        "contour": kind,
+        "controller": names[flight],
+        "v_target": float(V_TARGET_LOOP),
+        "threshold": 0.5,
+        "brake_gain": float(BRAKE_GAIN) if kind == "brake" else None,
+        "clicked": start_xy is not None,
+        "fuel_out": bool(fuel_out),
+        "tube_clipped": int(clipped_n),
+        "result": outcome_at(last["x"], last["y"], last["vy"], last["grounded"], pad_x),
+        "steps": len(frames) - 1,
+        "frames": frames,
+    }
+
+
+def skill_episode(seed, g, pad, kind, start_xy=None):
+    """Один показ. Сетку не гоняет и json не пишет."""
+    kind = str(kind)
+    if kind not in _CONTOURS:
+        raise ValueError("контур: tube, brake, split или rule")
+    with _SKILL_LOCK:
+        pack = _ensure_skill_locked()
+        return _fly_skill(pack, int(seed), float(g), float(pad), kind, start_xy)
+
+
 def _choose_action(state, g, pad):
     """Короткое правило: подрулить к центру pad и тормозить к земле."""
     if state["grounded"]:
@@ -421,7 +555,7 @@ PAGE = """<!DOCTYPE html>
   </nav>
   <section id="pane-pad" class="tab active">
   <h1>Площадка как параметр окна</h1>
-  <p class="lead">Центр площадки — параметр окна, интегратор его не видит. «План сети» — CEM, горизонт в поле справа, потолок 450. Клик по кадру ставит старт.</p>
+  <p class="lead">Центр площадки — параметр окна, интегратор его не видит. «План сети» — CEM, горизонт в поле справа, потолок 450. «Показать контур» — один эпизод готового навыка: голова называет режим, действие берёт трубу, торможение или разделение по тяжести. Клик по кадру ставит старт.</p>
   <div class="bench">
     <div class="stage">
       <canvas id="view" width="960" height="496"></canvas>
@@ -479,6 +613,17 @@ PAGE = """<!DOCTYPE html>
         <button class="go" id="example" type="button" title="Старое правило посадки, не сеть. Боковая скорость обрезана до 8, до дальней площадки часто не доезжает.">правило в коде</button>
         <button class="go wide" id="fall" type="button" title="Каждый шаг пустое действие: без тяги и без правила.">просто падать</button>
       </div>
+      <div class="wide">
+        <label for="contour">Контур навыка</label>
+        <select id="contour">
+          <option value="brake" selected>торможение в цели, κ 0.6</option>
+          <option value="split">разделение по тяжести</option>
+          <option value="tube">навык на трубе</option>
+          <option value="rule">правило головы early</option>
+        </select>
+      </div>
+      <button class="go wide" id="skill" type="button" title="Один эпизод контура. Голова landd_early_s0 называет режим, действие берёт навык. Желаемая vy и горизонт CEM не используются: цель скорости 6, порог 0.5. Клик ставит старт с нулевой скоростью. Это не зачёт сетки.">показать контур</button>
+      <p class="hint">Торможение на основной сетке 559 из 600, повтор 146 из 180. Разделение по тяжести повтор взяло: 557 из 600 и 150 из 180. Чтобы увидеть перелёт и запас, поставь g 15 и центр 406.</p>
       <label>Ручной шаг, три на три</label>
       <div class="actions" id="actions"></div>
       <p class="note">Мягкая посадка: касание в [pad−8, pad+8] и vy&lt;8. Порог 8 — «удар». Сеть площадки видит <code>(g/9, 1, pad_x/512)</code>, скрытая — нет. Сеть цели ещё и <code>desired_vy/120</code>. Ноль мягких — допустимый итог, победителя нет.</p>
@@ -537,8 +682,9 @@ PAGE = """<!DOCTYPE html>
   </section>
 </main>
 <script>
-const X0 = 160, Y0 = 416;
+const X0 = 160, X1 = 352, Y0 = 416;
 const S = 5;
+let camX = X0;
 const VW = (352 - X0) * S, GROUND = 512, GROUND_PAD = 16;
 const VH = (GROUND - Y0) * S + GROUND_PAD;
 const SHIP = 14;
@@ -567,6 +713,22 @@ function variantValue() { return document.getElementById("variant").value; }
 function desiredVyValue() { return Number(document.getElementById("desired_vy").value) || 0; }
 
 function wx(x) { return (x - X0) * S; }
+function wxc(x) { return (x - camX) * S; }
+function cameraX0(extent, focus, pad) {
+  let lo = pad - 8, hi = pad + 8;
+  for (const p of extent) {
+    if (p.x < lo) lo = p.x;
+    if (p.x > hi) hi = p.x;
+  }
+  if (clickStart) {
+    lo = Math.min(lo, clickStart.x);
+    hi = Math.max(hi, clickStart.x);
+  }
+  if (lo >= X0 && hi <= X1) return X0;
+  if (hi - lo <= (X1 - X0) - 16) return (lo + hi) / 2 - (X1 - X0) / 2;
+  const toward = pad >= focus ? 0.28 : 0.72;
+  return focus - (X1 - X0) * toward;
+}
 function wy(y) { return (y - Y0) * S; }
 
 canvas.addEventListener("click", (e) => {
@@ -592,11 +754,15 @@ function startPayload() {
 }
 
 function draw(frame, trail) {
+  const pad = padValue();
+  const extent = frames.length ? frames : trail;
+  camX = cameraX0(extent, frame.x, pad);
   ctx.clearRect(0, 0, VW, VH);
   ctx.fillStyle = "#14181f"; ctx.fillRect(0, 0, VW, VH);
-  const pad = padValue();
   ctx.strokeStyle = "#2a3140"; ctx.lineWidth = 1; ctx.beginPath();
-  for (let x = 160; x <= 352; x += 16) { ctx.moveTo(wx(x), 0); ctx.lineTo(wx(x), wy(GROUND)); }
+  const xStart = Math.floor(camX / 16) * 16;
+  const xEnd = camX + (X1 - X0);
+  for (let x = xStart; x <= xEnd + 16; x += 16) { ctx.moveTo(wxc(x), 0); ctx.lineTo(wxc(x), wy(GROUND)); }
   for (let y = Y0; y <= GROUND; y += 16) { ctx.moveTo(0, wy(y)); ctx.lineTo(VW, wy(y)); }
   ctx.stroke();
   const groundY = wy(GROUND);
@@ -611,12 +777,12 @@ function draw(frame, trail) {
   ctx.moveTo(0, groundY); ctx.lineTo(VW, groundY); ctx.stroke();
   // площадка в текущем центре pad
   ctx.fillStyle = "#2f9e62";
-  ctx.fillRect(wx(pad - 8), groundY - 4, 16 * S, 4);
+  ctx.fillRect(wxc(pad - 8), groundY - 4, 16 * S, 4);
   // границы площадки
   ctx.strokeStyle = "#8fd0a8"; ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
   ctx.beginPath();
-  ctx.moveTo(wx(pad - 8), groundY - 10); ctx.lineTo(wx(pad - 8), groundY);
-  ctx.moveTo(wx(pad + 8), groundY - 10); ctx.lineTo(wx(pad + 8), groundY);
+  ctx.moveTo(wxc(pad - 8), groundY - 10); ctx.lineTo(wxc(pad - 8), groundY);
+  ctx.moveTo(wxc(pad + 8), groundY - 10); ctx.lineTo(wxc(pad + 8), groundY);
   ctx.stroke(); ctx.setLineDash([]);
   // след. У головы цвет — её решение, не высота.
   if (headTrail) {
@@ -625,13 +791,13 @@ function draw(frame, trail) {
       const mode = trail[i - 1].head_mode;
       ctx.strokeStyle = mode === "land" ? "#ff9d3c" : (mode === "approach" ? "#4da3ff" : "#f2d48a");
       ctx.beginPath();
-      ctx.moveTo(wx(trail[i - 1].x), wy(trail[i - 1].y));
-      ctx.lineTo(wx(trail[i].x), wy(trail[i].y));
+      ctx.moveTo(wxc(trail[i - 1].x), wy(trail[i - 1].y));
+      ctx.lineTo(wxc(trail[i].x), wy(trail[i].y));
       ctx.stroke();
     }
   } else {
     ctx.strokeStyle = "#8fd0a8"; ctx.lineWidth = 2; ctx.beginPath();
-    trail.forEach((p, i) => { const c = i === 0 ? "moveTo" : "lineTo"; ctx[c](wx(p.x), wy(p.y)); });
+    trail.forEach((p, i) => { const c = i === 0 ? "moveTo" : "lineTo"; ctx[c](wxc(p.x), wy(p.y)); });
     ctx.stroke();
   }
   // корпус
@@ -646,7 +812,7 @@ function draw(frame, trail) {
     phaseColor = phase === "касание" ? "#f2d48a" : (phase === "прицел" ? "#4da3ff" : "#ff9d3c");
   }
   const a = frame.action | 0, iy = Math.floor(a/3), ix = a % 3;
-    const x = wx(frame.x), y = wy(frame.y);
+    const x = wxc(frame.x), y = wy(frame.y);
   ctx.fillStyle = phaseColor;
     ctx.beginPath(); ctx.moveTo(x, y - SHIP); ctx.lineTo(x - SHIP*0.55, y);
     ctx.lineTo(x + SHIP*0.55, y); ctx.closePath(); ctx.fill();
@@ -658,10 +824,10 @@ function draw(frame, trail) {
   // маркер старта
   if (clickStart) {
     ctx.strokeStyle = "#4da3ff"; ctx.lineWidth = 2; ctx.setLineDash([5,3]);
-    ctx.beginPath(); ctx.arc(wx(clickStart.x), wy(clickStart.y), 13, 0, Math.PI*2);
+    ctx.beginPath(); ctx.arc(wxc(clickStart.x), wy(clickStart.y), 13, 0, Math.PI*2);
     ctx.stroke(); ctx.setLineDash([]);
     ctx.fillStyle = "#4da3ff"; ctx.beginPath();
-    ctx.arc(wx(clickStart.x), wy(clickStart.y), 3, 0, Math.PI*2); ctx.fill();
+    ctx.arc(wxc(clickStart.x), wy(clickStart.y), 3, 0, Math.PI*2); ctx.fill();
   }
 }
 
@@ -680,12 +846,14 @@ function show(index) {
       "x " + f.x.toFixed(2) + "  y " + f.y.toFixed(2) +
       "  vx " + f.vx.toFixed(2) + "  vy " + f.vy.toFixed(2) +
       "  топливо " + f.fuel.toFixed(2) + "  действие " + NAMES[f.action] +
-      "  голова: " + headName + "  p " + Number(f.head_p).toFixed(2) +
-      "  учитель на этой точке: " + teacherName;
+      "  голова: " + headName + "  p " + (f.head_p == null ? "—" : Number(f.head_p).toFixed(2)) +
+      (f.controller ? "  контур: " + (f.controller === "rule" ? "правило" : (f.controller === "tube" ? "труба" : (f.controller === "brake" ? "торможение" : "без тяги"))) : "") +
+      (f.controller ? "  правило на этой точке: " : "  учитель на этой точке: ") + teacherName;
     const phColor = f.head_mode === "land" ? "#ff9d3c" : (f.head_mode === "approach" ? "#4da3ff" : "#1d6b45");
     document.getElementById("phase-line").innerHTML =
       'голова: <b style="color:' + phColor + '">' + headName + '</b>'
-      + '  · учитель здесь: <b>' + teacherName + '</b>'
+      + (f.controller ? '  · правило здесь: <b>' + teacherName + '</b>'
+        : '  · учитель здесь: <b>' + teacherName + '</b>')
       + '  · синий = подход, оранжевый = посадка, порог p 0.5';
     return;
   }
@@ -712,9 +880,17 @@ function setReport(data) {
   const cls = data.result === "мягкая" ? "ok" : "bad";
   const box = document.getElementById("report");
   box.dataset.result = data.result;
-  const goalNote = (data.variant || "").indexOf("goal") === 0
+  const skill = (data.mode || "").indexOf("skill") === 0;
+  const goalNote = !skill && (data.variant || "").indexOf("goal") === 0
     ? ", желаемая vy " + (data.desired_vy == null ? 0 : data.desired_vy) : "";
   let headNote = "";
+  if (skill) {
+    headNote = "\\nконтур: " + data.controller
+      + ", v_target " + data.v_target + ", порог " + data.threshold
+      + (data.brake_gain == null ? "" : ", κ " + data.brake_gain)
+      + (data.fuel_out ? ", бак пуст" : "")
+      + ". Один полёт, не зачёт сетки.";
+  }
   if (data.mode === "head") {
     const hs = data.first_head_land == null ? "не сказала" : ("с шага " + data.first_head_land);
     const ts = data.first_teacher_land == null ? "не наступила" : ("с шага " + data.first_teacher_land);
@@ -723,24 +899,37 @@ function setReport(data) {
   }
   box.innerHTML = "<strong class='" + cls + "'>" + data.result + "</strong>\\n"
     + "шагов " + (data.frames.length - 1) + ", g " + data.g +
-    ", центр " + data.pad_x + ", сеть " + data.variant + goalNote + headNote + "\\n"
+    ", центр " + data.pad_x + (skill ? ", " : ", сеть ") + data.variant + goalNote + headNote + "\\n"
     + "финиш x " + last.x.toFixed(2) + ", vy " + last.vy.toFixed(2) +
     ", топливо " + last.fuel.toFixed(2);
 }
 
 function setBusy(mode, busy) {
-  for (const id of ["plan","live","example","hover","fall","head-go"]) {
+  for (const id of ["plan","live","example","hover","fall","skill","head-go"]) {
     const el = document.getElementById(id);
     if (el) el.disabled = busy;
   }
   const plan = document.getElementById("plan");
-  if (busy) { plan.dataset.label = plan.textContent; plan.textContent = "план сети — считаю…"; }
-  else if (plan.dataset.label) { plan.textContent = plan.dataset.label; delete plan.dataset.label; }
+  const skill = document.getElementById("skill");
+  if (busy && mode === "plan") {
+    plan.dataset.label = plan.textContent; plan.textContent = "план сети — считаю…";
+  } else if (!busy && plan.dataset.label) {
+    plan.textContent = plan.dataset.label; delete plan.dataset.label;
+  }
+  if (busy && String(mode).indexOf("skill") === 0) {
+    skill.dataset.label = skill.textContent; skill.textContent = "контур — считаю…";
+  } else if (!busy && skill.dataset.label) {
+    skill.textContent = skill.dataset.label; delete skill.dataset.label;
+  }
 }
 
 async function run(mode) {
   stop(); const reportBox = document.getElementById("report");
-  reportBox.innerHTML = mode === "plan" ? "<span style='color:#1c1915;'>Строю план сети… это может занять до минуты.</span>" : "Считаю…";
+  reportBox.innerHTML = mode === "plan"
+    ? "<span style='color:#1c1915;'>Строю план сети… это может занять до минуты.</span>"
+    : (String(mode).indexOf("skill") === 0
+      ? "<span style='color:#1c1915;'>Считаю контур… один эпизод, обычно несколько секунд.</span>"
+      : "Считаю…");
   setBusy(mode, true);
   try {
     const res = await fetch("/api/run", {method:"POST",
@@ -801,6 +990,7 @@ document.getElementById("live").onclick = () => runLive();
 document.getElementById("example").onclick = () => run("example");
 document.getElementById("hover").onclick = () => run("hover");
 document.getElementById("fall").onclick = () => run("fall");
+document.getElementById("skill").onclick = () => run("skill-" + document.getElementById("contour").value);
 document.getElementById("clear-start").onclick = () => clearStart();
 document.getElementById("toggle").onclick = () => playing ? stop() : play();
 document.getElementById("scrub").oninput = (e) => { stop(); show(Number(e.target.value)); };
@@ -1154,17 +1344,25 @@ class Handler(BaseHTTPRequestHandler):
                 raise ValueError("желаемая vy вне 0…120")
             if path == "/api/run":
                 mode = payload.get("mode", "example")
-                if mode not in ("example", "fall", "plan", "hover"):
-                    raise ValueError("mode: plan, example, hover или fall")
                 g = float(payload.get("g", 8))
                 if not 0 < g <= 40:
                     raise ValueError("g вне 0…40")
-                horizon = int(payload.get("horizon", 40))
-                if not 1 <= horizon <= 450:
-                    raise ValueError("горизонт вне 1…450")
-                data = rollout(int(payload.get("seed", 0)), g, pad, variant,
-                               mode, horizon=horizon, start_xy=start_xy,
-                               desired_vy=desired_vy)
+                if isinstance(mode, str) and mode.startswith("skill-"):
+                    try:
+                        data = skill_episode(
+                            int(payload.get("seed", 0)), g, pad, mode.split("-", 1)[1],
+                            start_xy=start_xy)
+                    except (RuntimeError, SystemExit, OSError) as exc:
+                        raise ValueError(str(exc) or "контур не загрузился") from None
+                else:
+                    if mode not in ("example", "fall", "plan", "hover"):
+                        raise ValueError("mode: plan, example, hover, fall или skill-*")
+                    horizon = int(payload.get("horizon", 40))
+                    if not 1 <= horizon <= 450:
+                        raise ValueError("горизонт вне 1…450")
+                    data = rollout(int(payload.get("seed", 0)), g, pad, variant,
+                                   mode, horizon=horizon, start_xy=start_xy,
+                                   desired_vy=desired_vy)
             elif path == "/api/live/start":
                 g = float(payload.get("g", 8))
                 if not 0 < g <= 40:
